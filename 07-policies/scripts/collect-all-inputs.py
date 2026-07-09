@@ -217,6 +217,31 @@ def main():
                          "LGPL-2.1-or-later", "LGPL-3.0-only", "LGPL-3.0-or-later"}
     license_is_copyleft = spdx_id in copyleft_licenses
     license_present = bool(repo_license.get("name"))
+    # Also check for LICENSE file in local checkout (GitHub API uses default branch)
+    license_file_exists = any(
+        os.path.exists(f) for f in ['LICENSE', 'LICENSE.txt', 'LICENSE.md', 'LICENCE', 'COPYING']
+    )
+    if license_file_exists and not license_present:
+        # Override API result with local file check
+        license_present = True
+        if not spdx_id:
+            # Try to detect license type from file content
+            for lf in ['LICENSE', 'LICENSE.txt', 'LICENSE.md']:
+                if os.path.exists(lf):
+                    content_lf = open(lf).read().lower()
+                    if 'mit license' in content_lf or 'permission is hereby granted' in content_lf:
+                        spdx_id = 'MIT'
+                    elif 'apache license' in content_lf:
+                        spdx_id = 'Apache-2.0'
+                    elif 'gpl' in content_lf and 'version 3' in content_lf:
+                        spdx_id = 'GPL-3.0-or-later'
+                    elif 'gpl' in content_lf:
+                        spdx_id = 'GPL-2.0-or-later'
+                    elif 'bsd' in content_lf:
+                        spdx_id = 'BSD-3-Clause'
+                    break
+    license_is_copyleft = spdx_id in copyleft_licenses
+
     # Check if any license-scanning action is present in workflows
     license_scan_patterns = ["fossa-contrib/fossa-action", "licensefinder/",
                              "github/licensed", "pypa/gh-action-pypi-publish",
