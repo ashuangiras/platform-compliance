@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-001-GO
+control_id: QUA-001
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  golangci-lint must run clean in CI; a .golangci config should be committed.
+observable_artifact: "collect-go-info.sh output field: quality.lint.result"
+policy_check_ids:
+  - POL-QUA-001-GO-001

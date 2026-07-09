@@ -1,0 +1,67 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: TST-003
+title: Services must have at least one integration or end-to-end test
+domain: TST
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  Every repository of type "service" must contain at least one integration or
+  end-to-end test that exercises the service across component boundaries (e.g.
+  through its HTTP API, against a real or containerised dependency). Unit tests
+  alone are not sufficient for services.
+
+rationale: >
+  The highest-risk failures in services occur at component boundaries: API
+  contract mismatches, serialization errors, database query bugs, and
+  misconfigured dependencies. Unit tests, by design, mock these boundaries and
+  therefore cannot catch integration failures. An integration or end-to-end test
+  exercises the real wiring and catches the failures that matter most in
+  production. This control applies only to services (scope-conditioned), because
+  libraries and modules are validated through their unit tests and consumers.
+
+mapped_standards:
+  - source_id: SRC-TESTING-PRACTICES
+    clause: "Services require integration/end-to-end tests because the highest-risk failures occur at component boundaries"
+    mapping_note: >
+      TST-003 requires integration/e2e coverage for services specifically,
+      addressing the boundary failures that unit tests structurally cannot catch.
+  - source_id: SRC-GOOGLE-SRE
+    clause: "Chapter 17 — Testing for Reliability: integration and system tests validate component interactions"
+    mapping_note: >
+      Google SRE Chapter 17 emphasises testing at multiple levels, with
+      integration tests validating component interactions. TST-003 mandates this
+      for services.
+
+implementation_expectations: >
+  Service repositories must contain at least one integration or end-to-end test.
+
+  For Go, this is detected via:
+  - Files matching *_integration_test.go
+  - Test files under integration/ or e2e/ directories
+  - Tests guarded by a //go:build integration build tag
+
+  The platform CI collects this via collect-go-info.sh
+  (testing.integration_test_present).
+
+scope_conditions:
+  - condition: "repository.type == 'service'"
+    rationale: "Integration tests are required for services; libraries and modules rely on unit tests and consumer verification."
+
+evidence_required:
+  - type: go-testing
+    description: >
+      collect-go-info.sh output showing testing.integration_test_present == true
+      for service repositories.
+    format: json
+
+automation_status: partially-automated
+assessment_cadence: per-release
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - release_gate

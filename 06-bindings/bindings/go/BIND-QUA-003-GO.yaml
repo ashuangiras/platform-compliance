@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-003-GO
+control_id: QUA-003
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  go build ./... must succeed.
+observable_artifact: "collect-go-info.sh output field: quality.build.result"
+policy_check_ids:
+  - POL-QUA-003-GO-001

@@ -37,7 +37,11 @@
         "DOC",
         "ACC",
         "AUD",
-        "LIC"
+        "LIC",
+        "QUA",
+        "TST",
+        "API",
+        "ARC"
       ],
       "description": "Primary control domain this collection covers. Informational."
     },

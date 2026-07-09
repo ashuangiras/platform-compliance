@@ -1,0 +1,56 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: QUA-004
+title: Static type/correctness analysis must pass in CI
+domain: QUA
+type: detective
+priority: P2
+severity: high
+
+statement: >
+  Every repository must run the language's static type or correctness analyser
+  in CI, and it must report no findings. For Go, this is go vet, which detects
+  suspicious constructs such as printf format mismatches, unreachable code,
+  and improper struct tags. (For TypeScript this is tsc; for Python this is mypy.)
+
+rationale: >
+  Static analysis beyond linting catches subtle correctness bugs that compile
+  cleanly but behave incorrectly at runtime: format-string mismatches, misused
+  standard library APIs, copied lock values, and impossible type assertions. go
+  vet is fast, has near-zero false positives, and is part of the standard Go
+  toolchain. Running it in CI prevents a well-understood class of runtime defects
+  from reaching production.
+
+mapped_standards:
+  - source_id: SRC-GO-STYLE
+    clause: "go vet is part of the standard Go toolchain and catches suspicious constructs (Go Code Review Comments)"
+    mapping_note: >
+      go vet is the canonical Go correctness analyser. QUA-004 for the go context
+      requires a clean go vet run. golangci-lint also runs go vet, but QUA-004
+      makes the requirement explicit and independent of linter configuration.
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Verification — Security Testing — ST-2: static analysis for correctness and security"
+    mapping_note: >
+      Static correctness analysis complements linting and security SAST. QUA-004
+      ensures type/correctness analysis is part of the pipeline.
+
+implementation_expectations: >
+  Go repositories must run go vet ./... in CI and it must report no findings.
+
+  The platform CI collects vet status via collect-go-info.sh (quality.vet.result).
+
+evidence_required:
+  - type: go-quality
+    description: >
+      collect-go-info.sh output showing quality.vet.result == "pass".
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

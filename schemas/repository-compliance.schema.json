@@ -15,14 +15,21 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string", "description": "Schema reference for editor tooling. Not validated against the schema itself." },
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference for editor tooling. Not validated against the schema itself."
+    },
     "schema_version": {
       "type": "string",
       "description": "Version of this schema used to produce the manifest."
     },
     "repository": {
       "type": "object",
-      "required": ["name", "url", "type"],
+      "required": [
+        "name",
+        "url",
+        "type"
+      ],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -58,7 +65,13 @@
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["stateless", "stateful", "gateway", "worker", "batch"],
+              "enum": [
+                "stateless",
+                "stateful",
+                "gateway",
+                "worker",
+                "batch"
+              ],
               "description": "Service classification. 'stateful' activates BAK-001."
             },
             "externally_exposed": {
@@ -84,7 +97,17 @@
       "minItems": 1,
       "items": {
         "type": "string",
-        "enum": ["github", "terraform", "docker", "runtime-linux", "github-actions"]
+        "enum": [
+          "github",
+          "terraform",
+          "docker",
+          "runtime-linux",
+          "github-actions",
+          "go",
+          "node",
+          "python",
+          "frontend"
+        ]
       },
       "description": "Technology contexts from 02-taxonomy/technology-contexts.yaml. Determines which bindings and policies apply."
     },

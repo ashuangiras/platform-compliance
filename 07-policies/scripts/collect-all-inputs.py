@@ -138,6 +138,25 @@ def main():
             data = {"repository": {"name": repo_name}, "workflow_files": [], "action_references": []}
         (out / "actions-info.json").write_text(json.dumps(data))
 
+    # ── Go context (QUA, TST) ────────────────────────────────────────────────
+    if "go" in contexts:
+        result = subprocess.run(
+            ["bash", "07-policies/scripts/collect-go-info.sh", "."],
+            capture_output=True, text=True
+        )
+        try:
+            data = json.loads(result.stdout)
+        except Exception:
+            data = {"repository": {"name": repo_name}, "language": "go",
+                    "has_go_module": False,
+                    "tools": {"go_available": False, "golangci_lint_available": False},
+                    "quality": {"lint": {"result": "unavailable"}, "format": {"result": "unavailable"},
+                                "build": {"result": "unavailable"}, "vet": {"result": "unavailable"}},
+                    "testing": {"tests_present": False, "test_file_count": 0,
+                                "test_result": "unavailable", "coverage_percent": None,
+                                "integration_test_present": False}}
+        (out / "go-info.json").write_text(json.dumps(data))
+
     # ── ACC-001: Account MFA / security settings (GitHub context) ────────────
     # Fetch account or org 2FA status using the authenticated token
     user_data = run_gh("user") or {}

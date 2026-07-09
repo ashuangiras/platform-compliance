@@ -1,0 +1,62 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: TST-002
+title: Test coverage must meet the minimum threshold
+domain: TST
+type: detective
+priority: P2
+severity: medium
+
+statement: >
+  Automated test coverage must meet or exceed the minimum threshold of 70% of
+  statements. Coverage is measured by the language's native coverage tool
+  (go test -cover for Go). This control initially warns and is promoted to
+  blocking at a future MAJOR release (v2.0.0) per ADR-0010, giving existing
+  codebases time to raise coverage.
+
+rationale: >
+  Test coverage is an imperfect but useful signal: it identifies code paths that
+  no test exercises. A 70% threshold catches egregiously untested code without
+  incentivising the test-gaming that 100% mandates produce. Coverage is
+  deliberately graduated to warn-then-block because raising coverage on an
+  existing codebase takes time, whereas the other quality controls (lint,
+  format, build) can be satisfied immediately.
+
+mapped_standards:
+  - source_id: SRC-TESTING-PRACTICES
+    clause: "Coverage is a useful signal; a moderate minimum threshold (>=70%) catches untested code without incentivising gaming"
+    mapping_note: >
+      TST-002 sets a moderate coverage floor (70%). The threshold is intentionally
+      not 100% to avoid rewarding trivial tests written solely to hit a number.
+
+implementation_expectations: >
+  Go repositories must:
+  - Run go test -coverprofile in CI
+  - Total coverage must be >= 70%
+
+  Enforcement ramp (per ADR-0010):
+  - Now (v1.x): warn if coverage < 70%
+  - v2.0.0: block if coverage < 70% (4-week migration window applies)
+
+  The platform CI collects coverage via collect-go-info.sh
+  (testing.coverage_percent).
+
+evidence_required:
+  - type: go-testing
+    description: >
+      collect-go-info.sh output showing testing.coverage_percent >= 70.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - release_gate
+
+notes: >
+  TST-002 is the single code-quality control that ramps warn -> block per ADR-0016
+  decision 4. All other QUA/TST controls block immediately. The 70% threshold and
+  the promotion date (v2.0.0) are governed by ADR-0010's MAJOR-release process.

@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-TST-002-GO
+control_id: TST-002
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  go test coverage must be >= 70% (warn now, block at v2.0.0).
+observable_artifact: "collect-go-info.sh output field: testing.coverage_percent"
+policy_check_ids:
+  - POL-TST-002-GO-001

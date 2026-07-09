@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-002-GO
+control_id: QUA-002
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  gofmt -l must report zero unformatted files.
+observable_artifact: "collect-go-info.sh output field: quality.format.result"
+policy_check_ids:
+  - POL-QUA-002-GO-001

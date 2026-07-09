@@ -1,0 +1,152 @@
+title: Application & Code Quality Governance (ADR-0016)
+adr: ADR-0016
+note: Five-phase rollout. Go first. Each phase self-governs before the next.
+phases:
+- id: phase-P1-foundations
+  title: 'P1 — Foundations: contexts, domains, standards, Go QUA+TST'
+  horizon: v1.3.0
+  tasks:
+  - id: PC-0214
+    title: 'Register technology contexts: go, node, python, frontend'
+    status: done
+  - id: PC-0215
+    title: 'Register control domains: QUA, TST, API, ARC (schemas + taxonomy)'
+    status: done
+  - id: PC-0216
+    title: Register frontend-app repository type
+    status: done
+  - id: PC-0217
+    title: Register standard SRC-GO-STYLE (Effective Go + Uber Go Style)
+    status: done
+  - id: PC-0218
+    title: Register standard SRC-TESTING-PRACTICES (test presence + coverage)
+    status: done
+  - id: PC-0219
+    title: Write collect-go-info.sh data collector (lint/fmt/vet/build/test/coverage)
+    status: done
+  - id: PC-0220
+    title: Define QUA-001 (linter must pass) + binding + OPA policy + check
+    status: done
+  - id: PC-0221
+    title: Define QUA-002 (code must be formatted) + binding + OPA policy + check
+    status: done
+  - id: PC-0222
+    title: Define QUA-003 (build/compile must succeed) + binding + OPA policy + check
+    status: done
+  - id: PC-0223
+    title: Define QUA-004 (static type check / go vet) + binding + OPA policy + check
+    status: done
+  - id: PC-0224
+    title: Define TST-001 (tests exist + run in CI) + binding + OPA policy + check
+    status: done
+  - id: PC-0225
+    title: Define TST-002 (coverage >=70%, warn->block) + binding + OPA policy + check
+    status: done
+  - id: PC-0226
+    title: Define TST-003 (integration/e2e test required for services) + binding +
+      policy
+    status: done
+  - id: PC-0227
+    title: Add QUA/TST policies to POLICY_MAP; wire go context into collect-all-inputs.py
+    status: done
+  - id: PC-0228
+    title: Full CI validation of P1; merge; cut v1.3.0
+    status: not_started
+- id: phase-P2-go-service
+  title: 'P2 — Go service: ARC, API, OBS-004, SRC-005, SUP-005, PROF-GO-SERVICE-V1'
+  horizon: v1.4.0
+  tasks:
+  - id: PC-0229
+    title: 'Register standards: OpenAPI 3.1, OpenTelemetry, Conventional Commits,
+      12-Factor'
+    status: not_started
+  - id: PC-0230
+    title: Define ARC-001 (standard Go project layout) + policy
+    status: not_started
+  - id: PC-0231
+    title: Define ARC-003 (no import cycles / layer boundaries) + policy
+    status: not_started
+  - id: PC-0232
+    title: Define API-001 (OpenAPI spec required) + policy
+    status: not_started
+  - id: PC-0233
+    title: Define API-002 (versioning strategy declared) + policy
+    status: not_started
+  - id: PC-0234
+    title: Define API-003 (breaking change detection) + policy
+    status: not_started
+  - id: PC-0235
+    title: Define OBS-004 (OpenTelemetry tracing) + policy
+    status: not_started
+  - id: PC-0236
+    title: Define SRC-005 (Conventional Commits) + policy
+    status: not_started
+  - id: PC-0237
+    title: Define SUP-005 (committed lockfile) + policy
+    status: not_started
+  - id: PC-0238
+    title: Define DOC-003 (service runbook) + policy
+    status: not_started
+  - id: PC-0239
+    title: Create PROF-GO-SERVICE-V1 (inherits PROF-SERVICE-V1)
+    status: not_started
+  - id: PC-0240
+    title: Full CI validation of P2; merge; cut v1.4.0
+    status: not_started
+- id: phase-P3-node-python
+  title: 'P3 — Node + Python: extend QUA/TST/ARC bindings + profiles'
+  horizon: v1.5.0
+  tasks:
+  - id: PC-0241
+    title: 'Register standards: SRC-TS-STYLE, SRC-PYTHON-PEP8'
+    status: not_started
+  - id: PC-0242
+    title: Write collect-node-info.sh (ESLint, tsc, jest/vitest, coverage)
+    status: not_started
+  - id: PC-0243
+    title: Write collect-python-info.sh (ruff, mypy, pytest, coverage)
+    status: not_started
+  - id: PC-0244
+    title: Add node bindings for QUA-001/002/003/004, TST-001/002
+    status: not_started
+  - id: PC-0245
+    title: Add python bindings for QUA-001/002/004, TST-001/002
+    status: not_started
+  - id: PC-0246
+    title: Create PROF-NODE-SERVICE-V1, PROF-PYTHON-SERVICE-V1
+    status: not_started
+  - id: PC-0247
+    title: Full CI validation of P3; merge; cut v1.6.0
+    status: not_started
+- id: phase-P4-frontend
+  title: 'P4 — Frontend: CSP, bundle budget, a11y, PROF-FRONTEND-V1'
+  horizon: v1.7.0
+  tasks:
+  - id: PC-0248
+    title: 'Register standards: SRC-WEB-CSP, SRC-WCAG-2-2'
+    status: not_started
+  - id: PC-0249
+    title: Write collect-frontend-info.sh (CSP header, bundle size, source maps)
+    status: not_started
+  - id: PC-0250
+    title: Define frontend security controls (CSP present, no prod source maps)
+    status: not_started
+  - id: PC-0251
+    title: Define bundle-size budget control
+    status: not_started
+  - id: PC-0252
+    title: Create PROF-FRONTEND-V1
+    status: not_started
+  - id: PC-0253
+    title: Full CI validation of P4; merge; cut v1.8.0
+    status: not_started
+- id: phase-P5-library
+  title: 'P5 — Library: reuse QUA/TST, relax RUN/NET/OBS, PROF-LIBRARY-V1'
+  horizon: v1.9.0
+  tasks:
+  - id: PC-0254
+    title: Create PROF-LIBRARY-V1 (inherits PROF-BASE; QUA/TST; no RUN/NET/OBS)
+    status: not_started
+  - id: PC-0255
+    title: Full CI validation of P5; merge; cut v2.0.0 (coverage TST-002 -> block)
+    status: not_started

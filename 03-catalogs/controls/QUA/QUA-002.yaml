@@ -1,0 +1,54 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: QUA-002
+title: Source code must be formatted with the language's canonical formatter
+domain: QUA
+type: preventive
+priority: P1
+severity: medium
+
+statement: >
+  All source code must be formatted using the language's canonical automatic
+  formatter, and formatting must be verified in CI. For Go, this is gofmt (or
+  goimports). No file may be committed in an unformatted state.
+
+rationale: >
+  Consistent formatting eliminates an entire category of unproductive debate and
+  review noise. It makes diffs meaningful (changes reflect logic, not whitespace),
+  reduces merge conflicts, and makes code uniformly navigable. Go is unique in
+  having exactly one canonical format (gofmt), so QUA-002 for Go is unambiguous
+  and non-negotiable — there is no legitimate reason for unformatted Go code.
+
+mapped_standards:
+  - source_id: SRC-GO-STYLE
+    clause: "gofmt is the single canonical Go formatter; unformatted Go code is never acceptable (Effective Go)"
+    mapping_note: >
+      Effective Go establishes gofmt as the one true Go formatter. QUA-002 for the
+      go context requires that gofmt -l reports no unformatted files.
+
+implementation_expectations: >
+  Go repositories must:
+  - Run gofmt -l (or goimports -l) in CI to detect unformatted files
+  - The check must report zero unformatted files
+  - Developers are expected to run gofmt on save (editor integration) or via a
+    pre-commit hook
+
+  The platform CI collects formatting status via collect-go-info.sh
+  (quality.format.result and quality.format.unformatted_count).
+
+evidence_required:
+  - type: go-quality
+    description: >
+      collect-go-info.sh output showing quality.format.result == "pass"
+      (unformatted_count == 0).
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

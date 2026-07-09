@@ -1,0 +1,35 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-TESTING-PRACTICES
+name: Software Testing Practices (test presence, coverage, CI execution)
+version: "2024"
+publisher: platform-team (adapted from Google Testing Blog + Go/JS/Python testing conventions)
+source_url: "https://testing.googleblog.com/"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: adapted
+
+applies_to:
+  - TST  # Testing domain
+
+status: active
+
+notes: >
+  An adapted standard capturing baseline automated-testing expectations. Synthesised
+  from widely-accepted testing practices rather than a single normative source:
+
+  - Tests must exist and run automatically on every change (Google Testing Blog:
+    "test automation" pillar)
+  - Coverage is a useful signal but not a goal in itself; a minimum threshold
+    (>=70%) catches egregiously untested code without incentivising test gaming
+  - Services require integration/end-to-end tests, not just unit tests, because
+    the highest-risk failures occur at component boundaries
+
+  Platform control mappings:
+  - TST-001: tests exist and run in CI (go test, jest/vitest, pytest)
+  - TST-002: coverage >= 70% (measured by the language's native coverage tool)
+  - TST-003: services have at least one integration or end-to-end test
+
+  Coverage thresholds are deliberately moderate. The goal is to catch untested
+  code paths, not to enforce 100% coverage which incentivises trivial tests.

@@ -1,0 +1,60 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: TST-001
+title: Repository must contain automated tests that run in CI
+domain: TST
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Every repository containing application or library source code must contain
+  automated tests and execute them in CI on every pull request. The tests must
+  pass. For Go, this means the presence of *_test.go files and a passing
+  go test ./... run.
+
+rationale: >
+  Untested code is unverified code. Without automated tests, every change carries
+  unknown regression risk, refactoring becomes dangerous, and correctness relies
+  entirely on manual inspection. The mere presence of a passing test suite that
+  runs on every PR is the foundational quality practice — it catches regressions
+  automatically and documents intended behaviour. TST-001 requires that tests
+  exist and pass; TST-002 addresses how much they cover.
+
+mapped_standards:
+  - source_id: SRC-TESTING-PRACTICES
+    clause: "Tests must exist and run automatically on every change (test automation pillar)"
+    mapping_note: >
+      TST-001 implements the foundational test-automation requirement: tests exist
+      and run in CI. For Go, detected via *_test.go presence and a passing go test.
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Verification — Requirements-driven Testing — ST-1: automated test execution"
+    mapping_note: >
+      OWASP SAMM Verification level 1 requires automated tests. TST-001 enforces
+      their presence and execution.
+
+implementation_expectations: >
+  Go repositories must:
+  - Contain at least one *_test.go file
+  - Run go test ./... in CI on every PR
+  - All tests must pass
+
+  The platform CI collects test status via collect-go-info.sh
+  (testing.tests_present and testing.test_result).
+
+evidence_required:
+  - type: go-testing
+    description: >
+      collect-go-info.sh output showing testing.tests_present == true and
+      testing.test_result == "pass".
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

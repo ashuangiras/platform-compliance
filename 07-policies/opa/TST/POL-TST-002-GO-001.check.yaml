@@ -1,0 +1,11 @@
+id: POL-TST-002-GO-001
+title: "TST-002 (go): coverage >= 70%"
+binding_ids: [BIND-TST-002-GO]
+engine: opa
+file_path: "07-policies/opa/TST/POL-TST-002-GO-001.rego"
+pass_criteria: "coverage >= 70% — go module present and check passes."
+fail_criteria: "Go module present and the check fails."
+evidence_type: go-testing
+severity: medium
+introduced_date: "2026-07-10"
+status: active

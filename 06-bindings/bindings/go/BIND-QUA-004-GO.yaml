@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-004-GO
+control_id: QUA-004
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  go vet ./... must report no findings.
+observable_artifact: "collect-go-info.sh output field: quality.vet.result"
+policy_check_ids:
+  - POL-QUA-004-GO-001

@@ -47,3 +47,38 @@ contexts:
       cover: workflow permissions, pinned action versions, secret usage in workflows,
       and required workflow steps.
     applies_when: "repository uses GitHub Actions (all platform repos)"
+
+  go:
+    code: go
+    description: >
+      The repository contains Go source code. Bindings in this context cover:
+      golangci-lint / go vet static analysis, gofmt formatting, go build compilation,
+      go test execution and coverage, and Go module hygiene (go.mod/go.sum).
+    applies_when: "repository contains go.mod at the root or in a module directory"
+
+  node:
+    code: node
+    description: >
+      The repository contains Node.js / TypeScript source code. Bindings in this
+      context cover: ESLint static analysis, prettier formatting, tsc type checking,
+      test runner (jest/vitest) execution and coverage, and package manifest hygiene
+      (package.json + lockfile).
+    applies_when: "repository contains package.json at the root"
+
+  python:
+    code: python
+    description: >
+      The repository contains Python source code. Bindings in this context cover:
+      ruff / pylint static analysis, black / ruff-format formatting, mypy type
+      checking, pytest execution and coverage, and dependency manifest hygiene
+      (pyproject.toml / requirements.txt + lockfile).
+    applies_when: "repository contains pyproject.toml, setup.py, or requirements.txt"
+
+  frontend:
+    code: frontend
+    description: >
+      The repository builds a browser-facing web application. Bindings in this
+      context cover: Content-Security-Policy declaration, bundle-size budgets,
+      absence of production source maps, and accessibility (WCAG) checks. Layered
+      on top of the node context for build/lint/test.
+    applies_when: "repository.type == 'frontend-app'"

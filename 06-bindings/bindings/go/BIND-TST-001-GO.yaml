@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-TST-001-GO
+control_id: TST-001
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Repository must contain *_test.go files and go test ./... must pass.
+observable_artifact: "collect-go-info.sh output field: testing.test_result"
+policy_check_ids:
+  - POL-TST-001-GO-001

@@ -179,3 +179,51 @@ domains:
       - No GPL/AGPL transitive dependencies without explicit waiver
       - License scanning in CI pipeline
       - SBOM includes license identifiers
+
+  QUA:
+    name: Code Quality
+    description: >
+      Controls governing source code quality: linting, formatting, build/compile
+      success, and static type checking. Evaluated per language technology context
+      (go, node, python). Prevents defects, enforces consistency, and keeps the
+      codebase maintainable.
+    examples:
+      - Linter passes (golangci-lint, ESLint, ruff)
+      - Code is auto-formatted (gofmt, prettier, black)
+      - Project builds/compiles successfully
+      - Static type checking passes (go vet, tsc, mypy)
+
+  TST:
+    name: Testing
+    description: >
+      Controls governing automated testing: test presence, execution in CI,
+      coverage thresholds, and integration/end-to-end test requirements. Ensures
+      code correctness is verified continuously and regressions are caught early.
+    examples:
+      - Automated tests exist and run in CI
+      - Test coverage meets minimum threshold (>=70%)
+      - Services have integration or end-to-end tests
+
+  API:
+    name: API Contract
+    description: >
+      Controls governing service API contracts: OpenAPI specification presence,
+      versioning strategy, and breaking-change detection. Ensures service
+      interfaces are documented, versioned, and evolve without silently breaking
+      consumers.
+    examples:
+      - OpenAPI 3.x specification published
+      - API versioning strategy declared
+      - Breaking API changes detected in CI
+
+  ARC:
+    name: Architecture and Code Organization
+    description: >
+      Controls governing code organization: standard project layout per language,
+      module ownership boundaries, and dependency-direction rules (no import
+      cycles, respected layer boundaries). Keeps codebases navigable and
+      architecturally sound as they grow.
+    examples:
+      - Standard project layout for the language
+      - Module ownership boundaries declared
+      - No import cycles; dependency direction enforced
