@@ -1,0 +1,73 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-006
+title: Container images must be scanned for vulnerabilities at build time
+domain: SEC
+type: detective
+priority: P1
+severity: high
+
+statement: >
+  Every CI pipeline that builds a container image must run a vulnerability scanner
+  (Trivy, Grype, Snyk Container, or equivalent) against the built image before it
+  is published to any registry. Scans must fail on CRITICAL severity vulnerabilities.
+  HIGH severity vulnerabilities must be resolved or receive a documented waiver
+  within the SEC-007 SLA timeline.
+
+rationale: >
+  Dependency CVEs (SEC-003) detects known vulnerabilities in source-level dependencies
+  via Dependabot. SEC-006 is complementary: it scans the final compiled container image
+  including OS packages, language runtimes, and all bundled libraries. The image may
+  contain vulnerable OS packages that are not tracked as application dependencies.
+  A vulnerability that passes source scanning may still be present in the base image.
+  Scanning the image at build time — not in production — ensures vulnerabilities are
+  caught before deployment and are free to fix (not under live incident conditions).
+
+mapped_standards:
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 7 — Continuous Vulnerability Management: Safeguard 7.6 — Perform automated vulnerability scans of internally-developed software"
+    mapping_note: >
+      CIS Controls v8.1 Safeguard 7.6 requires automated vulnerability scanning
+      of internally-developed software. SEC-006 applies this to container images,
+      which are the delivery artifact for all platform services.
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Implementation — Secure Build — SB-2: Software Dependencies (image scanning at L2)"
+    mapping_note: >
+      OWASP SAMM SB-2 level 2 requires scanning all software components including
+      container base images for known vulnerabilities. SEC-006 implements this
+      at the image level, complementing SEC-003 at the source level.
+  - source_id: SRC-OPENSSF-SLSA-V1
+    clause: "Overview — Security Best Practices: promptly fixing known vulnerabilities"
+    mapping_note: >
+      SLSA v1.0 mandates industry security best practices including vulnerability
+      management. Image scanning at build time is a concrete implementation of
+      this requirement for containerised services.
+
+implementation_expectations: >
+  The CI pipeline must include a step that:
+  - Builds the container image
+  - Scans the built image with Trivy, Grype, or equivalent
+  - Fails the pipeline on CRITICAL severity findings
+  - Reports findings as build annotations or artifacts
+
+  Recommended: aquasecurity/trivy-action or anchore/grype-action in GitHub Actions.
+
+  The scan must run AFTER the image is built from source (not scanning a pulled image).
+  This ensures the scan reflects the actual image that would be pushed to the registry.
+
+evidence_required:
+  - type: github-actions-workflow
+    description: >
+      GitHub Actions workflow containing a container image vulnerability scanning
+      step after a build step.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-09"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

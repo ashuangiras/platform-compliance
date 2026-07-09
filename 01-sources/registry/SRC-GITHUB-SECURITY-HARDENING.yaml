@@ -1,0 +1,41 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-GITHUB-SECURITY-HARDENING
+name: GitHub Security Hardening for GitHub Actions
+version: "2024"
+publisher: GitHub, Inc.
+source_url: "https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions"
+retrieved_at: "2026-07-09"
+registered_date: "2026-07-09"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - SEC  # Security — GitHub Actions specific
+  - SRC  # Source Control — Actions permissions
+  - SUP  # Supply Chain — Actions pinning
+
+status: active
+
+notes: >
+  GitHub's official security hardening guide for GitHub Actions provides
+  authoritative guidance on secure workflow configuration. Relevant sections:
+
+  - "Using secrets": Never expose secrets in workflow logs
+    → SEC-001 (no plaintext secrets)
+
+  - "Considering cross-repository access": Use read-only GITHUB_TOKEN by default
+    → SEC-004 (workflow token permissions must be read-only at top level)
+
+  - "Using third-party actions": Pin actions to a full-length commit SHA
+    → SUP-001 (GitHub Actions context — pin dependencies)
+
+  - "Avoiding the use of self-hosted runners": Self-hosted runners persist
+    state between runs and are a supply chain risk
+    → SEC-008 (no self-hosted runners without documented justification)
+
+  - "Understanding the security of workflow triggers": pull_request_target
+    with explicit checkout is dangerous
+    → SEC-004 (workflow permissions control)
+
+  This standard is the primary authoritative source for SEC-004 and SEC-008.

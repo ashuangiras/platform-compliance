@@ -201,3 +201,274 @@ phases:
   - id: PC-0130
     title: Validate actionlint against all GitHub Actions workflow files
     status: done
+- id: phase-security-hardening
+  title: Security hardening and resilience controls
+  horizon: v1.2.0
+  note: Gap analysis performed 2026-07-09. Controls grouped Tier 1 (automatable, high-impact)
+    → Tier 2 → Tier 3.
+  tasks:
+  - id: PC-0165
+    title: Register SRC-CIS-CONTROLS-V8 in 01-sources/registry
+    status: done
+    tier: 1
+  - id: PC-0166
+    title: Register SRC-OWASP-SAMM-V2 in 01-sources/registry
+    status: done
+    tier: 1
+  - id: PC-0167
+    title: Register SRC-NTIA-SBOM-2021 in 01-sources/registry
+    status: done
+    tier: 2
+  - id: PC-0168
+    title: Register SRC-GITHUB-SECURITY-HARDENING in 01-sources/registry
+    status: done
+    tier: 1
+  - id: PC-0169
+    title: Register SRC-NIST-CSF-V2 in 01-sources/registry
+    status: done
+    tier: 2
+  - id: PC-0170
+    title: Define SEC-004 (GitHub Actions tokens must default to read-only permissions)
+    status: done
+    tier: 1
+  - id: PC-0171
+    title: Write binding BIND-SEC-004-GITHUB-ACTIONS and .check.yaml
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0170
+  - id: PC-0172
+    title: Write OPA policy POL-SEC-004-GITHUB-ACTIONS-001 + fixture
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0171
+  - id: PC-0173
+    title: Define RUN-004 (containers must drop ALL capabilities, add only required)
+    status: done
+    tier: 1
+  - id: PC-0174
+    title: Write binding BIND-RUN-004-DOCKER and .check.yaml
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0173
+  - id: PC-0175
+    title: Write OPA policy POL-RUN-004-DOCKER-001 + fixture
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0174
+  - id: PC-0176
+    title: Define RUN-005 (container root filesystem must be read-only)
+    status: done
+    tier: 1
+  - id: PC-0177
+    title: Write binding BIND-RUN-005-DOCKER and .check.yaml
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0176
+  - id: PC-0178
+    title: Write OPA policy POL-RUN-005-DOCKER-001 + fixture
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0177
+  - id: PC-0179
+    title: Define SEC-005 (SAST must run in CI on all code changes)
+    status: done
+    tier: 1
+  - id: PC-0180
+    title: Write binding BIND-SEC-005-GITHUB-ACTIONS and .check.yaml
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0179
+  - id: PC-0181
+    title: Write OPA policy POL-SEC-005-GITHUB-ACTIONS-001 + fixture
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0180
+  - id: PC-0182
+    title: Define IAC-004 (Terraform security scan must pass on every PR)
+    status: done
+    tier: 1
+  - id: PC-0183
+    title: Write binding BIND-IAC-004-TERRAFORM and .check.yaml
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0182
+  - id: PC-0184
+    title: Write OPA policy POL-IAC-004-TERRAFORM-001 + fixture
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0183
+  - id: PC-0185
+    title: Define SEC-006 (container images must be scanned for vulnerabilities at
+      build time)
+    status: done
+    tier: 1
+  - id: PC-0186
+    title: Write binding BIND-SEC-006-DOCKER and .check.yaml
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0185
+  - id: PC-0187
+    title: Write OPA policy POL-SEC-006-DOCKER-001 + fixture
+    status: done
+    tier: 1
+    depends_on:
+    - PC-0186
+  - id: PC-0188
+    title: Define SUP-004 (SBOM must be generated for every release)
+    status: not_started
+    tier: 2
+  - id: PC-0189
+    title: Write binding BIND-SUP-004-GITHUB-ACTIONS and OPA policy + fixture
+    status: not_started
+    tier: 2
+    depends_on:
+    - PC-0188
+  - id: PC-0190
+    title: Define ACC-001 (MFA must be enforced for all GitHub org members)
+    status: not_started
+    tier: 2
+  - id: PC-0191
+    title: Write binding BIND-ACC-001-GITHUB and OPA policy + fixture
+    status: not_started
+    tier: 2
+    depends_on:
+    - PC-0190
+  - id: PC-0192
+    title: 'Define SEC-007 (vulnerability remediation SLA: Critical ≤7d, High ≤30d,
+      Medium ≤90d)'
+    status: not_started
+    tier: 2
+  - id: PC-0193
+    title: Write binding BIND-SEC-007-GITHUB and OPA policy + fixture
+    status: not_started
+    tier: 2
+    depends_on:
+    - PC-0192
+  - id: PC-0194
+    title: Define IAC-005 (scheduled Terraform plan must detect infrastructure drift)
+    status: not_started
+    tier: 2
+  - id: PC-0195
+    title: Write binding BIND-IAC-005-TERRAFORM and OPA policy + fixture
+    status: not_started
+    tier: 2
+    depends_on:
+    - PC-0194
+  - id: PC-0196
+    title: Define AUD-001 (GitHub org audit log must be enabled and retained ≥90 days)
+    status: not_started
+    tier: 2
+  - id: PC-0197
+    title: Write binding BIND-AUD-001-GITHUB and OPA policy + fixture
+    status: not_started
+    tier: 2
+    depends_on:
+    - PC-0196
+  - id: PC-0198
+    title: Define RUN-006 (privileged containers are not allowed)
+    status: not_started
+    tier: 3
+  - id: PC-0199
+    title: Write binding BIND-RUN-006-DOCKER and OPA policy + fixture
+    status: not_started
+    tier: 3
+    depends_on:
+    - PC-0198
+  - id: PC-0200
+    title: Define RUN-007 (containers must not share host network/PID/IPC namespaces)
+    status: not_started
+    tier: 3
+  - id: PC-0201
+    title: Write binding BIND-RUN-007-DOCKER and OPA policy + fixture
+    status: not_started
+    tier: 3
+    depends_on:
+    - PC-0200
+  - id: PC-0202
+    title: Define OBS-003 (services must expose Prometheus metrics endpoint)
+    status: not_started
+    tier: 3
+  - id: PC-0203
+    title: Write binding BIND-OBS-003-GITHUB and OPA policy + fixture
+    status: not_started
+    tier: 3
+    depends_on:
+    - PC-0202
+  - id: PC-0204
+    title: Define LIC-001 (open source licenses must be compatible with usage terms)
+    status: not_started
+    tier: 3
+  - id: PC-0205
+    title: Write binding BIND-LIC-001-GITHUB-ACTIONS and OPA policy + fixture
+    status: not_started
+    tier: 3
+    depends_on:
+    - PC-0204
+  - id: PC-0206
+    title: Define SEC-008 (no self-hosted runners without documented justification)
+    status: not_started
+    tier: 3
+  - id: PC-0207
+    title: Write binding BIND-SEC-008-GITHUB-ACTIONS and OPA policy + fixture
+    status: not_started
+    tier: 3
+    depends_on:
+    - PC-0206
+  - id: PC-0208
+    title: Add Tier 1 controls to PROF-BASE (mandatory) and update gates
+    status: not_started
+    tier: 1
+    depends_on:
+    - PC-0172
+    - PC-0175
+    - PC-0178
+    - PC-0181
+  - id: PC-0209
+    title: Add container controls (RUN-004/005, SEC-006) to PROF-SERVICE-V1
+    status: not_started
+    tier: 1
+    depends_on:
+    - PC-0175
+    - PC-0178
+    - PC-0187
+  - id: PC-0210
+    title: Add IAC-004 to PROF-TERRAFORM-MODULE-V1 and PROF-TERRAFORM-ROOT-V1
+    status: not_started
+    tier: 1
+    depends_on:
+    - PC-0184
+  - id: PC-0211
+    title: Add Tier 2 controls to profiles and run full CI validation
+    status: not_started
+    tier: 2
+    depends_on:
+    - PC-0189
+    - PC-0191
+    - PC-0193
+    - PC-0197
+  - id: PC-0212
+    title: Add Tier 3 controls to profiles and run full CI validation
+    status: not_started
+    tier: 3
+    depends_on:
+    - PC-0199
+    - PC-0201
+    - PC-0203
+    - PC-0205
+    - PC-0207
+  - id: PC-0213
+    title: Cut v1.2.0 tag — trigger release.yml bundle packaging
+    status: not_started
+    depends_on:
+    - PC-0212

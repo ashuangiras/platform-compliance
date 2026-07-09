@@ -1,0 +1,36 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-NTIA-SBOM-2021
+name: NTIA Minimum Elements for a Software Bill of Materials (SBOM)
+version: "2021"
+publisher: National Telecommunications and Information Administration (NTIA)
+source_url: "https://www.ntia.gov/report/2021/minimum-elements-software-bill-materials-sbom"
+retrieved_at: "2026-07-09"
+registered_date: "2026-07-09"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - SUP  # Supply Chain — SBOM generation and publication
+
+status: active
+
+notes: >
+  The NTIA Minimum Elements document (July 2021) defines the baseline data fields
+  that every SBOM must contain to be meaningful for vulnerability management and
+  software supply chain security. It is the authoritative source for SUP-004.
+
+  Required SBOM fields (minimum elements):
+  - Supplier name
+  - Component name
+  - Component version
+  - Other unique identifiers (e.g., package URL / PURL)
+  - Dependency relationship
+  - Author of SBOM data
+  - Timestamp
+
+  Supported formats: SPDX, CycloneDX, SWID.
+  Platform targets CycloneDX JSON format for tooling compatibility.
+
+  Maps to:
+  - SUP-004 (SBOM must be generated and published for every release)

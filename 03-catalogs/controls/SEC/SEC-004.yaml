@@ -1,0 +1,89 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-004
+title: GitHub Actions workflow tokens must use read-only permissions by default
+domain: SEC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  All GitHub Actions workflow files must declare read-only GITHUB_TOKEN permissions
+  at the top level (permissions: read-all or explicit minimal permissions).
+  Any job requiring write access must declare only the specific write permissions
+  needed at the job level. Workflows must never use write-all at the top level.
+
+rationale: >
+  The GITHUB_TOKEN is automatically issued to every workflow run with write access
+  to the repository by default. A compromised workflow (via a malicious action,
+  pull_request_target misuse, or script injection) with write permissions can push
+  malicious code, publish packages, modify releases, create deployments, or alter
+  status checks — effectively a full repository compromise.
+  Declaring read-only permissions at the top level limits the blast radius: a
+  compromised workflow step can read but not modify the repository. Job-level
+  write permissions are explicit, reviewable, and scoped to the specific job that
+  needs them.
+
+mapped_standards:
+  - source_id: SRC-GITHUB-SECURITY-HARDENING
+    clause: "Using permissions for the GITHUB_TOKEN: set top-level read-only, declare write at job level"
+    mapping_note: >
+      GitHub's official security hardening guide explicitly recommends setting
+      top-level permissions to read-all or contents: read and scoping any required
+      write permissions to the individual job. This is the direct basis for SEC-004.
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "Token-Permissions check — top-level read-only, run-level write if needed (High risk)"
+    mapping_note: >
+      Scorecard's Token-Permissions check evaluates whether workflow tokens follow
+      least-privilege. A perfect score requires read-only at top level and explicit
+      write permissions at the job level. SEC-004 directly implements this check.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 6 — Access Control Management: Safeguard 6.8 — Define and maintain role-based access control"
+    mapping_note: >
+      CIS Controls v8.1 Control 6 covers access control management. SEC-004 applies
+      this principle to automated workflow identities: the GITHUB_TOKEN should follow
+      least-privilege just as human accounts do.
+
+implementation_expectations: >
+  Every GitHub Actions workflow file (.github/workflows/*.yml) must:
+
+  1. Declare top-level permissions as read-only:
+     permissions:
+       contents: read
+     OR
+     permissions: read-all
+
+  2. Any job requiring write access declares only the specific permission needed:
+     jobs:
+       deploy:
+         permissions:
+           contents: write   # only this job needs write
+
+  3. The following are NEVER allowed at the top level:
+     - permissions: write-all
+     - Any individual permission set to "write" at the top level unless justified
+       in a comment referencing the specific use case
+
+  4. Reusable workflows called with workflow_call inherit the caller's permissions.
+     The caller must still declare read-only at the top level with specific
+     write permissions passed per job.
+
+  Tools: StepSecurity Harden Runner, actionlint (checks permission patterns)
+
+evidence_required:
+  - type: github-actions-workflow
+    description: >
+      All workflow files in .github/workflows/ must be parsed for top-level
+      permissions declarations. The evidence confirms: top-level permissions
+      are read-only; any write permission is declared at the job level.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-09"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

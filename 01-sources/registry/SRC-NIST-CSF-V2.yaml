@@ -1,0 +1,44 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-NIST-CSF-V2
+name: NIST Cybersecurity Framework (CSF) v2.0
+version: "2.0"
+publisher: National Institute of Standards and Technology (NIST)
+source_url: "https://www.nist.gov/cyberframework"
+retrieved_at: "2026-07-09"
+registered_date: "2026-07-09"
+registered_by: platform-team
+role: informative
+
+applies_to:
+  - SEC  # Protect, Detect, Respond
+  - INC  # Respond function
+  - AUD  # Detect function
+  - BAK  # Recover function
+
+status: active
+
+notes: >
+  NIST CSF v2.0 (February 2024) organizes cybersecurity outcomes into six functions:
+  Govern, Identify, Protect, Detect, Respond, Recover.
+
+  This standard is registered as informative (not normative) for the platform —
+  it provides a risk management lens for evaluating control coverage but does
+  not directly mandate specific technical implementations.
+
+  Function-to-control mappings (informative):
+  - Govern (GV): Policy, roles, strategy
+    → DOC-002 (ADR records), CHG-001/002
+  - Identify (ID): Asset and risk management
+    → ACC-001 (access control), AUD-001 (audit log)
+  - Protect (PR): Safeguards
+    → SRC-001/002, SEC-001/002/003/004/005/006, RUN-002/004/005
+  - Detect (DE): Anomaly detection
+    → OBS-001/002/003, AUD-001
+  - Respond (RS): Incident response
+    → INC-001, CHG-001
+  - Recover (RC): Recovery planning
+    → BAK-001
+
+  Use CSF to communicate compliance posture to stakeholders and
+  to identify coverage gaps at the function level.

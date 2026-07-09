@@ -1,0 +1,51 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SEC-004-GITHUB-ACTIONS
+control_id: SEC-004
+technology_context: github-actions
+introduced_date: "2026-07-09"
+introduced_by: platform-team
+status: active
+
+specification: >
+  Every GitHub Actions workflow file (.github/workflows/*.yml) MUST declare
+  a top-level `permissions` block that restricts the GITHUB_TOKEN to
+  read-only access. Any write permission required by a specific job MUST be
+  declared at the job level, not at the top level.
+
+  COMPLIANT — top-level read-only, job-level write:
+    permissions:
+      contents: read
+    jobs:
+      release:
+        permissions:
+          contents: write
+
+  COMPLIANT — explicit read-all:
+    permissions: read-all
+
+  NON-COMPLIANT — no top-level permissions block:
+    (omitted) — defaults to write on many permission types
+
+  NON-COMPLIANT — write-all at top level:
+    permissions: write-all
+
+  NON-COMPLIANT — write permission at top level:
+    permissions:
+      contents: write   # must be at job level
+
+  Reusable workflows (workflow_call) inherit the caller's permissions.
+  The caller must still satisfy this constraint.
+
+observable_artifact: >
+  Parsed GitHub Actions workflow file(s) showing the top-level permissions block.
+  Example compliant evidence:
+  {
+    "workflow_file": ".github/workflows/deploy.yml",
+    "top_level_permissions": {"contents": "read", "pull-requests": "write"},
+    "top_level_has_write": false,
+    "violations": []
+  }
+
+policy_check_ids:
+  - POL-SEC-004-GITHUB-ACTIONS-001

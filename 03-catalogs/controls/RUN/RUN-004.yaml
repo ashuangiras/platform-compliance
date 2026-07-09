@@ -1,0 +1,74 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-004
+title: Containers must drop ALL Linux capabilities and add only required ones
+domain: RUN
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  All containerised services must be configured with cap_drop: [ALL] in their
+  Docker Compose or orchestration manifest, and must explicitly list only the
+  specific Linux capabilities required for the service to function in cap_add.
+  Services requiring no special capabilities must have cap_add empty or absent.
+
+rationale: >
+  Linux capabilities divide the root privilege set into granular units.
+  Containers launched without capability restrictions inherit a default set
+  that includes capabilities like NET_BIND_SERVICE, CHOWN, KILL, and others
+  that are unnecessary for most services but can be exploited if a container
+  is compromised. Dropping all capabilities and adding back only those needed
+  follows the principle of least privilege at the kernel level, limiting the
+  blast radius of a container escape or privilege escalation attack.
+
+mapped_standards:
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "5.3 Ensure that Linux kernel capabilities are restricted within containers"
+    mapping_note: >
+      CIS Docker 1.6.0 section 5.3 explicitly requires dropping all default
+      capabilities and adding only the specific capabilities required. RUN-004
+      directly implements this recommendation.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 4 — Secure Configuration: Safeguard 4.1 — Establish and maintain a secure configuration process"
+    mapping_note: >
+      Capability restrictions are a mandatory secure configuration for container
+      workloads. CIS Controls v8.1 Control 4 requires maintaining secure
+      configurations, of which capability restriction is a key element.
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Implementation — Secure Build — SB-1: Build Process hardening"
+    mapping_note: >
+      OWASP SAMM SB-1 level 2 includes hardening build and runtime configurations.
+      Capability restriction is a concrete hardening measure for containerised builds.
+
+implementation_expectations: >
+  In docker-compose.yml or equivalent:
+    services:
+      my-service:
+        cap_drop:
+          - ALL
+        cap_add:
+          - NET_BIND_SERVICE   # only if service binds to privileged ports
+
+  Common capabilities that should NEVER be added:
+    SYS_ADMIN, NET_ADMIN, SYS_PTRACE, SYS_MODULE, DAC_OVERRIDE, SYS_RAWIO
+
+  If a service genuinely cannot function without a sensitive capability,
+  the exception must be documented in the service contract and reviewed.
+
+evidence_required:
+  - type: docker-compose-security
+    description: >
+      Docker Compose service definition showing cap_drop: [ALL] and optional
+      minimal cap_add list. Evidence collected by collect-dockerfile-info.sh.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-09"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

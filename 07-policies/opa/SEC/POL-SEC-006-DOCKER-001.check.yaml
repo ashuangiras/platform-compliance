@@ -1,0 +1,11 @@
+id: POL-SEC-006-DOCKER-001
+title: "Container image scanner (Trivy, Grype, or equivalent) must be present in CI"
+binding_ids: [BIND-SEC-006-DOCKER]
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-006-DOCKER-001.rego"
+pass_criteria: "At least one recognised image scanning action found in CI workflow."
+fail_criteria: "No container image scanner found in any workflow file."
+evidence_type: github-actions-workflow
+severity: high
+introduced_date: "2026-07-09"
+status: active

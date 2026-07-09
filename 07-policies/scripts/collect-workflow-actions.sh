@@ -21,6 +21,7 @@ repo_root = Path(sys.argv[1])
 repo_name = sys.argv[2]
 
 workflow_files = []
+workflow_files_detail = []
 action_references = []
 
 workflows_dir = repo_root / '.github' / 'workflows'
@@ -79,9 +80,49 @@ if workflows_dir.exists():
                 'pin_type': pin_type
             })
 
+        # ── Parse top-level permissions block (SEC-004) ────────────────────
+        import yaml as _yaml
+        try:
+            wf_data = _yaml.safe_load(content) or {}
+        except Exception:
+            wf_data = {}
+
+        top_perms = wf_data.get('permissions', None)
+        # Analyse top-level permissions
+        if top_perms is None:
+            perms_declared = False
+            top_level_write = True  # GitHub default grants write to many scopes
+            top_level_read_only = False
+        elif top_perms == 'read-all':
+            perms_declared = True
+            top_level_write = False
+            top_level_read_only = True
+        elif top_perms == 'write-all':
+            perms_declared = True
+            top_level_write = True
+            top_level_read_only = False
+        elif isinstance(top_perms, dict):
+            perms_declared = True
+            write_vals = [v for v in top_perms.values() if v == 'write']
+            top_level_write = len(write_vals) > 0
+            top_level_read_only = not top_level_write
+        else:
+            perms_declared = False
+            top_level_write = True
+            top_level_read_only = False
+
+        workflow_files_detail.append({
+            'path': wf_rel,
+            'top_level_permissions': top_perms,
+            'permissions_declared': perms_declared,
+            'top_level_has_write': top_level_write,
+            'top_level_read_only': top_level_read_only,
+        })
+
 output = {
     'repository': {'name': repo_name},
     'workflow_files': workflow_files,
+    'workflow_files_detail': workflow_files_detail,
     'action_references': action_references
 }
 
