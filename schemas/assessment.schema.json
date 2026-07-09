@@ -90,7 +90,7 @@
         "properties": {
           "control_id": {
             "type": "string",
-            "pattern": "^[A-Z]{2,4}-[0-9]{3}$"
+            "pattern": "^[A-Z]{2,4}-[0-9]{3}(-[A-Z0-9]+)?$"
           },
           "result": {
             "type": "string",
@@ -147,7 +147,7 @@
         },
         "blocking_controls": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3}$" },
+          "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3}(-[A-Z0-9]+)?$" },
           "description": "Control IDs that are blocking the gate (result: fail with enforcement: block)."
         }
       }

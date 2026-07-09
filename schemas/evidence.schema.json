@@ -52,7 +52,7 @@
     },
     "control_id": {
       "type": "string",
-      "pattern": "^[A-Z]{2,4}-[0-9]{3}$",
+      "pattern": "^[A-Z]{2,4}-[0-9]{3}(-[A-Z0-9]+)?$",
       "description": "The platform control this evidence addresses."
     },
     "policy_check_id": {

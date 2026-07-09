@@ -96,7 +96,7 @@ phases:
     - PC-0104
   - id: PC-0108
     title: First end-to-end CI run on GitHub that produces real evidence
-    status: not-started
+    status: done
     depends_on:
     - PC-0094
     - PC-0095
@@ -105,12 +105,12 @@ phases:
     - PC-0098
   - id: PC-0109
     title: Validate that evidence records from CI conform to evidence.schema.json
-    status: not-started
+    status: done
     depends_on:
     - PC-0108
   - id: PC-0110
     title: Validate that assessment report from CI conforms to assessment.schema.json
-    status: not-started
+    status: done
     depends_on:
     - PC-0108
   - id: PC-0111

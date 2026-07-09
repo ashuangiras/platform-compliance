@@ -393,7 +393,7 @@ jobs:
             overall = "manual-review-required"
 
           report = {
-            "id": f"ASSESS-{os.environ.get('GITHUB_REPOSITORY','').replace('/','_').upper()}-{datetime.date.today().strftime('%Y%m%d')}-001",
+            "id": f"ASSESS-{os.environ.get('GITHUB_REPOSITORY','').replace('/','-').upper()}-{datetime.date.today().strftime('%Y%m%d')}-001",
             "schema_version": "1.0.0",
             "subject": {"type": "repository", "identifier": f"https://github.com/{os.environ.get('GITHUB_REPOSITORY','')}", "commit_sha": os.environ.get("GITHUB_SHA", "")},
             "profile_id": "${{ inputs.profile-id }}",
