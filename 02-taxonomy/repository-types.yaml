@@ -65,6 +65,21 @@ types:
     implied_domains:
       - SUP
 
+  frontend-app:
+    code: frontend-app
+    description: >
+      A browser-facing web application (single-page app, static site, or server-
+      rendered frontend). Materially different from a backend service: no health
+      endpoint in the same sense, different security surface (Content-Security-
+      Policy, bundle-size budget, no production source maps). Governed by
+      PROF-FRONTEND-V1.
+    applicable_profiles:
+      - PROF-FRONTEND-V1
+    implied_domains:
+      - QUA
+      - TST
+      - SEC
+
   documentation:
     code: documentation
     description: >

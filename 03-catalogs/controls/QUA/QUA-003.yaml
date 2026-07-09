@@ -1,0 +1,54 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: QUA-003
+title: The project must build/compile successfully in CI
+domain: QUA
+type: preventive
+priority: P1
+severity: critical
+
+statement: >
+  Every repository containing compiled or buildable source code must build
+  successfully in CI on every pull request. For Go, this means go build ./...
+  completes without errors across all packages.
+
+rationale: >
+  A repository that does not build is fundamentally broken — it cannot be
+  deployed, tested, or depended upon. Verifying the build in CI on every PR
+  catches compilation errors, missing dependencies, and broken imports before
+  they land on the default branch, where they would block every other developer.
+  This is the most basic viability signal for any codebase.
+
+mapped_standards:
+  - source_id: SRC-GO-STYLE
+    clause: "A Go module must compile with go build ./... — the baseline for any valid Go codebase"
+    mapping_note: >
+      Successful compilation is the precondition for all other Go quality checks.
+      QUA-003 requires go build ./... to succeed across all packages.
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Implementation — Secure Build — SB-1: a reliable, reproducible build process"
+    mapping_note: >
+      OWASP SAMM SB-1 requires a reliable build process. A build that fails in CI
+      violates this baseline; QUA-003 enforces build success as a gate.
+
+implementation_expectations: >
+  Go repositories must run go build ./... in CI and the build must succeed.
+
+  The platform CI collects build status via collect-go-info.sh
+  (quality.build.result).
+
+evidence_required:
+  - type: go-quality
+    description: >
+      collect-go-info.sh output showing quality.build.result == "pass".
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

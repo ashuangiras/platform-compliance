@@ -1,0 +1,64 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: QUA-001
+title: Source code must pass the language-appropriate linter in CI
+domain: QUA
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Every repository containing source code must run a language-appropriate linter
+  in CI on every pull request, and the linter must report zero issues. For Go,
+  the linter is golangci-lint (which aggregates go vet, staticcheck, and style
+  linters). A linter configuration file should be committed to make the ruleset
+  explicit and reproducible.
+
+rationale: >
+  Linters catch entire classes of bugs and code smells before they reach review:
+  unused variables, shadowed errors, ineffective assignments, unhandled errors,
+  suspicious constructs, and style inconsistencies. Enforcing the linter in CI
+  keeps the codebase consistent regardless of who wrote the code, reduces review
+  burden (reviewers focus on logic, not style), and prevents defect accumulation.
+  A clean linter run is a low-cost, high-value quality signal.
+
+mapped_standards:
+  - source_id: SRC-GO-STYLE
+    clause: "golangci-lint aggregates go vet, staticcheck, and idiomatic style checks (Effective Go + Uber Go Style Guide)"
+    mapping_note: >
+      golangci-lint is the de-facto standard Go linter aggregator. QUA-001 for the
+      go context requires a clean golangci-lint run, enforcing the idiomatic
+      patterns codified in Effective Go and the Uber Go Style Guide.
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Verification — Security Testing — ST-2: automated static analysis in the build pipeline"
+    mapping_note: >
+      Linting is a form of lightweight static analysis. OWASP SAMM ST-2 requires
+      automated analysis in the pipeline; QUA-001 delivers this at the code-quality
+      layer, complementing SEC-005 (security SAST).
+
+implementation_expectations: >
+  Go repositories must:
+  - Run golangci-lint in a CI workflow on every PR
+  - Have a committed .golangci.yml (or .golangci.yaml) configuration
+  - The golangci-lint run must report zero issues
+
+  The platform CI collects the lint result via collect-go-info.sh. If golangci-lint
+  is not installed on the runner, the result is "unavailable" and the control warns
+  rather than blocking.
+
+evidence_required:
+  - type: go-quality
+    description: >
+      collect-go-info.sh output showing quality.lint.result == "pass" and
+      quality.lint.config_present == true.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

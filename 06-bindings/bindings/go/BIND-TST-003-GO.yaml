@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-TST-003-GO
+control_id: TST-003
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Service repositories must have an integration or e2e test.
+observable_artifact: "collect-go-info.sh output field: testing.integration_test_present"
+policy_check_ids:
+  - POL-TST-003-GO-001

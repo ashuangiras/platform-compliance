@@ -39,6 +39,14 @@ POLICY_MAP = {
     "OBS-003":   ("OBS/POL-OBS-003-DOCKER-001.rego",            "dockerfile-info.json", "data.platform.obs.obs_003_docker.result",            ["docker"]),
     "LIC-001":   ("LIC/POL-LIC-001-GITHUB-001.rego",            "lic-info.json",        "data.platform.lic.lic_001_github.result",            ["github"]),
     "SEC-008":   ("SEC/POL-SEC-008-GITHUB-ACTIONS-001.rego",    "actions-info.json",    "data.platform.sec.sec_008_github_actions.result",    ["github-actions"]),
+    # ── ADR-0016 P1: Go code quality (QUA) and testing (TST) ────────────────
+    "QUA-001":   ("QUA/POL-QUA-001-GO-001.rego",              "go-info.json",         "data.platform.qua.qua_001_go.result",                ["go"]),
+    "QUA-002":   ("QUA/POL-QUA-002-GO-001.rego",              "go-info.json",         "data.platform.qua.qua_002_go.result",                ["go"]),
+    "QUA-003":   ("QUA/POL-QUA-003-GO-001.rego",              "go-info.json",         "data.platform.qua.qua_003_go.result",                ["go"]),
+    "QUA-004":   ("QUA/POL-QUA-004-GO-001.rego",              "go-info.json",         "data.platform.qua.qua_004_go.result",                ["go"]),
+    "TST-001":   ("TST/POL-TST-001-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_001_go.result",                ["go"]),
+    "TST-002":   ("TST/POL-TST-002-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_002_go.result",                ["go"]),
+    "TST-003":   ("TST/POL-TST-003-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_003_go.result",                ["go"]),
 
     # ── Tier 2 ──────────────────────────────────────────────────────────────
     "SUP-004":   ("SUP/POL-SUP-004-GITHUB-ACTIONS-001.rego",  "actions-info.json",   "data.platform.sup.sup_004_github_actions.result",   ["github-actions"]),

@@ -1,0 +1,38 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-GO-STYLE
+name: Go Style (Effective Go + Go Code Review Comments + Uber Go Style Guide)
+version: "2024"
+publisher: The Go Authors / Uber Technologies
+source_url: "https://go.dev/doc/effective_go"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - QUA  # Code quality (gofmt, go vet, golangci-lint)
+  - ARC  # Architecture (package layout, dependency direction)
+
+status: active
+
+notes: >
+  The canonical sources for idiomatic Go code quality and organization:
+
+  - Effective Go (https://go.dev/doc/effective_go) — idiomatic patterns, formatting,
+    naming, error handling
+  - Go Code Review Comments (https://go.dev/wiki/CodeReviewComments) — common review
+    feedback codified
+  - Uber Go Style Guide (https://github.com/uber-go/guide) — production-grade
+    conventions for larger codebases
+
+  Platform control mappings:
+  - QUA-001 (linter): golangci-lint aggregates go vet, staticcheck, and style linters
+  - QUA-002 (formatting): gofmt / goimports is the canonical Go formatter (non-negotiable)
+  - QUA-004 (type/vet): go vet catches suspicious constructs; part of golangci-lint
+  - ARC-001 (layout): standard Go project layout (cmd/, internal/, pkg/)
+  - ARC-003 (dependency direction): no import cycles (enforced by the Go compiler);
+    internal/ packages enforce visibility boundaries
+
+  gofmt is unique among language formatters: Go has exactly one canonical format,
+  so QUA-002 for Go is unambiguous and non-negotiable.

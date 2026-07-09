@@ -1,0 +1,11 @@
+id: POL-QUA-001-GO-001
+title: "QUA-001 (go): golangci-lint must pass; config committed"
+binding_ids: [BIND-QUA-001-GO]
+engine: opa
+file_path: "07-policies/opa/QUA/POL-QUA-001-GO-001.rego"
+pass_criteria: "golangci-lint must pass; config committed — go module present and check passes."
+fail_criteria: "Go module present and the check fails."
+evidence_type: go-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

@@ -16,12 +16,17 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
     "id": {
       "type": "string",
       "pattern": "^BIND-[A-Z]{2,4}-[0-9]{3}-[A-Z-]+$",
       "description": "Stable binding identifier. Format: BIND-{CONTROL_ID}-{CONTEXT}.",
-      "examples": ["BIND-SRC-001-GITHUB", "BIND-IAC-001-TERRAFORM"]
+      "examples": [
+        "BIND-SRC-001-GITHUB",
+        "BIND-IAC-001-TERRAFORM"
+      ]
     },
     "control_id": {
       "type": "string",
@@ -30,7 +35,17 @@
     },
     "technology_context": {
       "type": "string",
-      "enum": ["github", "terraform", "docker", "runtime-linux", "github-actions"],
+      "enum": [
+        "github",
+        "terraform",
+        "docker",
+        "runtime-linux",
+        "github-actions",
+        "go",
+        "node",
+        "python",
+        "frontend"
+      ],
       "description": "Technology context from 02-taxonomy/technology-contexts.yaml."
     },
     "specification": {
@@ -64,7 +79,10 @@
     },
     "status": {
       "type": "string",
-      "enum": ["active", "deprecated"],
+      "enum": [
+        "active",
+        "deprecated"
+      ],
       "description": "active: in use; deprecated: replaced by a newer binding."
     },
     "notes": {
