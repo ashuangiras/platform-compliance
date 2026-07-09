@@ -18,7 +18,7 @@ Every platform repository has a `.compliance-manifest.yaml` at its root that dec
 schema_version: "1.0.0"
 repository:
   name: platform-compliance
-  url: "https://github.com/angirasa-risk/platform-compliance"   # angirasa-risk to be resolved
+  url: "https://github.com/angirasa_risk/platform-compliance"   # angirasa_risk to be resolved
   type: platform-repo
   has_container_images: false
 declared_profiles:
@@ -31,5 +31,5 @@ last_updated: "2026-07-09"
 ```
 
 ## Outstanding
-- `angirasa-risk` placeholder — needs to be replaced with the actual GitHub org name
+- `angirasa_risk` placeholder — needs to be replaced with the actual GitHub org name
 - `templates/service-contract.template.yaml` — exists in schemas, template not yet authored

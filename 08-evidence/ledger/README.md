@@ -11,7 +11,7 @@ This directory defines how the evidence ledger is structured and managed.
 
 ## Key rules
 
-- Evidence records go in `../collected/angirasa-risk/{repo}/{YYYY-MM-DD}/`
+- Evidence records go in `../collected/angirasa_risk/{repo}/{YYYY-MM-DD}/`
 - File naming: `{sha8}-{control-id}-{epoch-ms}.yaml`
 - Records are immutable once written
 - Retention minimum: 365 days; indefinite for records referenced by assessment reports or release records

@@ -217,7 +217,7 @@ Every new platform repository:
 1. Creates `.compliance-manifest.yaml` at the root
 2. Adds a CI workflow referencing the reusable workflow:
    ```yaml
-   uses: angirasa-risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+   uses: angirasa_risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
    ```
 3. Configures branch protection with the compliance check as a required status check
 

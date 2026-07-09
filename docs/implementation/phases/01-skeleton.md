@@ -25,4 +25,4 @@ Establish the complete directory skeleton with READMEs for each directory, final
 ## Outstanding
 - `docs/onboarding.md` — referenced but not yet created (PC-0003)
 - `docs/authoring-controls.md` — referenced but not yet created (PC-0006)
-- `angirasa-risk` placeholder in many files needs resolution once GitHub org is confirmed
+- `angirasa_risk` placeholder in many files needs resolution once GitHub org is confirmed

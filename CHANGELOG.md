@@ -60,7 +60,7 @@ All pre-push validation checks pass. 75/86 v1 tasks done; the 11 remaining requi
 - Full implementation roadmap with 249 total files
 
 **Repository identity:**
-- GitHub: https://github.com/angirasa-risk/platform-compliance
+- GitHub: https://github.com/angirasa_risk/platform-compliance
 - Self-compliance manifest declaring PROF-PLATFORM-V1
 
 ### Schema validation (all pass)

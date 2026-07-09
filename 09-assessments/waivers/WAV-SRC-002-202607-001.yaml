@@ -1,0 +1,45 @@
+$schema: "../../schemas/waiver.schema.json"
+
+id: "WAV-SRC-002-202607-001"
+schema_version: "1.0.0"
+
+control_id: "SRC-002"
+
+resource_ref:
+  type: repository
+  identifier: "https://github.com/angirasa_risk/platform-compliance"
+
+rationale: >
+  GitHub prohibits users from approving their own pull requests. The platform is
+  currently operated by a single contributor (angirasa_risk). During this bootstrap
+  phase, no second contributor exists to provide a review. Requiring PR approval
+  therefore makes all changes to this repository unmergeable without the bootstrap
+  workaround documented in ADR-0003 (temporary reduction of required_approving_review_count
+  to 0 and immediate restoration).
+
+  This waiver does not disable the PR requirement itself — all changes still go
+  through pull requests and are subject to all automated status checks. It waives
+  only the human-review approval gate.
+
+risk_acceptance_statement: >
+  The risk accepted is that changes to platform-compliance can be introduced without
+  a second human review. This risk is partially mitigated by: (1) automated compliance
+  checks running on every PR via the self-compliance workflow, (2) full git history
+  traceability, (3) branch protection preventing force-pushes, and (4) the single
+  contributor being the platform owner who is accountable for all changes.
+
+  This risk is acceptable during the single-developer bootstrap phase. The waiver
+  expires when a second contributor joins the platform team.
+
+compensating_controls:
+  - SEC-001    # all PRs still scanned for secrets
+  - SEC-002    # push protection still active
+  - DOC-001    # README must still be present
+  - CHG-001    # change records still required
+
+approved_by: "angirasa_risk (platform-team)"
+approved_date: "2026-07-09"
+expiry_date: "2026-10-07"
+review_date: "2026-08-09"
+
+status: active

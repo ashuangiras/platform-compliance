@@ -13,7 +13,8 @@ technology_contexts:
   - github
   - github-actions
 
-waiver_ids: []
+waiver_ids:
+  - WAV-SRC-002-202607-001   # Single-developer bootstrap: GitHub prohibits self-approval (expires 2026-10-07)
 
 compliance_contact: platform-team
 

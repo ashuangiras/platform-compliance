@@ -729,7 +729,7 @@ Define the complete evidence system: the schema for evidence records, the format
 
 - [ ] `schemas/evidence-record.schema.yaml` validates all four test fixtures correctly (3 valid pass, 1 invalid fails)
 - [ ] The ledger format document specifies: directory structure, file naming convention, indexing mechanism, and retention policy
-- [ ] The `collected/` directory structure is defined: one subdirectory per `angirasa-risk/{repo}`, one file per `{commit-sha}-{control-id}-{timestamp}.yaml`
+- [ ] The `collected/` directory structure is defined: one subdirectory per `angirasa_risk/{repo}`, one file per `{commit-sha}-{control-id}-{timestamp}.yaml`
 - [ ] Evidence records produced by Phase 7 policy checks conform to the schema
 - [ ] The schema enforces that `result: waived` requires a non-null `waiver_id`
 - [ ] The schema enforces that `result: pass` or `result: fail` for automated controls requires a non-null `policy_check_id`
@@ -1001,7 +1001,7 @@ Define the `.compliance-manifest.yaml` format that every downstream repository m
 schema_version: "1.0.0"
 repository:
   name: platform-compliance
-  url: https://github.com/angirasa-risk/platform-compliance
+  url: https://github.com/angirasa_risk/platform-compliance
   type: platform-repo
 declared_profiles:
   - PROF-PLATFORM-V1

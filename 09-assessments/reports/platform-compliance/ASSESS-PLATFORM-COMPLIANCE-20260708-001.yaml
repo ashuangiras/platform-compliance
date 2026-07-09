@@ -11,7 +11,7 @@ schema_version: "1.0.0"
 
 subject:
   type: release
-  identifier: "https://github.com/angirasa-risk/platform-compliance"
+  identifier: "https://github.com/angirasa_risk/platform-compliance"
   # commit_sha: omitted — will be set to the actual 40-char SHA when v1.0.0 is tagged
 
 profile_id: PROF-PLATFORM-V1

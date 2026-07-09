@@ -33,7 +33,7 @@ At each `platform-compliance` release, a GitHub Actions workflow packages `07-po
 
 Consuming repos download the bundle at their pinned version:
 ```bash
-curl -sSfL "https://github.com/angirasa-risk/platform-compliance/releases/download/v1.1.0/policies.tar.gz" \
+curl -sSfL "https://github.com/angirasa_risk/platform-compliance/releases/download/v1.1.0/policies.tar.gz" \
   -o /tmp/policies.tar.gz
 sha256sum --check /tmp/policies.tar.gz.sha256  # verify integrity
 tar -xz -C /tmp/policy-bundle /tmp/policies.tar.gz
@@ -48,7 +48,7 @@ tar -xz -C /tmp/policy-bundle /tmp/policies.tar.gz
 Package the OPA bundle as an OCI artifact and push to GHCR (GitHub Container Registry) alongside each release. OPA 0.44+ supports pulling bundles from OCI registries natively.
 
 ```bash
-opa run --bundle ghcr.io/angirasa-risk/platform-compliance-policies:v1.1.0
+opa run --bundle ghcr.io/angirasa_risk/platform-compliance-policies:v1.1.0
 ```
 
 **Pros:** OPA-native. Standard OCI distribution. Image signing (cosign) provides strong integrity guarantees.
@@ -61,7 +61,7 @@ The reusable workflow checks out `platform-compliance` at the pinned tag and use
 ```yaml
 - uses: actions/checkout@v4
   with:
-    repository: angirasa-risk/platform-compliance
+    repository: angirasa_risk/platform-compliance
     ref: v1.1.0
     path: /tmp/platform-compliance
 ```

@@ -27,7 +27,7 @@ resource_ref:
   # One of: repository | service | environment
   type: "repository"
   # Repository URL, service name, or environment identifier
-  identifier: "https://github.com/angirasa-risk/my-repo"
+  identifier: "https://github.com/angirasa_risk/my-repo"
 
 # WHY the control cannot currently be satisfied.
 # Be specific. "Not ready yet" is not a valid rationale.

@@ -44,7 +44,7 @@ schema_version: "1.0.0"
 
 repository:
   name: my-terraform-module
-  url: "https://github.com/angirasa-risk/my-terraform-module"
+  url: "https://github.com/angirasa_risk/my-terraform-module"
   type: terraform-module
   has_container_images: false
 
@@ -105,7 +105,7 @@ on:
 jobs:
   merge-gate:
     name: "Compliance: Merge Gate"
-    uses: angirasa-risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+    uses: angirasa_risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
     with:
       gate: merge_gate
       profile-id: PROF-PLATFORM-V1
@@ -120,7 +120,7 @@ For service repositories that need release and deployment gates, add additional 
   release-gate:
     name: "Compliance: Release Gate"
     if: startsWith(github.ref, 'refs/tags/v')
-    uses: angirasa-risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+    uses: angirasa_risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
     with:
       gate: release_gate
       profile-id: PROF-PLATFORM-V1
@@ -254,7 +254,7 @@ When a new version is released:
 2. If breaking: follow the `migration_guide` in the release record
 3. Update the workflow reference in `.github/workflows/compliance.yml`:
    ```yaml
-   uses: angirasa-risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.1.0
+   uses: angirasa_risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.1.0
    ```
 4. Merge the update; CI will re-evaluate all controls against the new version
 5. Fix any new failures introduced by the version update

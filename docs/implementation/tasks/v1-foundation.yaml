@@ -281,7 +281,7 @@ phases:
     title: Write .compliance-manifest.yaml for platform-compliance
     status: done
   - id: PC-0079
-    title: Resolve angirasa-risk placeholder in all files
+    title: Resolve angirasa_risk placeholder in all files
     status: done
     note: Needs the actual GitHub org name to be confirmed
 - id: phase-12
@@ -289,36 +289,36 @@ phases:
   tasks:
   - id: PC-0080
     title: Push repository to GitHub and configure branch protection (SRC-001, SRC-002)
-    status: not-started
+    status: done
   - id: PC-0081
     title: Enable GitHub secret scanning + push protection (SEC-002)
-    status: not-started
+    status: done
     depends_on:
     - PC-0080
   - id: PC-0082
     title: First CI run — collect real evidence, generate real assessment report
-    status: not-started
+    status: done
     depends_on:
     - PC-0081
     blocked_by: Phase A workflow completion
   - id: PC-0083
     title: Review assessment report — resolve or waive any failures
-    status: not-started
+    status: done
     depends_on:
     - PC-0082
   - id: PC-0084
     title: Write v1.0.0 CHANGELOG.md entry and confirm release record
-    status: not-started
+    status: done
     depends_on:
     - PC-0083
   - id: PC-0085
     title: Update docs/next-repo-readiness.md with CI-confirmed status
-    status: not-started
+    status: done
     depends_on:
     - PC-0083
   - id: PC-0086
     title: Tag v1.0.0 and publish release
-    status: not-started
+    status: done
     depends_on:
     - PC-0083
     - PC-0084
