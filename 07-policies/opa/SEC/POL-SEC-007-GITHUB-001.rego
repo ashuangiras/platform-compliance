@@ -21,6 +21,7 @@ result := {
         "message":  "SEC-007: All open vulnerability alerts are within SLA timelines",
     },
 } if {
+    count(input.open_alerts) > 0
     input.sla_breach_count == 0
 }
 
@@ -35,7 +36,7 @@ result := {
     "result": "fail",
     "details": {
         "checked":  sprintf("Dependabot alert SLAs for '%v'", [input.repository.name]),
-        "found":    sprintf("%v SLA breach(es): %v", [input.sla_breach_count, concat(", ", {v | input.sla_violations[_] = v})]),
+        "found":    sprintf("%v SLA breach(es): %v", [input.sla_breach_count, concat(", ", {v | some v in input.sla_violations})]),
         "expected": "No alerts exceeding: Critical ≤7d, High ≤30d, Medium ≤90d",
         "message":  sprintf("SEC-007: %v vulnerability alert(s) exceed SLA. Remediate or create a waiver.", [input.sla_breach_count]),
     },
