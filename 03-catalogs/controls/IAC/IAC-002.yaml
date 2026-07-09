@@ -30,11 +30,13 @@ mapped_standards:
       equivalent manual gate that ensures changes are reviewed before
       reconciliation occurs.
   - source_id: SRC-AWS-WAF-2024
-    clause: "[PLACEHOLDER: AWS WAF OPS — How do you deploy your workloads safely?]"
+    clause: "OPS 06 — How do you mitigate deployment risks? Best practice: use deployment strategies that allow for testing and validation before full rollout (plan before apply)."
     mapping_note: >
       WAF operational excellence practices around safe deployments directly
       support the plan-review gate concept.
-      [PLACEHOLDER: verify WAF OPS question reference for deployment safety]
+      AWS WAF OPS 06 covers deployment risk mitigation. IAC-002's plan-before-apply
+      requirement is a direct implementation: the terraform plan output serves as
+      a deployment risk review artifact before any apply is executed.
 
 implementation_expectations: >
   The CI pipeline must:

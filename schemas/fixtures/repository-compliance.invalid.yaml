@@ -1,0 +1,11 @@
+$schema: ../../schemas/repository-compliance.schema.json
+schema_version: 1.0.0
+repository:
+  name: platform-compliance
+  url: https://github.com/ashuangiras/platform-compliance
+  type: platform-repo
+declared_profiles: []
+technology_contexts:
+- github
+compliance_contact: platform-team
+last_updated: '2026-07-09'

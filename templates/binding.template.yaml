@@ -1,0 +1,39 @@
+$schema: "../../schemas/binding.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Binding ID — format: BIND-{CONTROL_ID}-{TECHNOLOGY_CONTEXT}
+# Examples: BIND-SRC-001-GITHUB, BIND-RUN-001-DOCKER
+id: "BIND-XXX-001-GITHUB"
+
+# Control being bound — format: {DOMAIN}-{NNN}
+control_id: "XXX-001"
+
+# Technology stack this binding targets
+# One of: github | terraform | docker | runtime-linux | github-actions
+technology_context: "github"
+
+# Precise, testable specification of what must be true in this technology context
+# This becomes the acceptance criterion for the OPA policy
+specification: >
+  [Describe exactly what configuration, file, or API state must exist
+  to satisfy the control in this technology context.
+  Example: "The repository MUST have required_pull_request_reviews.required_approving_review_count >= 1
+  in the branch protection settings for the default branch."]
+
+# The artifact or API response that provides evidence of compliance
+observable_artifact: >
+  [Describe what artifact is collected to evaluate this binding.
+  Example: "GitHub branch protection API response for the default branch:
+  GET /repos/{owner}/{repo}/branches/{branch}/protection"]
+
+# OPA policy file IDs that implement this binding
+# Format: POL-{DOMAIN}-{NNN}-{TECHNOLOGY}-{NNN}
+policy_check_ids:
+  - "POL-XXX-001-GITHUB-001"
+
+introduced_date: "2026-07-09"
+introduced_by: "platform-team"
+status: "active"    # active | deprecated
+
+# notes: "Additional context about implementation decisions or known limitations."

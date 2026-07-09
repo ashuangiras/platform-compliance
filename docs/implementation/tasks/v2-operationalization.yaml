@@ -115,7 +115,7 @@ phases:
     - PC-0108
   - id: PC-0111
     title: 'Test: open a deliberately failing PR and confirm merge gate blocks it'
-    status: not-started
+    status: done
     depends_on:
     - PC-0108
   - id: PC-0112
@@ -194,10 +194,10 @@ phases:
     - PC-0124
   - id: PC-0128
     title: Resolve ashuangiras placeholder in all files with actual GitHub org
-    status: not-started
+    status: done
   - id: PC-0129
     title: Write remaining templates (service-contract, control, change-record, etc.)
-    status: not-started
+    status: done
   - id: PC-0130
     title: Validate actionlint against all GitHub Actions workflow files
-    status: not-started
+    status: done

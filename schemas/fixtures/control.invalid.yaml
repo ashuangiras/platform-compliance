@@ -1,0 +1,18 @@
+$schema: ../../schemas/control.schema.json
+id: SRC-001
+title: Default branch must be branch-protected
+domain: SRC
+type: preventive
+priority: P0
+severity: critical
+statement: The default branch MUST have branch protection.
+rationale: Prevents unauthorized pushes.
+evidence_required:
+- type: branch-protection
+  description: Branch protection response.
+  format: json
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: '2026-07-01'

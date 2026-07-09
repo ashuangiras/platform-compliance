@@ -1,0 +1,9 @@
+$schema: ../../schemas/service-contract.schema.json
+id: svc-api-gateway
+schema_version: 1.0.0
+service_name: API Gateway
+service_type: proxy
+repository_ref: https://github.com/ashuangiras/api-gateway
+declared_profiles:
+- PROF-SERVICE-V1
+last_updated: '2026-07-09'

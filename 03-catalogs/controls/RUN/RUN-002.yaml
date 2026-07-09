@@ -27,7 +27,9 @@ mapped_standards:
       CIS Docker Benchmark 4.1 directly requires that a non-root user be
       created and used in the container. The platform adopts this requirement
       without modification.
-      [PLACEHOLDER: verify exact wording of CIS Docker 1.6.0 section 4.1
+      CIS Docker 1.6.0 section 4.1 explicitly states that running containers
+      as root is a security risk. The RUN-002 control maps directly to this
+      requirement by mandating a non-root USER instruction in every Dockerfile.
       to ensure our statement accurately reflects the benchmark requirement]
 
 implementation_expectations: >

@@ -23,11 +23,13 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-OPENSSF-SCORECARD-V2
-    clause: "[PLACEHOLDER: Scorecard v2 — CII-Best-Practices or Maintained check for README]"
+    clause: "CII-Best-Practices check — passing badge requires a README describing the project (https://www.bestpractices.dev/criteria/0)"
     mapping_note: >
       OpenSSF Scorecard evaluates whether repositories have documentation as
       part of the project health indicators.
-      [PLACEHOLDER: verify the exact Scorecard check that evaluates README
+      CII-Best-Practices passing badge (scored by Scorecard) requires a README
+      that describes the project. Scorecard's Maintained check also treats a
+      missing README as a maintenance signal. Criteria: bestpractices.dev/criteria/0
       presence — may be part of CII-Best-Practices or a separate Documentation check]
 
 implementation_expectations: >

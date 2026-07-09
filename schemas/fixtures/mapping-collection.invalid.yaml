@@ -1,0 +1,4 @@
+$schema: ../../schemas/mapping-collection.schema.json
+source_id: SRC-OPENSSF-SCORECARD-V2
+domain: INVALID-DOMAIN
+mappings: []

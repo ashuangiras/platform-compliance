@@ -1,0 +1,15 @@
+$schema: ../../schemas/waiver.schema.json
+id: WAV-SRC-002-202607-001
+schema_version: 1.0.0
+control_id: SRC-002
+resource_ref:
+  type: repository
+  identifier: https://github.com/ashuangiras/platform-compliance
+rationale: Single-developer account cannot self-approve pull requests as GitHub prohibits
+  it.
+risk_acceptance_statement: Risk of unauthorized merges is accepted given the single-developer
+  context and mitigated by required status checks and no force-push.
+approved_by: ashuangiras
+approved_date: '2026-07-01'
+expiry_date: '2026-10-01'
+status: active

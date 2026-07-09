@@ -1,0 +1,7 @@
+$schema: ../../schemas/adr.schema.json
+id: adr-0001
+title: Invalid ADR
+status: accepted
+date: '2026-07-01'
+deciders:
+- platform-team

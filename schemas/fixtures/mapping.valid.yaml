@@ -1,0 +1,12 @@
+$schema: ../../schemas/mapping.schema.json
+id: MAP-OPENSSF-SCORECARD-V2-SRC-001
+source_id: SRC-OPENSSF-SCORECARD-V2
+source_clause: Branch-Protection check
+source_clause_text: Does the project protect its main/default branch against unauthorized
+  direct pushes?
+control_id: SRC-001
+rationale: Scorecard Branch-Protection check directly tests whether branch protection
+  is enabled, which is precisely what SRC-001 requires.
+mapping_type: derived
+mapped_date: '2026-07-01'
+mapped_by: platform-team

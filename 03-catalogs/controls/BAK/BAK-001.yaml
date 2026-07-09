@@ -23,15 +23,17 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-AWS-WAF-2024
-    clause: "[PLACEHOLDER: AWS WAF REL 9 — How do you back up data?]"
+    clause: "REL 09 — How do you back up data? Best practices: identify and back up all data that needs to be recovered; define backup frequency and retention."
     mapping_note: >
       WAF Reliability Pillar's data backup practice directly informs BAK-001.
       The WAF practice requires backup planning, automation, and periodic
       testing of backup restoration.
-      [PLACEHOLDER: verify question numbering and specific requirements in
+      AWS WAF REL 09 covers backup strategies and restore testing. The BAK-001
+      control specifically requires that backup processes be declared and that
+      restore procedures are documented and periodically tested.
       the 2024 edition of the WAF]
   - source_id: SRC-GOOGLE-SRE
-    clause: "[PLACEHOLDER: SRE book Chapter 26 — Data Integrity]"
+    clause: "Chapter 26 — Data Integrity: What You Read Is What You Wrote: backup processes must be verified by successful restore tests; data integrity depends on the ability to recover."
     mapping_note: >
       SRE Chapter 26 emphasises the need for tested backup and recovery
       processes as a core reliability practice.

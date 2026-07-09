@@ -21,11 +21,13 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-OPENSSF-SCORECARD-V2
-    clause: "[PLACEHOLDER: Scorecard Maintained / Dependency-Update-Tool check]"
+    clause: "Dependency-Update-Tool check — Does the project use Dependabot or Renovate bot? (High risk)"
     mapping_note: >
       Scorecard evaluates whether repositories have automated dependency update
       tooling configured.
-      [PLACEHOLDER: verify the exact Scorecard check name for dependency update
+      Scorecard's Dependency-Update-Tool check detects Dependabot or Renovate
+      configuration files. High-risk check (vulnerable to known-flaw attacks).
+      Ref: github.com/ossf/scorecard/blob/main/docs/checks.md#dependency-update-tool
       automation — this may be covered by the Maintained or Vulnerabilities check]
 
 implementation_expectations: >

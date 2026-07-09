@@ -1,0 +1,10 @@
+$schema: ../../schemas/change-record.schema.json
+id: CHG-20260701-001
+schema_version: 1.0.0
+change_type: infrastructure
+description: Changed infrastructure.
+affected_object_ids:
+- SRC-001
+breaking: false
+author: platform-team
+date: '2026-07-01'

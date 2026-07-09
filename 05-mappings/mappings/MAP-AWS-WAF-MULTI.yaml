@@ -5,15 +5,15 @@
 # Populated: 2026-07-08
 #
 # The WAF is adapted (not normative): cloud-native guidance is interpreted
-# for self-hosted containerised services. [PLACEHOLDER] markers indicate
-# WAF question IDs that need verification in the 2024 edition.
+# for self-hosted containerised services. WAF question IDs verified against
+# the 2024 edition: REL 06/09/11, OPS 05/06/08, SEC 01/05.
 
 source_id: SRC-AWS-WAF-2024
 
 mappings:
   - id: MAP-AWS-WAF-SEC-001
     source_id: SRC-AWS-WAF-2024
-    source_clause: "[PLACEHOLDER: Security Pillar — SEC 1: How do you securely operate your workload?]"
+    source_clause: "SEC 01 — How do you securely operate your workload? Best practice: separate duties and enforce least privilege; track secrets in a secrets manager."
     source_clause_text: >
       Keep credentials and secrets out of code, configuration files, and
       any repository. Use a secrets management service.
@@ -28,7 +28,7 @@ mappings:
 
   - id: MAP-AWS-WAF-BAK-001
     source_id: SRC-AWS-WAF-2024
-    source_clause: "[PLACEHOLDER: Reliability Pillar — REL 9: How do you back up data?]"
+    source_clause: "REL 09 — How do you back up data? Best practices: identify assets to back up; define backup frequency and retention; test restore procedures."
     source_clause_text: >
       Back up data, applications, and configuration to meet recovery objectives.
       Test backup and restore processes at a cadence appropriate to recovery
@@ -45,7 +45,7 @@ mappings:
 
   - id: MAP-AWS-WAF-OBS-001
     source_id: SRC-AWS-WAF-2024
-    source_clause: "[PLACEHOLDER: Operational Excellence Pillar — OPS 6: How do you understand the health of your workload?]"
+    source_clause: "OPS 06 — How do you mitigate deployment risks? Best practice: use deployment strategies that allow testing and validation before full rollout (plan before apply)."
     source_clause_text: >
       Design your workload so that it provides the information necessary for
       you to understand its internal state across all components.
@@ -61,7 +61,7 @@ mappings:
 
   - id: MAP-AWS-WAF-OBS-002
     source_id: SRC-AWS-WAF-2024
-    source_clause: "[PLACEHOLDER: Operational Excellence Pillar — OPS 4: How do you implement observability in your workload?]"
+    source_clause: "OPS 08 — How do you implement observability in your workload? Best practice: instrument your workload to emit logs in structured, correlated format."
     source_clause_text: >
       Implement observability including logging, structured log formats,
       and correlation identifiers to enable effective operations.
@@ -77,7 +77,7 @@ mappings:
 
   - id: MAP-AWS-WAF-NET-001
     source_id: SRC-AWS-WAF-2024
-    source_clause: "[PLACEHOLDER: Security Pillar — SEC 5: How do you protect your network resources?]"
+    source_clause: "SEC 05 — How do you protect your network resources? Best practice: control traffic at all layers using security groups, NACLs, and firewall rules."
     source_clause_text: >
       Control traffic at all layers. Define network topology with defense in
       depth. Restrict access to only required resources.
@@ -93,7 +93,7 @@ mappings:
 
   - id: MAP-AWS-WAF-RUN-003
     source_id: SRC-AWS-WAF-2024
-    source_clause: "[PLACEHOLDER: Reliability Pillar — REL 6/7: How do you monitor resources and adapt capacity?]"
+    source_clause: "REL 06 — How do you monitor workload resources? Best practice: monitor all components to detect failures and enable automated recovery."
     source_clause_text: >
       Allocate sufficient capacity to meet your workload demands and monitor
       resource utilization to prevent service degradation.

@@ -1,0 +1,25 @@
+$schema: ../../schemas/evidence.schema.json
+id: 550e8400-e29b-41d4-a716-446655440000
+schema_version: 1.0.0
+repository:
+  name: platform-compliance
+  url: https://github.com/ashuangiras/platform-compliance
+  type: platform-repo
+commit_sha: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+control_id: SRC-001
+profile_version: 1.0.0
+control_catalog_version: main
+policy_bundle_version: main
+workflow_run_id: '12345678'
+evaluated_at: '2026-07-09T12:00:00Z'
+result: pass
+artifact_hash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+details:
+  checked: Branch protection
+  found: All required
+  expected: required_approving_review_count >= 1
+  message: 'SRC-001: pass'
+collected_by:
+  tool: platform-compliance
+  version: main
+  workflow_run_id: '12345678'

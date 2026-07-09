@@ -1,0 +1,13 @@
+$schema: ../../schemas/standard-source.schema.json
+id: SRC-OPENSSF-SCORECARD-V2
+name: OpenSSF Scorecard v2
+version: v2
+publisher: Open Source Security Foundation (OpenSSF)
+source_url: https://github.com/ossf/scorecard
+retrieved_at: '2026-07-01'
+registered_date: '2026-07-01'
+registered_by: platform-team
+role: normative
+applies_to:
+- all
+status: active

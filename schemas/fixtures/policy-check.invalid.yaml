@@ -1,0 +1,13 @@
+$schema: ../../schemas/policy-check.schema.json
+id: POL-SRC-001
+title: Invalid policy check
+binding_ids:
+- BIND-SRC-001-GITHUB
+engine: opa
+file_path: 07-policies/opa/SRC/POL-SRC-001-GITHUB-001.rego
+pass_criteria: Passes.
+fail_criteria: Fails.
+evidence_type: branch-protection
+severity: critical
+introduced_date: '2026-07-01'
+status: active

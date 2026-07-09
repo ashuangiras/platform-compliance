@@ -1,0 +1,7 @@
+$schema: ../../schemas/adr.schema.json
+id: ADR-0001
+title: Use YAML for all human-authored configuration files
+status: accepted
+date: '2026-07-01'
+deciders:
+- platform-team

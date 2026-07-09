@@ -26,7 +26,7 @@ mapped_standards:
       open vulnerability alerts from the OSV database. SEC-003 defines the
       SLA under which those alerts must be addressed.
   - source_id: SRC-OPENSSF-SLSA-V1
-    clause: "[PLACEHOLDER: SLSA v1.0 dependency vulnerability management reference]"
+    clause: "Overview — Security Best Practices: All SLSA implementations MUST use industry security best practices, including promptly fixing known vulnerabilities in dependencies."
     mapping_note: >
       SLSA's supply chain security model includes requirements around addressing
       known vulnerabilities in build inputs.

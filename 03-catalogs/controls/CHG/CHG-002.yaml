@@ -30,7 +30,7 @@ mapped_standards:
       of the change record. The platform separates change records (per PR)
       from release records (per version tag) for clarity.
   - source_id: SRC-OPENSSF-SLSA-V1
-    clause: "[PLACEHOLDER: SLSA v1.0 — release provenance requirements]"
+    clause: "Producer — Distribute provenance (Build L1+): The producer MUST distribute provenance to artifact consumers describing how the artifact was produced."
     mapping_note: >
       SLSA's provenance model includes requirements for documenting the build
       and release process. A release record is the platform's mechanism for

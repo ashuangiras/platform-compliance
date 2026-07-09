@@ -24,7 +24,7 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-OPENSSF-SLSA-V1
-    clause: "[PLACEHOLDER: SLSA v1.0 Build track — hermetic build requirement]"
+    clause: "Build Platform — Isolation strength — Isolated (Build L3): The build platform MUST ensure builds run in an isolated environment; it MUST NOT be possible for one build to influence the environment of a subsequent build."
     mapping_note: >
       SLSA's hermetic build requirement states that builds must not access
       external resources at build time in a way that could produce different

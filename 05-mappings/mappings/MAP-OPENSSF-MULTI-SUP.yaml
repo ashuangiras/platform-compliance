@@ -23,7 +23,7 @@ mappings:
 
   - id: MAP-OPENSSF-SLSA-SUP-001
     source_id: SRC-OPENSSF-SLSA-V1
-    source_clause: "[PLACEHOLDER: SLSA v1.0 Build track — hermetic build requirements section]"
+    source_clause: "Build Platform — Isolation strength — Isolated (Build L3): builds MUST run in an isolated environment with no cross-build influence"
     control_id: SUP-001
     rationale: >
       SLSA's hermetic build requirement states that builds must not access
@@ -55,7 +55,7 @@ mappings:
 
   - id: MAP-OPENSSF-SLSA-SUP-002
     source_id: SRC-OPENSSF-SLSA-V1
-    source_clause: "[PLACEHOLDER: SLSA v1.0 — immutable artifact reference requirement in Build track]"
+    source_clause: "Build Platform — Provenance is Authentic (Build L2): provenance MUST unambiguously identify the output package by cryptographic digest"
     control_id: SUP-002
     rationale: >
       SLSA's provenance model requires that build inputs be immutably

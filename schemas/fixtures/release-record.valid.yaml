@@ -1,0 +1,11 @@
+$schema: ../../schemas/release-record.schema.json
+id: v1.0.0
+schema_version: 1.0.0
+release_date: '2026-07-01'
+change_record_ids:
+- CHG-20260701-001
+gate_assessment_id: ASSESS-ASHUANGIRAS-PLATFORM-COMPLIANCE-20260701-001
+release_summary: Initial stable release of the platform compliance backbone. Includes
+  22 controls, PROF-PLATFORM-V1, and a 7-job CI pipeline.
+breaking_changes: false
+released_by: platform-team

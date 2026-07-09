@@ -23,7 +23,7 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-GOOGLE-SRE
-    clause: "[PLACEHOLDER: SRE book Chapter 14 — Managing Incidents; postmortem reference]"
+    clause: "Chapter 14 — Managing Incidents: all significant incidents require a postmortem; the goal is blameless retrospective and systemic improvement, not finger-pointing."
     mapping_note: >
       Google SRE Chapter 14 describes the incident management lifecycle including
       the blameless post-mortem as a standard practice. INC-001 adapts this to
