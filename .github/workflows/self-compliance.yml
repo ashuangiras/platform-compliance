@@ -28,7 +28,9 @@ jobs:
       repository-type: platform-repo
       technology-contexts: "github,github-actions"
       has-container-images: false
-      platform-compliance-ref: "main"  # self-reference; pin to tag on release
+      # For PRs: use the branch being tested (so new policies in the PR are exercised)
+      # For pushes to main: use "main" (the merged result)
+      platform-compliance-ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
 
   release-gate:
     name: "Compliance: Release Gate"
