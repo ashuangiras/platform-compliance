@@ -66,6 +66,7 @@ result := {
 violations[msg] if {
 	some wf in input.workflow_files_detail
 	wf.permissions_declared == false
+	wf.is_reusable != true
 	msg := sprintf("%v: no top-level permissions block (defaults allow write access)", [wf.path])
 }
 
@@ -73,5 +74,6 @@ violations[msg] if {
 	some wf in input.workflow_files_detail
 	wf.permissions_declared == true
 	wf.top_level_has_write == true
+	wf.is_reusable != true
 	msg := sprintf("%v: top-level permissions grant write access (must be read-only)", [wf.path])
 }

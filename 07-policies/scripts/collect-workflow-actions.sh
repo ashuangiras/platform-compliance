@@ -87,6 +87,14 @@ if workflows_dir.exists():
         except Exception:
             wf_data = {}
 
+        # Detect if this is a reusable workflow (called via workflow_call)
+        triggers = wf_data.get('on', {})
+        is_reusable = False
+        if isinstance(triggers, dict):
+            is_reusable = 'workflow_call' in triggers
+        elif isinstance(triggers, list):
+            is_reusable = 'workflow_call' in triggers
+
         top_perms = wf_data.get('permissions', None)
         # Analyse top-level permissions
         if top_perms is None:
@@ -117,6 +125,7 @@ if workflows_dir.exists():
             'permissions_declared': perms_declared,
             'top_level_has_write': top_level_write,
             'top_level_read_only': top_level_read_only,
+            'is_reusable': is_reusable,
         })
 
 output = {
