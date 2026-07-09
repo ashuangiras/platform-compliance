@@ -84,6 +84,17 @@ def main():
         rego_path = str(bundle / rego_rel)
         input_path = str(inputs / input_file)
 
+        # If the policy file doesn't exist in the bundle (e.g., bootstrapping a new
+        # policy before it's been merged to main), skip gracefully rather than error.
+        if not (bundle / rego_rel).exists():
+            skipped += 1
+            (results / f"{control_id}.json").write_text(json.dumps({
+                "result": "not_applicable",
+                "details": {"message": f"{control_id}: policy file not yet in bundle ({rego_rel}). Will be enforced after next release."}
+            }))
+            print(f"  ○ {control_id}: not_applicable (policy not in bundle — bootstrapping)")
+            continue
+
         if not os.path.exists(rego_path):
             (results / f"{control_id}.json").write_text(json.dumps({
                 "result": "error",
