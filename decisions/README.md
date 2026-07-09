@@ -30,6 +30,9 @@ Required sections: Title, Status, Date, Deciders, Context, Decision, Consequence
 | [ADR-0005](ADR-0005-yaml-for-all-files.md) | YAML for all human-authored files; JSON Schema (.schema.json) is the sole exception | accepted |
 | [ADR-0006](ADR-0006-evidence-storage.md) | Distributed evidence storage — each repository owns its own `.evidence/` ledger; future migration to external store tracked as PC-0164 | accepted |
 | [ADR-0007](ADR-0007-waiver-governance.md) | Waiver approval governance — PR review as canonical approval event; approver levels and max durations by control priority | accepted |
+| [ADR-0009](ADR-0009-policy-bundle-distribution.md) | OPA policy bundle distributed as a GitHub release artifact with SHA-256 verification | accepted |
+| [ADR-0010](ADR-0010-versioning-cadence.md) | Platform versioning semantics (PATCH/MINOR/MAJOR) and release cadence with 4-week MAJOR migration window | accepted |
+| [ADR-0016](ADR-0016-application-quality-governance.md) | Application & code-quality governance expansion — QUA/TST/API/ARC domains, go/node/python/frontend contexts, language profiles | accepted |
 
 ## Rules
 
