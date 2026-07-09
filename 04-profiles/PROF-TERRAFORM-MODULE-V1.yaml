@@ -1,167 +1,160 @@
-$schema: "../schemas/profile.schema.json"
-
-# PROF-TERRAFORM-MODULE-V1 — Reusable Terraform modules
-#
-# Applies to repositories that contain Terraform modules intended to be
-# consumed by other Terraform configurations. These modules are not deployed
-# directly; they have no apply step.
-#
-# Inherits PROF-BASE (SRC-001/002, SEC-001/002, DOC-001, CHG-002, SRC-003)
-# and adds Terraform-specific code quality and supply chain controls.
-
+$schema: ../schemas/profile.schema.json
 id: PROF-TERRAFORM-MODULE-V1
-name: "Terraform Module Profile v1"
-description: >
-  Compliance profile for reusable Terraform modules. Inherits the universal
-  baseline from PROF-BASE and adds controls specific to infrastructure-as-code
-  quality, dependency pinning, and vulnerability management. Modules are not
-  deployed directly so IAC-002 (plan-before-apply) is not applicable.
+name: Terraform Module Profile v1
+description: 'Compliance profile for reusable Terraform modules. Inherits the universal
+  baseline from PROF-BASE and adds controls specific to infrastructure-as-code quality,
+  dependency pinning, and vulnerability management. Modules are not deployed directly
+  so IAC-002 (plan-before-apply) is not applicable.
 
-version: "1.0.0"
-inherits: "PROF-BASE"
-
+  '
+version: 1.0.0
+inherits: PROF-BASE
 applicable_to:
-  - terraform-module
-
-introduced_date: "2026-07-09"
+- terraform-module
+introduced_date: '2026-07-09'
 status: active
-
 categories:
-
   mandatory:
-    description: >
-      Inherited from PROF-BASE (SRC-001, SRC-002, SEC-001, SEC-002, DOC-001, CHG-002)
-      plus Terraform-specific controls that block the merge gate on failure.
-    controls:
-      # ── Inherited from PROF-BASE ──────────────────────────────────────────
-      - id: SRC-001
-      - id: SRC-002
-      - id: SEC-001
-      - id: SEC-002
-      - id: DOC-001
-      - id: CHG-002
-      # ── Terraform-specific additions ──────────────────────────────────────
-      - id: IAC-001   # terraform fmt + validate on every PR
-      - id: SUP-001   # all provider and module versions must be pinned
-      - id: SEC-003   # critical/high CVEs must be resolved
+    description: 'Inherited from PROF-BASE (SRC-001, SRC-002, SEC-001, SEC-002, DOC-001,
+      CHG-002) plus Terraform-specific controls that block the merge gate on failure.
 
+      '
+    controls:
+    - id: SRC-001
+    - id: SRC-002
+    - id: SEC-001
+    - id: SEC-002
+    - id: DOC-001
+    - id: CHG-002
+    - id: IAC-001
+    - id: SUP-001
+    - id: SEC-003
+    - id: IAC-004
   manual_initially:
-    description: >
-      Controls accepted via human attestation. Automation target before v2.
-    controls:
-      - id: SRC-003
-      - id: IAC-003   # no hardcoded environment values in module variables
+    description: 'Controls accepted via human attestation. Automation target before
+      v2.
 
+      '
+    controls:
+    - id: SRC-003
+    - id: IAC-003
   deferred:
-    description: >
-      Planned controls not yet enforced in this profile version.
-    controls:
-      - id: SRC-004
-      - id: SUP-003
+    description: 'Planned controls not yet enforced in this profile version.
 
+      '
+    controls:
+    - id: SRC-004
+    - id: SUP-003
   not_applicable:
-    description: >
-      Controls that do not apply to reusable Terraform modules.
+    description: 'Controls that do not apply to reusable Terraform modules.
+
+      '
     controls:
-      - id: IAC-002
-        rationale: "Plan-before-apply applies only to root modules (PROF-TERRAFORM-ROOT-V1). Reusable modules are never applied directly."
-      - id: RUN-001
-        rationale: "Container-specific. Terraform modules do not build container images."
-      - id: RUN-002
-        rationale: "Container-specific."
-      - id: RUN-003
-        rationale: "Container-specific."
-      - id: SUP-002
-        rationale: "Container image pinning. Not applicable to Terraform modules."
-      - id: OBS-001
-        rationale: "Service health check. Not applicable to infrastructure modules."
-      - id: OBS-002
-        rationale: "Structured logging. Not applicable to infrastructure modules."
-      - id: BAK-001
-        rationale: "Stateful service backup. Not applicable to Terraform modules."
-      - id: NET-001
-        rationale: "Service ingress policy. Not applicable to Terraform modules."
-      - id: CHG-001
-        rationale: "Platform-repo change tracking. Not applicable to Terraform modules."
-      - id: DOC-002
-        rationale: "Architecture decision records. Not applicable to Terraform modules."
-      - id: INC-001
-        rationale: "Service incident postmortem. Not applicable to Terraform modules."
-
+    - id: IAC-002
+      rationale: Plan-before-apply applies only to root modules (PROF-TERRAFORM-ROOT-V1).
+        Reusable modules are never applied directly.
+    - id: RUN-001
+      rationale: Container-specific. Terraform modules do not build container images.
+    - id: RUN-002
+      rationale: Container-specific.
+    - id: RUN-003
+      rationale: Container-specific.
+    - id: SUP-002
+      rationale: Container image pinning. Not applicable to Terraform modules.
+    - id: OBS-001
+      rationale: Service health check. Not applicable to infrastructure modules.
+    - id: OBS-002
+      rationale: Structured logging. Not applicable to infrastructure modules.
+    - id: BAK-001
+      rationale: Stateful service backup. Not applicable to Terraform modules.
+    - id: NET-001
+      rationale: Service ingress policy. Not applicable to Terraform modules.
+    - id: CHG-001
+      rationale: Platform-repo change tracking. Not applicable to Terraform modules.
+    - id: DOC-002
+      rationale: Architecture decision records. Not applicable to Terraform modules.
+    - id: INC-001
+      rationale: Service incident postmortem. Not applicable to Terraform modules.
 gates:
-
   merge_gate:
-    description: >
-      Evaluated before any PR is merged. Terraform fmt/validate and pinned
+    description: 'Evaluated before any PR is merged. Terraform fmt/validate and pinned
       dependencies are checked automatically on every commit.
-    required_controls:
-      - id: SRC-001
-        enforcement: block
-      - id: SRC-002
-        enforcement: block
-      - id: SEC-001
-        enforcement: block
-      - id: SEC-002
-        enforcement: block
-      - id: IAC-001
-        enforcement: block
-      - id: SUP-001
-        enforcement: block
-      - id: SRC-003
-        enforcement: warn
-      - id: DOC-001
-        enforcement: warn
-      - id: IAC-003
-        enforcement: warn
 
+      '
+    required_controls:
+    - id: SRC-001
+      enforcement: block
+    - id: SRC-002
+      enforcement: block
+    - id: SEC-001
+      enforcement: block
+    - id: SEC-002
+      enforcement: block
+    - id: IAC-001
+      enforcement: block
+    - id: SUP-001
+      enforcement: block
+    - id: SRC-003
+      enforcement: warn
+    - id: DOC-001
+      enforcement: warn
+    - id: IAC-003
+      enforcement: warn
+    - id: IAC-004
+      enforcement: block
   release_gate:
-    description: >
-      Evaluated before a module version tag is published.
-    required_controls:
-      - id: SRC-001
-        enforcement: block
-      - id: SRC-002
-        enforcement: block
-      - id: SEC-001
-        enforcement: block
-      - id: SEC-002
-        enforcement: block
-      - id: IAC-001
-        enforcement: block
-      - id: SUP-001
-        enforcement: block
-      - id: SEC-003
-        enforcement: block
-      - id: SRC-003
-        enforcement: block
-      - id: DOC-001
-        enforcement: block
-      - id: CHG-002
-        enforcement: block
-      - id: IAC-003
-        enforcement: warn
+    description: 'Evaluated before a module version tag is published.
 
+      '
+    required_controls:
+    - id: SRC-001
+      enforcement: block
+    - id: SRC-002
+      enforcement: block
+    - id: SEC-001
+      enforcement: block
+    - id: SEC-002
+      enforcement: block
+    - id: IAC-001
+      enforcement: block
+    - id: SUP-001
+      enforcement: block
+    - id: SEC-003
+      enforcement: block
+    - id: SRC-003
+      enforcement: block
+    - id: DOC-001
+      enforcement: block
+    - id: CHG-002
+      enforcement: block
+    - id: IAC-003
+      enforcement: warn
+    - id: IAC-004
+      enforcement: block
   deployment_gate:
-    description: >
-      Not a primary gate for modules (modules are consumed, not deployed).
+    description: 'Not a primary gate for modules (modules are consumed, not deployed).
       Mirrors release gate requirements.
-    required_controls:
-      - id: SRC-001
-        enforcement: block
-      - id: SEC-001
-        enforcement: block
-      - id: IAC-001
-        enforcement: block
-      - id: SUP-001
-        enforcement: block
 
-  continuous_audit:
-    description: >
-      Scheduled vulnerability and secret scanning.
+      '
     required_controls:
-      - id: SEC-001
-        enforcement: notify
-      - id: SEC-002
-        enforcement: notify
-      - id: SEC-003
-        enforcement: notify
+    - id: SRC-001
+      enforcement: block
+    - id: SEC-001
+      enforcement: block
+    - id: IAC-001
+      enforcement: block
+    - id: SUP-001
+      enforcement: block
+  continuous_audit:
+    description: 'Scheduled vulnerability and secret scanning.
+
+      '
+    required_controls:
+    - id: SEC-001
+      enforcement: notify
+    - id: SEC-002
+      enforcement: notify
+    - id: SEC-003
+      enforcement: notify
+    - id: IAC-004
+      enforcement: notify

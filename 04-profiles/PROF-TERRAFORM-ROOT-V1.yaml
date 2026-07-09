@@ -1,174 +1,171 @@
-$schema: "../schemas/profile.schema.json"
-
-# PROF-TERRAFORM-ROOT-V1 — Terraform root modules (deployed infrastructure)
-#
-# Applies to repositories that contain deployable Terraform configurations.
-# Root modules call reusable modules and are applied against real infrastructure.
-# They have a terraform plan step (IAC-002) and manage actual state.
-#
-# Inherits PROF-TERRAFORM-MODULE-V1 (which inherits PROF-BASE)
-# and adds IAC-002 (plan-before-apply).
-
+$schema: ../schemas/profile.schema.json
 id: PROF-TERRAFORM-ROOT-V1
-name: "Terraform Root Module Profile v1"
-description: >
-  Compliance profile for Terraform root configurations (deployable infrastructure).
-  Inherits all controls from PROF-TERRAFORM-MODULE-V1 and adds the requirement
-  for a terraform plan output to be reviewed before any apply is executed.
-  This profile governs production infrastructure repositories.
+name: Terraform Root Module Profile v1
+description: 'Compliance profile for Terraform root configurations (deployable infrastructure).
+  Inherits all controls from PROF-TERRAFORM-MODULE-V1 and adds the requirement for
+  a terraform plan output to be reviewed before any apply is executed. This profile
+  governs production infrastructure repositories.
 
-version: "1.0.0"
-inherits: "PROF-TERRAFORM-MODULE-V1"
-
+  '
+version: 1.0.0
+inherits: PROF-TERRAFORM-MODULE-V1
 applicable_to:
-  - terraform-root
-
-introduced_date: "2026-07-09"
+- terraform-root
+introduced_date: '2026-07-09'
 status: active
-
 categories:
-
   mandatory:
-    description: >
-      All mandatory controls from PROF-TERRAFORM-MODULE-V1 plus IAC-002
+    description: 'All mandatory controls from PROF-TERRAFORM-MODULE-V1 plus IAC-002
       (plan-before-apply) which is specific to deployable root configurations.
-    controls:
-      # ── Inherited from PROF-TERRAFORM-MODULE-V1 ───────────────────────────
-      - id: SRC-001
-      - id: SRC-002
-      - id: SEC-001
-      - id: SEC-002
-      - id: DOC-001
-      - id: CHG-002
-      - id: IAC-001
-      - id: SUP-001
-      - id: SEC-003
-      # ── Root-module-specific additions ────────────────────────────────────
-      - id: IAC-002   # terraform plan output must be reviewed before apply
 
+      '
+    controls:
+    - id: SRC-001
+    - id: SRC-002
+    - id: SEC-001
+    - id: SEC-002
+    - id: DOC-001
+    - id: CHG-002
+    - id: IAC-001
+    - id: SUP-001
+    - id: SEC-003
+    - id: IAC-002
+    - id: IAC-004
   manual_initially:
-    description: >
-      Controls accepted via human attestation.
-    controls:
-      - id: SRC-003
-      - id: IAC-003
+    description: 'Controls accepted via human attestation.
 
+      '
+    controls:
+    - id: SRC-003
+    - id: IAC-003
   deferred:
-    description: >
-      Planned controls not yet enforced in this profile version.
-    controls:
-      - id: SRC-004
-      - id: SUP-003
+    description: 'Planned controls not yet enforced in this profile version.
 
+      '
+    controls:
+    - id: SRC-004
+    - id: SUP-003
   not_applicable:
-    description: >
-      Controls that do not apply to Terraform root configurations.
+    description: 'Controls that do not apply to Terraform root configurations.
+
+      '
     controls:
-      - id: RUN-001
-        rationale: "Container-specific. Terraform root modules do not build container images."
-      - id: RUN-002
-        rationale: "Container-specific."
-      - id: RUN-003
-        rationale: "Container-specific."
-      - id: SUP-002
-        rationale: "Container image pinning. Terraform root modules do not build images."
-      - id: OBS-001
-        rationale: "Service health check. Not applicable to infrastructure configurations."
-      - id: OBS-002
-        rationale: "Structured logging. Not applicable to infrastructure configurations."
-      - id: BAK-001
-        rationale: "Stateful service backup. Infrastructure state is managed by Terraform backend (governed separately)."
-      - id: NET-001
-        rationale: "Service ingress policy. Network configuration is declared as Terraform resources, not via this control."
-      - id: CHG-001
-        rationale: "Platform-repo change tracking. Not applicable to infrastructure repos."
-      - id: DOC-002
-        rationale: "Architecture decision records. Not applicable to infrastructure repos."
-      - id: INC-001
-        rationale: "Service incident postmortem. Not applicable to infrastructure configurations."
-
+    - id: RUN-001
+      rationale: Container-specific. Terraform root modules do not build container
+        images.
+    - id: RUN-002
+      rationale: Container-specific.
+    - id: RUN-003
+      rationale: Container-specific.
+    - id: SUP-002
+      rationale: Container image pinning. Terraform root modules do not build images.
+    - id: OBS-001
+      rationale: Service health check. Not applicable to infrastructure configurations.
+    - id: OBS-002
+      rationale: Structured logging. Not applicable to infrastructure configurations.
+    - id: BAK-001
+      rationale: Stateful service backup. Infrastructure state is managed by Terraform
+        backend (governed separately).
+    - id: NET-001
+      rationale: Service ingress policy. Network configuration is declared as Terraform
+        resources, not via this control.
+    - id: CHG-001
+      rationale: Platform-repo change tracking. Not applicable to infrastructure repos.
+    - id: DOC-002
+      rationale: Architecture decision records. Not applicable to infrastructure repos.
+    - id: INC-001
+      rationale: Service incident postmortem. Not applicable to infrastructure configurations.
 gates:
-
   merge_gate:
-    description: >
-      Evaluated before any infrastructure change PR is merged.
-      The terraform plan is reviewed as part of the PR diff.
-    required_controls:
-      - id: SRC-001
-        enforcement: block
-      - id: SRC-002
-        enforcement: block
-      - id: SEC-001
-        enforcement: block
-      - id: SEC-002
-        enforcement: block
-      - id: IAC-001
-        enforcement: block
-      - id: SUP-001
-        enforcement: block
-      - id: SRC-003
-        enforcement: warn
-      - id: DOC-001
-        enforcement: warn
-      - id: IAC-003
-        enforcement: warn
+    description: 'Evaluated before any infrastructure change PR is merged. The terraform
+      plan is reviewed as part of the PR diff.
 
+      '
+    required_controls:
+    - id: SRC-001
+      enforcement: block
+    - id: SRC-002
+      enforcement: block
+    - id: SEC-001
+      enforcement: block
+    - id: SEC-002
+      enforcement: block
+    - id: IAC-001
+      enforcement: block
+    - id: SUP-001
+      enforcement: block
+    - id: SRC-003
+      enforcement: warn
+    - id: DOC-001
+      enforcement: warn
+    - id: IAC-003
+      enforcement: warn
+    - id: IAC-004
+      enforcement: block
   release_gate:
-    description: >
-      Evaluated before an infrastructure version tag is published.
-      Plan-before-apply is required at release; no infrastructure applies
-      may happen without an approved plan artifact.
-    required_controls:
-      - id: SRC-001
-        enforcement: block
-      - id: SRC-002
-        enforcement: block
-      - id: SEC-001
-        enforcement: block
-      - id: SEC-002
-        enforcement: block
-      - id: IAC-001
-        enforcement: block
-      - id: IAC-002
-        enforcement: block
-      - id: SUP-001
-        enforcement: block
-      - id: SEC-003
-        enforcement: block
-      - id: SRC-003
-        enforcement: block
-      - id: DOC-001
-        enforcement: block
-      - id: CHG-002
-        enforcement: block
-      - id: IAC-003
-        enforcement: warn
+    description: 'Evaluated before an infrastructure version tag is published. Plan-before-apply
+      is required at release; no infrastructure applies may happen without an approved
+      plan artifact.
 
+      '
+    required_controls:
+    - id: SRC-001
+      enforcement: block
+    - id: SRC-002
+      enforcement: block
+    - id: SEC-001
+      enforcement: block
+    - id: SEC-002
+      enforcement: block
+    - id: IAC-001
+      enforcement: block
+    - id: IAC-002
+      enforcement: block
+    - id: SUP-001
+      enforcement: block
+    - id: SEC-003
+      enforcement: block
+    - id: SRC-003
+      enforcement: block
+    - id: DOC-001
+      enforcement: block
+    - id: CHG-002
+      enforcement: block
+    - id: IAC-003
+      enforcement: warn
+    - id: IAC-004
+      enforcement: block
   deployment_gate:
-    description: >
-      Evaluated before a terraform apply is executed in any environment.
+    description: 'Evaluated before a terraform apply is executed in any environment.
       Plan output must exist and have been reviewed (IAC-002).
-    required_controls:
-      - id: SRC-001
-        enforcement: block
-      - id: SEC-001
-        enforcement: block
-      - id: IAC-001
-        enforcement: block
-      - id: IAC-002
-        enforcement: block
-      - id: SUP-001
-        enforcement: block
 
-  continuous_audit:
-    description: >
-      Scheduled scanning for secrets, vulnerabilities, and dependency drift.
+      '
     required_controls:
-      - id: SEC-001
-        enforcement: notify
-      - id: SEC-002
-        enforcement: notify
-      - id: SEC-003
-        enforcement: notify
-      - id: SUP-001
-        enforcement: notify
+    - id: SRC-001
+      enforcement: block
+    - id: SEC-001
+      enforcement: block
+    - id: IAC-001
+      enforcement: block
+    - id: IAC-002
+      enforcement: block
+    - id: SUP-001
+      enforcement: block
+    - id: IAC-004
+      enforcement: block
+  continuous_audit:
+    description: 'Scheduled scanning for secrets, vulnerabilities, and dependency
+      drift.
+
+      '
+    required_controls:
+    - id: SEC-001
+      enforcement: notify
+    - id: SEC-002
+      enforcement: notify
+    - id: SEC-003
+      enforcement: notify
+    - id: SUP-001
+      enforcement: notify
+    - id: IAC-004
+      enforcement: notify
