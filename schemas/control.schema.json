@@ -3,7 +3,7 @@
   "$id": "platform-compliance/schemas/control.schema.json",
   "schemaVersion": "1.0.0",
   "title": "Platform Control",
-  "description": "A platform control in the control catalog (03-catalogs/controls/). A control defines WHAT must be satisfied — not how. Implementation detail belongs in bindings; policy code belongs in policies.",
+  "description": "A platform control in the control catalog (03-catalogs/controls/). A control defines WHAT must be satisfied \u2014 not how. Implementation detail belongs in bindings; policy code belongs in policies.",
   "type": "object",
   "required": [
     "id",
@@ -30,7 +30,11 @@
       "type": "string",
       "pattern": "^[A-Z]{2,4}-[0-9]{3}$",
       "description": "Stable control identifier. Format: {DOMAIN}-{NNN}. Never changes once assigned.",
-      "examples": ["SRC-001", "SEC-002", "IAC-001"]
+      "examples": [
+        "SRC-001",
+        "SEC-002",
+        "IAC-001"
+      ]
     },
     "title": {
       "type": "string",
@@ -39,23 +43,56 @@
     },
     "domain": {
       "type": "string",
-      "enum": ["SRC", "SUP", "IAC", "RUN", "NET", "SEC", "OBS", "BAK", "CHG", "INC", "CAT", "REL", "DOC"],
+      "enum": [
+        "SRC",
+        "SUP",
+        "IAC",
+        "RUN",
+        "NET",
+        "SEC",
+        "OBS",
+        "BAK",
+        "CHG",
+        "INC",
+        "CAT",
+        "REL",
+        "DOC",
+        "ACC",
+        "AUD"
+      ],
       "description": "Control domain code from 02-taxonomy/control-domains.yaml. Must match the directory under 03-catalogs/controls/."
     },
     "type": {
       "type": "string",
-      "enum": ["preventive", "detective", "corrective", "directive", "compensating"],
+      "enum": [
+        "preventive",
+        "detective",
+        "corrective",
+        "directive",
+        "compensating"
+      ],
       "description": "Control classification by mechanism."
     },
     "priority": {
       "type": "string",
-      "enum": ["P1", "P2", "P3", "P4"],
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
       "description": "P1: critical, no exceptions without platform-owner waiver. P2: high. P3: medium. P4: low/informational."
     },
     "severity": {
       "type": "string",
-      "enum": ["critical", "high", "medium", "low", "informational"],
-      "description": "Severity of a control failure — the impact if this control is not satisfied."
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "informational"
+      ],
+      "description": "Severity of a control failure \u2014 the impact if this control is not satisfied."
     },
     "statement": {
       "type": "string",
@@ -71,7 +108,9 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["source_id"],
+        "required": [
+          "source_id"
+        ],
         "additionalProperties": false,
         "properties": {
           "source_id": {
@@ -98,7 +137,10 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["type", "description"],
+        "required": [
+          "type",
+          "description"
+        ],
         "additionalProperties": false,
         "properties": {
           "type": {
@@ -110,29 +152,59 @@
           },
           "format": {
             "type": "string",
-            "enum": ["json", "yaml", "text", "screenshot", "pdf", "xml"]
+            "enum": [
+              "json",
+              "yaml",
+              "text",
+              "screenshot",
+              "pdf",
+              "xml"
+            ]
           }
         }
       }
     },
     "automation_status": {
       "type": "string",
-      "enum": ["automated", "partially-automated", "manual", "automation-target", "not-automatable"]
+      "enum": [
+        "automated",
+        "partially-automated",
+        "manual",
+        "automation-target",
+        "not-automatable"
+      ]
     },
     "assessment_cadence": {
       "type": "string",
-      "enum": ["per-commit", "per-merge", "per-release", "per-deployment", "continuous", "on-change"]
+      "enum": [
+        "per-commit",
+        "per-merge",
+        "per-release",
+        "per-deployment",
+        "continuous",
+        "on-change"
+      ]
     },
     "failure_behavior": {
       "type": "string",
-      "enum": ["block", "warn", "notify", "record"],
+      "enum": [
+        "block",
+        "warn",
+        "notify",
+        "record"
+      ],
       "description": "Default consequence of a failing assessment for this control."
     },
     "failure_applies_to": {
       "type": "array",
       "items": {
         "type": "string",
-        "enum": ["merge_gate", "release_gate", "deployment_gate", "continuous_audit"]
+        "enum": [
+          "merge_gate",
+          "release_gate",
+          "deployment_gate",
+          "continuous_audit"
+        ]
       },
       "description": "Gates where failure_behavior applies. If absent, applies to all gates at which this control is assessed."
     },
@@ -140,7 +212,10 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["condition", "rationale"],
+        "required": [
+          "condition",
+          "rationale"
+        ],
         "additionalProperties": false,
         "properties": {
           "condition": {
@@ -155,7 +230,12 @@
     },
     "lifecycle_status": {
       "type": "string",
-      "enum": ["active", "deferred", "deprecated", "superseded"]
+      "enum": [
+        "active",
+        "deferred",
+        "deprecated",
+        "superseded"
+      ]
     },
     "superseded_by": {
       "type": "string",
@@ -181,13 +261,23 @@
     }
   },
   "if": {
-    "properties": { "lifecycle_status": { "const": "active" } },
-    "required": ["lifecycle_status"]
+    "properties": {
+      "lifecycle_status": {
+        "const": "active"
+      }
+    },
+    "required": [
+      "lifecycle_status"
+    ]
   },
   "then": {
     "properties": {
-      "mapped_standards": { "minItems": 1 }
+      "mapped_standards": {
+        "minItems": 1
+      }
     },
-    "required": ["mapped_standards"]
+    "required": [
+      "mapped_standards"
+    ]
   }
 }

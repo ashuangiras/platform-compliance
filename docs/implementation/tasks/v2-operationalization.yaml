@@ -326,52 +326,52 @@ phases:
     - PC-0186
   - id: PC-0188
     title: Define SUP-004 (SBOM must be generated for every release)
-    status: not_started
+    status: done
     tier: 2
   - id: PC-0189
     title: Write binding BIND-SUP-004-GITHUB-ACTIONS and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 2
     depends_on:
     - PC-0188
   - id: PC-0190
     title: Define ACC-001 (MFA must be enforced for all GitHub org members)
-    status: not_started
+    status: done
     tier: 2
   - id: PC-0191
     title: Write binding BIND-ACC-001-GITHUB and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 2
     depends_on:
     - PC-0190
   - id: PC-0192
     title: 'Define SEC-007 (vulnerability remediation SLA: Critical ≤7d, High ≤30d,
       Medium ≤90d)'
-    status: not_started
+    status: done
     tier: 2
   - id: PC-0193
     title: Write binding BIND-SEC-007-GITHUB and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 2
     depends_on:
     - PC-0192
   - id: PC-0194
     title: Define IAC-005 (scheduled Terraform plan must detect infrastructure drift)
-    status: not_started
+    status: done
     tier: 2
   - id: PC-0195
     title: Write binding BIND-IAC-005-TERRAFORM and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 2
     depends_on:
     - PC-0194
   - id: PC-0196
     title: Define AUD-001 (GitHub org audit log must be enabled and retained ≥90 days)
-    status: not_started
+    status: done
     tier: 2
   - id: PC-0197
     title: Write binding BIND-AUD-001-GITHUB and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 2
     depends_on:
     - PC-0196

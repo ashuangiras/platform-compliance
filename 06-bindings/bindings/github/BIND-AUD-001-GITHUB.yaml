@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-AUD-001-GITHUB
+control_id: AUD-001
+technology_context: github
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  The GitHub audit log must be accessible via API for the owning account.
+  GET /users/{user}/audit-log or GET /orgs/{org}/audit-log must return entries.
+observable_artifact: "GitHub API audit log response showing recent entries and accessibility."
+policy_check_ids:
+  - POL-AUD-001-GITHUB-001

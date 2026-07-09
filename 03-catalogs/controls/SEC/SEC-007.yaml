@@ -1,0 +1,65 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-007
+title: Open vulnerabilities must be remediated within defined SLA timelines
+domain: SEC
+type: detective
+priority: P2
+severity: high
+
+statement: >
+  Open dependency vulnerabilities in governed repositories must be remediated
+  within the following SLA timelines measured from the alert creation date:
+  - CRITICAL severity: ≤ 7 days
+  - HIGH severity: ≤ 30 days
+  - MEDIUM severity: ≤ 90 days
+  Vulnerabilities with a documented waiver do not count against the SLA.
+
+rationale: >
+  SEC-003 requires that critical and high CVEs are resolved before merging.
+  SEC-007 extends this to enforce remediation timelines on alerts that have
+  slipped through or are awaiting a fix. Without a defined SLA, "acknowledged"
+  vulnerabilities accumulate indefinitely. Attackers actively target known
+  CVEs; a 7-day window for critical vulnerabilities limits the exposure window
+  to the time between public disclosure and exploitation.
+
+mapped_standards:
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 7 — Continuous Vulnerability Management: Safeguard 7.7 — Remediate detected vulnerabilities within defined timelines"
+    mapping_note: >
+      CIS Controls v8.1 Safeguard 7.7 requires defined and enforced remediation
+      timelines for detected vulnerabilities. SEC-007 implements this safeguard
+      with specific SLA thresholds calibrated to severity.
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Implementation — Secure Build — SB-2: Software Dependencies (vulnerability SLA at level 2)"
+    mapping_note: >
+      OWASP SAMM SB-2 level 2 requires tracking and remediating known vulnerabilities
+      with defined response timelines. SEC-007 operationalises this requirement.
+
+implementation_expectations: >
+  Dependabot or GitHub Advanced Security must be enabled (SEC-003).
+  The platform CI runs a scheduled check that:
+  1. Queries all open Dependabot/GHAS alerts with their creation timestamps
+  2. Calculates age_days = (current_date - created_at)
+  3. Flags any alert where age_days exceeds the SLA for its severity
+  4. Fails the gate if any unfixed SLA breach exists
+
+  Waivers: if a vulnerability cannot be fixed (e.g., no patch exists), create
+  a waiver record in 09-assessments/waivers/ with an expiry date and rationale.
+
+evidence_required:
+  - type: github-security-alerts
+    description: >
+      GitHub Dependabot/GHAS alert list with severity, state, and creation
+      timestamps. Evidence shows no open alerts exceeding SLA thresholds.
+    format: json
+
+automation_status: automated
+assessment_cadence: continuous
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

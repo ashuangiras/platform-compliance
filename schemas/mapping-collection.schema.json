@@ -5,7 +5,9 @@
   "title": "Mapping Collection File",
   "description": "Schema for a mapping collection file in 05-mappings/mappings/. Each file groups related mapping records from a single source to one or more control domains. The individual mapping objects within the 'mappings' array conform to the structure defined in mapping.schema.json.",
   "type": "object",
-  "required": ["mappings"],
+  "required": [
+    "mappings"
+  ],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -15,11 +17,27 @@
     "source_id": {
       "type": "string",
       "pattern": "^SRC-[A-Z0-9]+-[A-Z0-9-]+$",
-      "description": "Primary source ID for this collection file. Informational — individual mapping records each carry their own source_id."
+      "description": "Primary source ID for this collection file. Informational \u2014 individual mapping records each carry their own source_id."
     },
     "domain": {
       "type": "string",
-      "enum": ["SRC", "SUP", "IAC", "RUN", "NET", "SEC", "OBS", "BAK", "CHG", "INC", "CAT", "REL", "DOC"],
+      "enum": [
+        "SRC",
+        "SUP",
+        "IAC",
+        "RUN",
+        "NET",
+        "SEC",
+        "OBS",
+        "BAK",
+        "CHG",
+        "INC",
+        "CAT",
+        "REL",
+        "DOC",
+        "ACC",
+        "AUD"
+      ],
       "description": "Primary control domain this collection covers. Informational."
     },
     "mappings": {
@@ -28,14 +46,26 @@
       "description": "One or more mapping records. Each record links a standard clause to a platform control.",
       "items": {
         "type": "object",
-        "required": ["id", "source_id", "source_clause", "control_id", "rationale", "mapping_type", "mapped_date", "mapped_by"],
+        "required": [
+          "id",
+          "source_id",
+          "source_clause",
+          "control_id",
+          "rationale",
+          "mapping_type",
+          "mapped_date",
+          "mapped_by"
+        ],
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
             "pattern": "^MAP-[A-Z0-9-]+-[A-Z]{2,4}-[0-9]{3}$",
             "description": "Stable mapping identifier. Format: MAP-{SOURCE_ID_STEM}-{DOMAIN}-{NNN}.",
-            "examples": ["MAP-OPENSSF-SCORECARD-SRC-001", "MAP-CIS-DOCKER-RUN-001"]
+            "examples": [
+              "MAP-OPENSSF-SCORECARD-SRC-001",
+              "MAP-CIS-DOCKER-RUN-001"
+            ]
           },
           "source_id": {
             "type": "string",
@@ -62,7 +92,12 @@
           },
           "mapping_type": {
             "type": "string",
-            "enum": ["derived", "partial", "extended", "adopted"],
+            "enum": [
+              "derived",
+              "partial",
+              "extended",
+              "adopted"
+            ],
             "description": "derived: direct derivation. partial: partial coverage. extended: control goes beyond the clause. adopted: practice adopted as-is."
           },
           "mapped_date": {

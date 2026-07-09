@@ -122,6 +122,11 @@ if workflows_dir.exists():
             top_level_write = True
             top_level_read_only = False
 
+        # Extract trigger dict for IAC-005 schedule detection
+        # Use both str and bool key for 'on' (PyYAML boolean parsing)
+        raw_triggers = wf_data.get('on', wf_data.get(True, {}))
+        triggers_dict = raw_triggers if isinstance(raw_triggers, dict) else {}
+
         workflow_files_detail.append({
             'path': wf_rel,
             'top_level_permissions': top_perms,
@@ -129,6 +134,7 @@ if workflows_dir.exists():
             'top_level_has_write': top_level_write,
             'top_level_read_only': top_level_read_only,
             'is_reusable': is_reusable,
+            'triggers': triggers_dict,
         })
 
 output = {

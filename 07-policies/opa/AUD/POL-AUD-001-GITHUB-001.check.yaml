@@ -1,0 +1,11 @@
+id: POL-AUD-001-GITHUB-001
+title: "GitHub audit log must be accessible and returning entries"
+binding_ids: [BIND-AUD-001-GITHUB]
+engine: opa
+file_path: "07-policies/opa/AUD/POL-AUD-001-GITHUB-001.rego"
+pass_criteria: "Audit log is accessible via API."
+fail_criteria: "Audit log is not accessible (permissions, plan limitation, or not configured)."
+evidence_type: github-audit-log
+severity: medium
+introduced_date: "2026-07-10"
+status: active

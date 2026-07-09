@@ -142,3 +142,27 @@ domains:
       - README presence and quality
       - ADR for significant decisions
       - Runbook for operational procedures
+
+  ACC:
+    name: Access Control
+    description: >
+      Controls governing identity, authentication, and authorization for platform
+      resources. Covers multi-factor authentication, least-privilege access,
+      access review cadence, and machine identity management.
+    examples:
+      - MFA enforcement for all developers
+      - Least-privilege IAM policies
+      - Access review cadence
+      - Secret rotation policies
+
+  AUD:
+    name: Audit Logging
+    description: >
+      Controls governing the retention, integrity, and accessibility of audit
+      logs. Covers enabling audit log streaming, retention policies, and
+      ensuring change events are captured for compliance investigations.
+    examples:
+      - GitHub org audit log enabled and retained
+      - Cloud provider CloudTrail / Cloud Audit Logs enabled
+      - Log integrity (tamper-evident storage)
+      - Minimum retention periods

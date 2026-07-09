@@ -1,0 +1,67 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SUP-004
+title: A Software Bill of Materials (SBOM) must be generated and published for every release
+domain: SUP
+type: preventive
+priority: P2
+severity: high
+
+statement: >
+  Every repository that publishes a release artifact MUST generate a Software
+  Bill of Materials (SBOM) in CycloneDX JSON or SPDX format and attach it as
+  a release asset alongside the artifact. The SBOM must contain the NTIA minimum
+  elements: supplier name, component name, component version, unique identifier
+  (PURL), dependency relationships, SBOM author, and timestamp.
+
+rationale: >
+  An SBOM provides complete visibility into the software supply chain: every
+  library, runtime, OS package, and transitive dependency in an artifact. Without
+  an SBOM, security teams cannot determine whether a newly-disclosed vulnerability
+  (e.g., log4shell) affects a deployed service. SBOM generation at build time is
+  low-cost; reactive vulnerability triage without one is extremely high-cost.
+  SBOMs are increasingly required by regulation, contract, and customer expectation.
+
+mapped_standards:
+  - source_id: SRC-NTIA-SBOM-2021
+    clause: "Minimum Elements for a Software Bill of Materials: supplier name, component name, version, unique identifier, dependency relationship, author, timestamp"
+    mapping_note: >
+      SUP-004 implements the NTIA minimum elements as a mandatory requirement,
+      ensuring every release includes a verifiable, machine-readable SBOM.
+  - source_id: SRC-OPENSSF-SLSA-V1
+    clause: "Producer — Distribute provenance (Build L1+): The producer MUST distribute provenance to artifact consumers."
+    mapping_note: >
+      An SBOM is a form of provenance that complements SLSA attestation by
+      documenting the complete dependency graph, not just the build process.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 2 — Inventory and Control of Software Assets: Safeguard 2.1 — Establish and maintain a software inventory"
+    mapping_note: >
+      CIS Controls v8.1 requires a software inventory; an SBOM is the
+      machine-readable artifact that satisfies this requirement per release.
+
+implementation_expectations: >
+  A GitHub Actions workflow (typically release.yml or a build workflow) must:
+  1. Generate an SBOM using a recognised tool:
+     - anchore/sbom-action (Syft-based, supports CycloneDX/SPDX)
+     - advanced-security/sbom-generator-action
+     - CycloneDX ecosystem tools (cyclonedx-gomod, cyclonedx-npm, etc.)
+     - syft CLI invoked directly
+  2. Upload the SBOM as a release artifact (*.cdx.json, *.spdx.json, sbom.json)
+  3. The SBOM must be generated AFTER the build step so it reflects the actual artifact.
+
+evidence_required:
+  - type: github-actions-workflow
+    description: >
+      GitHub Actions workflow containing an SBOM-generating step in the build
+      or release pipeline. Evidence confirms the SBOM action is present and runs
+      after the build.
+    format: json
+
+automation_status: automation-target
+assessment_cadence: per-release
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - release_gate

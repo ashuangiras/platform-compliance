@@ -1,0 +1,14 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-ACC-001-GITHUB
+control_id: ACC-001
+technology_context: github
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  The GitHub account or organization owning the repository must have MFA/2FA
+  enabled. For personal accounts: two_factor_authentication: true via GET /user.
+  For organization accounts: two_factor_requirement_enabled: true via GET /orgs/{org}.
+observable_artifact: "GitHub API response from GET /user and GET /orgs/{org} showing 2FA status."
+policy_check_ids:
+  - POL-ACC-001-GITHUB-001

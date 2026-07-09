@@ -46,6 +46,15 @@ jobs:
           tar -tzf policies.tar.gz | grep -c "\.rego$"
           echo "rego files in bundle"
 
+      - name: Generate SBOM (SUP-004)
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./
+          format: cyclonedx-json
+          output-file: /tmp/sbom.cdx.json
+          upload-artifact: false
+          upload-release-assets: false
+
       - name: Create or update GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -66,10 +75,11 @@ jobs:
             echo "Created release ${TAG}"
           fi
 
-          # Upload bundle and checksum as release assets
+          # Upload bundle, checksum, and SBOM as release assets
           gh release upload "${TAG}" \
             /tmp/policies.tar.gz \
             /tmp/policies.tar.gz.sha256 \
+            /tmp/sbom.cdx.json \
             --repo "${{ github.repository }}" \
             --clobber
 

@@ -1,0 +1,11 @@
+id: POL-ACC-001-GITHUB-001
+title: "GitHub account must have MFA/2FA enabled"
+binding_ids: [BIND-ACC-001-GITHUB]
+engine: opa
+file_path: "07-policies/opa/ACC/POL-ACC-001-GITHUB-001.rego"
+pass_criteria: "two_factor_authentication or two_factor_requirement_enabled is true."
+fail_criteria: "MFA is not enabled on the platform account."
+evidence_type: github-account-security
+severity: high
+introduced_date: "2026-07-10"
+status: active

@@ -1,0 +1,75 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: IAC-005
+title: Infrastructure drift must be detected by a scheduled Terraform plan
+domain: IAC
+type: detective
+priority: P2
+severity: medium
+
+statement: >
+  Every Terraform root configuration (PROF-TERRAFORM-ROOT-V1) must have a
+  GitHub Actions workflow with a scheduled trigger that runs terraform plan
+  and alerts on non-empty plans (i.e., detected drift between declared state
+  and actual infrastructure). The schedule must run at minimum once every 24 hours.
+
+rationale: >
+  Manual changes made directly to cloud infrastructure (console clicks, ad-hoc
+  CLI commands) create drift between the declared Terraform state and actual
+  resources. Drift is dangerous because: (1) it bypasses the security review
+  process; (2) it creates hidden attack surface not visible in code review;
+  (3) it can cause deployment failures when the next terraform apply encounters
+  unexpected resource state. A scheduled plan detects drift automatically and
+  alerts before it becomes a security incident or outage.
+
+mapped_standards:
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "Principle 2 — Desired state is versioned and immutable; actual state must converge to declared state"
+    mapping_note: >
+      GitOps Principle 2 requires that actual infrastructure state converges to
+      the declared desired state. Scheduled drift detection enforces this
+      convergence by alerting when divergence is detected.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 4 — Secure Configuration: Safeguard 4.3 — Configure automated session timeouts for enterprise assets"
+    mapping_note: >
+      CIS Controls v8.1 includes continuous configuration monitoring.
+      Drift detection is the infrastructure-as-code implementation of this
+      requirement: continuously verifying that configured state matches declared.
+
+implementation_expectations: >
+  Add a GitHub Actions workflow to the Terraform root repository that:
+  - Triggers on: schedule (cron: "0 * * * *" or similar, at least daily)
+  - Runs: terraform init, terraform plan -detailed-exitcode
+  - Exit code 2 from terraform plan means drift detected — alert via GitHub
+    Issue or notification
+
+  Example workflow structure:
+    jobs:
+      drift-check:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - uses: hashicorp/setup-terraform@v3
+          - run: terraform init
+          - id: plan
+            run: terraform plan -detailed-exitcode
+            continue-on-error: true
+          - if: steps.plan.outputs.exitcode == 2
+            run: echo "DRIFT DETECTED" && exit 1
+
+evidence_required:
+  - type: github-actions-workflow
+    description: >
+      GitHub Actions workflow with a schedule trigger that runs terraform plan.
+      Evidence confirms the workflow is configured and running on schedule.
+    format: json
+
+automation_status: automation-target
+assessment_cadence: continuous
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - deployment_gate
+  - continuous_audit

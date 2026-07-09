@@ -1,0 +1,70 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: ACC-001
+title: Multi-factor authentication must be enabled for all platform developers
+domain: ACC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  All developer accounts with write access to any governed platform repository
+  MUST have multi-factor authentication (MFA) enabled. For GitHub, this means
+  the account's two-factor authentication (2FA) must be active and use a
+  hardware security key, authenticator app, or SMS as a second factor.
+
+rationale: >
+  Account compromise via phishing or credential stuffing is the most common
+  initial access vector for software supply chain attacks. An account with write
+  access to a platform repository can push malicious code, modify CI/CD pipelines,
+  or exfiltrate secrets. MFA provides a second layer of defense that prevents
+  stolen credentials from being sufficient for account takeover. GitHub's own
+  security data shows that accounts with 2FA enabled are dramatically less likely
+  to be compromised.
+
+mapped_standards:
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 6 — Access Control Management: Safeguard 6.5 — Require MFA for externally-exposed applications"
+    mapping_note: >
+      CIS Controls v8.1 Safeguard 6.5 explicitly requires MFA for all externally
+      accessible accounts. GitHub is an internet-accessible service; all accounts
+      with repository write access must have MFA enabled.
+  - source_id: SRC-GITHUB-SECURITY-HARDENING
+    clause: "Account security: enabling two-factor authentication for your GitHub account"
+    mapping_note: >
+      GitHub's security hardening documentation explicitly recommends enabling 2FA
+      for all GitHub accounts. ACC-001 elevates this recommendation to a mandatory
+      platform control.
+  - source_id: SRC-NIST-CSF-V2
+    clause: "Protect (PR) — Identity Management, Authentication and Access Control (PR.AA): Multi-factor authentication is enforced"
+    mapping_note: >
+      NIST CSF v2.0 PR.AA function requires MFA for privileged and internet-accessible
+      accounts. Platform developer accounts are both privileged and internet-accessible.
+
+implementation_expectations: >
+  All GitHub accounts that are members of the platform team or have write access
+  to governed repositories must have 2FA enabled. This is verified via the
+  GitHub API using an admin token.
+
+  For GitHub organizations: enable "Require two-factor authentication for
+  all members" at the organization security settings level.
+
+  For individual accounts on a personal plan: verify 2FA is enabled via
+  the GitHub API: GET /user returns two_factor_authentication: true.
+
+evidence_required:
+  - type: github-account-security
+    description: >
+      GitHub API response confirming 2FA is enabled for the account owning
+      the repository. For org repos, org-level 2FA requirement confirmation.
+    format: json
+
+automation_status: automated
+assessment_cadence: continuous
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate
