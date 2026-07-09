@@ -7,7 +7,7 @@ name: "Reusable Platform Compliance Check"
 # It lives at .github/workflows/ so GitHub Actions can call it from
 # downstream repositories using:
 #
-#   uses: angirasa-risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+#   uses: ashuangiras/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
 #
 # Design document: workflows/github/reusable-compliance.yml
 # ─────────────────────────────────────────────────────────────────────────────
@@ -159,8 +159,9 @@ jobs:
 
       - name: "SEC-001 — Scan for secrets (gitleaks)"
         run: |
-          mkdir -p /tmp/results
-          if curl -sSfL "https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_$(uname -s)_x64.tar.gz" | tar -xz -C /usr/local/bin gitleaks 2>/dev/null; then
+          mkdir -p /tmp/results /tmp/inputs
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          if curl -sSfL "https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_${OS}_x64.tar.gz" -o /tmp/gitleaks.tar.gz 2>/dev/null && tar -xz -f /tmp/gitleaks.tar.gz -C /usr/local/bin gitleaks 2>/dev/null; then
             gitleaks detect --source . --report-format json --report-path /tmp/gitleaks-raw.json --exit-code 0 2>/dev/null || true
             python3 -c "import json; raw=json.load(open('/tmp/gitleaks-raw.json')) if __import__('os').path.exists('/tmp/gitleaks-raw.json') else []; findings=raw if isinstance(raw,list) else []; print(json.dumps({'repository':{'name':'${{ github.event.repository.name }}'},'scan_tool':'gitleaks','scan_tool_version':'latest','findings':findings,'github_alerts_open':0}))" > /tmp/inputs/sec-secrets.json
           else
@@ -184,6 +185,9 @@ jobs:
     name: "4 — OPA policy checks"
     runs-on: ubuntu-latest
     needs: [validate-manifest, check-required-files]
+    permissions:
+      contents: read
+      administration: read
     outputs:
       policy-results-path: ${{ steps.run-policies.outputs.results-path }}
 
