@@ -198,31 +198,23 @@ jobs:
 
       - name: Fetch policy bundle from platform-compliance
         run: |
-          curl -sSfL \
-            "https://github.com/${{ github.repository_owner }}/platform-compliance/archive/refs/tags/${PLATFORM_COMPLIANCE_REF}.tar.gz" \
-            | tar -xz --strip-components=1 "platform-compliance-*/07-policies/opa" -C /tmp/
-          echo "Policy bundle fetched"
+          mkdir -p /tmp/platform-compliance-policies /tmp/pc-extract
+          # Handle both tag refs (v1.0.0) and branch refs (main)
+          REF="${PLATFORM_COMPLIANCE_REF}"
+          OWNER="${{ github.repository_owner }}"
+          TAG_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/tags/${REF}.tar.gz"
+          BRANCH_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/heads/${REF}.tar.gz"
+          if curl -sSfL "${TAG_URL}" -o /tmp/bundle.tar.gz 2>/dev/null; then
+            echo "Fetched tag bundle: ${REF}"
+          else
+            curl -sSfL "${BRANCH_URL}" -o /tmp/bundle.tar.gz
+            echo "Fetched branch bundle: ${REF}"
+          fi
+          # Extract to temp dir, then copy just the OPA policies
+          tar -xz -f /tmp/bundle.tar.gz -C /tmp/pc-extract
+          cp -r /tmp/pc-extract/*/07-policies/opa/. /tmp/platform-compliance-policies/
+          echo "Policy bundle ready:"
 
-      - name: Collect SRC-001 input (branch protection)
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          branch=$(python3 -c "import yaml; d=yaml.safe_load(open('.compliance-manifest.yaml')); print('main')")
-          gh api "repos/${{ github.repository }}/branches/${branch}/protection" \
-            --jq '{
-              repository: {name: "${{ github.event.repository.name }}", type: "${{ inputs.repository-type }}"},
-              default_branch: "'"${branch}"'",
-              branch_protection: .
-            }' > /tmp/inputs/src-001.json 2>/dev/null || echo '{"repository":{"name":"${{ github.event.repository.name }}"},"default_branch":"main","branch_protection":null}' > /tmp/inputs/src-001.json
-          mkdir -p /tmp/inputs /tmp/results
-
-      - name: "SRC-001 — Branch protection check"
-        run: |
-          opa eval \
-            --data /tmp/policy-bundle/SRC/POL-SRC-001-GITHUB-001.rego \
-            --input /tmp/inputs/src-001.json \
-            "data.platform.src.src_001_github.result" \
-            --format raw > /tmp/results/SRC-001.json || echo '{"result":"error"}' > /tmp/results/SRC-001.json
 
       - name: Run all applicable policy checks
         id: run-policies

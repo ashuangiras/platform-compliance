@@ -120,13 +120,13 @@ phases:
     - PC-0108
   - id: PC-0112
     title: Write 08-evidence/ledger/retention.md (archival and deletion procedures)
-    status: not-started
+    status: done
   - id: PC-0113
     title: Write docs/onboarding.md (PC-0003 from Phase 01)
-    status: not-started
+    status: done
   - id: PC-0114
     title: Write docs/authoring-controls.md (PC-0006 from Phase 01)
-    status: not-started
+    status: done
 - id: phase-B
   title: Tooling and developer experience
   horizon: v1.2.0
