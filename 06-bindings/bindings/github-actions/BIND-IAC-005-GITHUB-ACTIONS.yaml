@@ -1,0 +1,14 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-IAC-005-GITHUB-ACTIONS
+control_id: IAC-005
+technology_context: github-actions
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  At least one GitHub Actions workflow must have a schedule (cron) trigger AND
+  include hashicorp/setup-terraform or opentofu/setup-opentofu to run terraform plan
+  for drift detection.
+observable_artifact: "GitHub Actions workflow files parsed for schedule trigger + terraform setup action."
+policy_check_ids:
+  - POL-IAC-005-GITHUB-ACTIONS-001

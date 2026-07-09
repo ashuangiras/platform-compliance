@@ -33,6 +33,12 @@ POLICY_MAP = {
     "SEC-005":   ("SEC/POL-SEC-005-GITHUB-ACTIONS-001.rego", "actions-info.json",   "data.platform.sec.sec_005_github_actions.result",   ["github-actions"]),
     "IAC-004":   ("IAC/POL-IAC-004-TERRAFORM-001.rego",       "actions-info.json",   "data.platform.iac.iac_004_terraform.result",         ["terraform"]),
     "SEC-006":   ("SEC/POL-SEC-006-DOCKER-001.rego",          "actions-info.json",   "data.platform.sec.sec_006_docker.result",            ["docker"]),
+    # ── Tier 2 ──────────────────────────────────────────────────────────────
+    "SUP-004":   ("SUP/POL-SUP-004-GITHUB-ACTIONS-001.rego",  "actions-info.json",   "data.platform.sup.sup_004_github_actions.result",   ["github-actions"]),
+    "ACC-001":   ("ACC/POL-ACC-001-GITHUB-001.rego",           "acc-security.json",   "data.platform.acc.acc_001_github.result",            ["github"]),
+    "SEC-007":   ("SEC/POL-SEC-007-GITHUB-001.rego",           "sec-vuln-sla.json",   "data.platform.sec.sec_007_github.result",            ["github"]),
+    "IAC-005":   ("IAC/POL-IAC-005-GITHUB-ACTIONS-001.rego",   "actions-info.json",   "data.platform.iac.iac_005_github_actions.result",    ["terraform"]),
+    "AUD-001":   ("AUD/POL-AUD-001-GITHUB-001.rego",           "aud-security.json",   "data.platform.aud.aud_001_github.result",            ["github"]),
 }
 
 

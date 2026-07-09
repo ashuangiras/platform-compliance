@@ -1,0 +1,11 @@
+id: POL-SUP-004-GITHUB-ACTIONS-001
+title: "SBOM generation (anchore/sbom-action, CycloneDX, or equivalent) must be present in CI"
+binding_ids: [BIND-SUP-004-GITHUB-ACTIONS]
+engine: opa
+file_path: "07-policies/opa/SUP/POL-SUP-004-GITHUB-ACTIONS-001.rego"
+pass_criteria: "At least one recognised SBOM-generation action found in a workflow."
+fail_criteria: "No SBOM generation action found in any workflow."
+evidence_type: github-actions-workflow
+severity: high
+introduced_date: "2026-07-10"
+status: active

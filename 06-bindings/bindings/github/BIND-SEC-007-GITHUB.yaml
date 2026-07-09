@@ -1,0 +1,14 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SEC-007-GITHUB
+control_id: SEC-007
+technology_context: github
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Open Dependabot or GHAS alerts must not exceed SLA timelines:
+  Critical ≤7 days, High ≤30 days, Medium ≤90 days. Age is measured from
+  the alert creation date to the current date.
+observable_artifact: "GitHub Dependabot/GHAS alert list with severity, state, and age_days."
+policy_check_ids:
+  - POL-SEC-007-GITHUB-001

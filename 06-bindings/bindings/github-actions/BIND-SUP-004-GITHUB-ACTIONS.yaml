@@ -1,0 +1,15 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SUP-004-GITHUB-ACTIONS
+control_id: SUP-004
+technology_context: github-actions
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  At least one GitHub Actions workflow must include a recognised SBOM-generation
+  action: anchore/sbom-action, advanced-security/sbom-generator-action, a CycloneDX
+  toolkit action, or equivalent. The SBOM step should run after the build step
+  in a release or build workflow.
+observable_artifact: "GitHub Actions workflow files parsed for SBOM generation action references."
+policy_check_ids:
+  - POL-SUP-004-GITHUB-ACTIONS-001

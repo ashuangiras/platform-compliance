@@ -1,0 +1,68 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AUD-001
+title: GitHub audit log must be accessible and retained for at least 90 days
+domain: AUD
+type: detective
+priority: P2
+severity: medium
+
+statement: >
+  The GitHub account or organization that owns governed repositories MUST have
+  audit logging enabled with a minimum retention period of 90 days. Audit log
+  entries must be accessible to the platform team for incident investigation.
+  For GitHub Enterprise: audit log streaming to an external SIEM is required
+  for the full retention period.
+
+rationale: >
+  Audit logs are the forensic record of who did what and when to the platform.
+  Without audit logs, it is impossible to investigate security incidents (who
+  pushed a commit, who changed branch protection, who accessed secrets, who
+  modified CI/CD pipelines). A 90-day retention window covers the typical
+  mean-time-to-detect for supply chain compromises, which is often weeks.
+  Audit logs are required by most compliance frameworks (SOC 2, ISO 27001,
+  NIST CSF) as evidence of change control.
+
+mapped_standards:
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 8 — Audit Log Management: Safeguard 8.2 — Collect audit logs; Safeguard 8.3 — Ensure adequate audit log storage"
+    mapping_note: >
+      CIS Controls v8.1 Control 8 requires collecting and retaining audit logs
+      with sufficient retention for investigation. AUD-001 implements Safeguards
+      8.2 and 8.3 for the GitHub platform audit trail.
+  - source_id: SRC-NIST-CSF-V2
+    clause: "Detect (DE) — Security Continuous Monitoring (DE.CM): Audit logs are reviewed to detect security events"
+    mapping_note: >
+      NIST CSF v2.0 requires continuous monitoring including audit log review.
+      AUD-001 ensures the audit data exists and is retained for the monitoring
+      process to be meaningful.
+
+implementation_expectations: >
+  For GitHub Free/Pro personal accounts:
+  - The account must have "Audit log" accessible at github.com/settings/audit-log
+  - Security log shows authentication events for 90 days (built-in)
+  - Verify the audit log is accessible via API: GET /users/{user}/audit-log
+
+  For GitHub Organizations (recommended migration):
+  - Enable "Audit log" in org settings
+  - Configure audit log streaming to a SIEM or object storage
+  - Retention: minimum 90 days in the streaming destination
+
+  Note: Full audit log streaming requires GitHub Enterprise. For GitHub Free/Pro,
+  the built-in 90-day security log is the minimum acceptable evidence.
+
+evidence_required:
+  - type: github-audit-log
+    description: >
+      Confirmation that the GitHub audit log is accessible and contains recent
+      entries. The number of log entries and retention status are evidence.
+    format: json
+
+automation_status: partially-automated
+assessment_cadence: continuous
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - continuous_audit

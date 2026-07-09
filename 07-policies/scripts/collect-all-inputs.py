@@ -138,6 +138,74 @@ def main():
             data = {"repository": {"name": repo_name}, "workflow_files": [], "action_references": []}
         (out / "actions-info.json").write_text(json.dumps(data))
 
+    # ── ACC-001: Account MFA / security settings (GitHub context) ────────────
+    # Fetch account or org 2FA status using the authenticated token
+    user_data = run_gh("user") or {}
+    owner = repo.split("/")[0] if "/" in repo else repo_name
+    # Try org first, fall back to user account
+    org_data = run_gh(f"orgs/{owner}") or {}
+    two_factor_required = org_data.get("two_factor_requirement_enabled")
+    two_factor_enabled = user_data.get("two_factor_authentication")
+    (out / "acc-security.json").write_text(json.dumps({
+        "repository": {"name": repo_name},
+        "account": {
+            "login": owner,
+            "is_org": bool(org_data.get("login")),
+            "two_factor_authentication": two_factor_enabled,
+            "two_factor_requirement_enabled": two_factor_required,
+        }
+    }))
+
+    # ── SEC-007: Vulnerability SLA check ─────────────────────────────────────
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    dependabot_alerts = run_gh(f"repos/{repo}/dependabot/alerts?state=open&per_page=100") or []
+    sla_violations = []
+    alerts_with_age = []
+    for alert in (dependabot_alerts if isinstance(dependabot_alerts, list) else []):
+        sev = (alert.get("security_advisory") or {}).get("severity", "").lower()
+        created_str = alert.get("created_at", "")
+        try:
+            created = datetime.fromisoformat(created_str.replace("Z", "+00:00"))
+            age_days = (now - created).days
+        except Exception:
+            age_days = 0
+        sla_map = {"critical": 7, "high": 30, "medium": 90}
+        sla_days = sla_map.get(sev, 365)
+        breached = age_days > sla_days
+        alerts_with_age.append({
+            "number": alert.get("number"),
+            "severity": sev,
+            "package": (alert.get("dependency") or {}).get("package", {}).get("name", "unknown"),
+            "created_at": created_str,
+            "age_days": age_days,
+            "sla_days": sla_days,
+            "sla_breached": breached,
+            "state": alert.get("state", "open"),
+        })
+        if breached:
+            sla_violations.append(f"{sev}/{(alert.get('dependency') or {}).get('package', {}).get('name', '?')} ({age_days}d > {sla_days}d SLA)")
+    (out / "sec-vuln-sla.json").write_text(json.dumps({
+        "repository": {"name": repo_name},
+        "evaluated_at": now.isoformat(),
+        "open_alerts": alerts_with_age,
+        "sla_violations": sla_violations,
+        "sla_breach_count": len(sla_violations),
+    }))
+
+    # ── AUD-001: Audit log accessibility check ────────────────────────────────
+    # Try to access audit log entries (requires appropriate permissions)
+    audit_entries = run_gh(f"users/{owner}/audit-log?per_page=1&phrase=action:repo") or []
+    audit_accessible = isinstance(audit_entries, list)
+    (out / "aud-security.json").write_text(json.dumps({
+        "repository": {"name": repo_name},
+        "audit_log": {
+            "accessible": audit_accessible,
+            "recent_entry_count": len(audit_entries) if audit_accessible else 0,
+            "owner": owner,
+        }
+    }))
+
     print(f"Inputs written to {out}/")
     for f in sorted(out.iterdir()):
         print(f"  {f.name}")

@@ -1,0 +1,11 @@
+id: POL-SEC-007-GITHUB-001
+title: "Open vulnerability alerts must be within SLA timelines (Critical ≤7d, High ≤30d, Medium ≤90d)"
+binding_ids: [BIND-SEC-007-GITHUB]
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-007-GITHUB-001.rego"
+pass_criteria: "No open Dependabot alerts exceed their SLA timeline."
+fail_criteria: "One or more alerts exceed the SLA: Critical >7d, High >30d, or Medium >90d."
+evidence_type: github-security-alerts
+severity: high
+introduced_date: "2026-07-10"
+status: active
