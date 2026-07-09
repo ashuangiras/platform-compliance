@@ -81,8 +81,8 @@ if workflows_dir.exists():
             })
 
         # ── Parse top-level permissions block (SEC-004) ────────────────────
-        import yaml as _yaml
         try:
+            import yaml as _yaml
             wf_data = _yaml.safe_load(content) or {}
         except Exception:
             wf_data = {}
