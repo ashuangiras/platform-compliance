@@ -469,6 +469,6 @@ phases:
     - PC-0207
   - id: PC-0213
     title: Cut v1.2.0 tag — trigger release.yml bundle packaging
-    status: not_started
+    status: done
     depends_on:
     - PC-0212
