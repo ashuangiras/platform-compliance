@@ -61,7 +61,7 @@ The date directory uses ISO 8601 format: `YYYY-MM-DD`.
 
 No separate index file is maintained. Evidence records are queryable by:
 
-1. **Path traversal**: `08-evidence/collected/angirasa_risk/{repo}/{date}/*.yaml`
+1. **Path traversal**: `08-evidence/collected/ashuangiras/{repo}/{date}/*.yaml`
 2. **Filename parsing**: Extract `sha8` and `control-id` from any filename
 3. **YAML field queries**: Load records and filter on `control_id`, `result`, `commit_sha`, `evaluated_at`
 
@@ -103,7 +103,7 @@ Direct commits to `collected/` without a PR are blocked by SRC-001/SRC-002 branc
 `platform-compliance` collects evidence for its own self-governance. Its evidence is stored at:
 
 ```
-08-evidence/collected/angirasa_risk/platform-compliance/
+08-evidence/collected/ashuangiras/platform-compliance/
 ```
 
 This is the first evidence ledger populated in the system, and serves as the working example for all downstream repositories.

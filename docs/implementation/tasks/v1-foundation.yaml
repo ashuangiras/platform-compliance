@@ -281,7 +281,7 @@ phases:
     title: Write .compliance-manifest.yaml for platform-compliance
     status: done
   - id: PC-0079
-    title: Resolve angirasa_risk placeholder in all files
+    title: Resolve ashuangiras placeholder in all files
     status: done
     note: Needs the actual GitHub org name to be confirmed
 - id: phase-12

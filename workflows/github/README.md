@@ -79,7 +79,7 @@ on:
 
 jobs:
   merge-gate:
-    uses: angirasa_risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+    uses: ashuangiras/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
     with:
       gate: merge_gate
       profile-id: PROF-PLATFORM-V1
@@ -92,7 +92,7 @@ For release gating, add a separate job triggered on tag push:
 
 ```yaml
   release-gate:
-    uses: angirasa_risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+    uses: ashuangiras/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
     with:
       gate: release_gate
       profile-id: PROF-PLATFORM-V1

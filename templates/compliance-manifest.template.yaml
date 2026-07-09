@@ -16,7 +16,7 @@ repository:
   name: "your-repo-name"
 
   # Full HTTPS URL to the repository
-  url: "https://github.com/angirasa_risk/your-repo-name"
+  url: "https://github.com/ashuangiras/your-repo-name"
 
   # Repository type — choose one from 02-taxonomy/repository-types.yaml:
   #   terraform-module   A reusable Terraform module (no backend, no apply)

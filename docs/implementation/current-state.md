@@ -74,7 +74,7 @@ Running `check-jsonschema` against all major artifacts:
 | REL domain controls | Domain defined in taxonomy; no controls |
 | `docs/onboarding.md` | Referenced in roadmap; not created |
 | `docs/authoring-controls.md` | Referenced in roadmap; not created |
-| `angirasa_risk` placeholder resolution | GitHub org not yet set anywhere |
+| `ashuangiras` placeholder resolution | GitHub org not yet set anywhere |
 | `08-evidence/collected/` content | Directory exists; no real evidence |
 | Waiver records | None granted; no real waivers exist |
 | Second platform repository | ADR-0003 holds all downstream repos until v1.0.0 gate |

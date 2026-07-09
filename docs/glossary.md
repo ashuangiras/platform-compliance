@@ -83,7 +83,7 @@ The condition where actual infrastructure or configuration state has diverged fr
 A timestamped, structured, immutable record of a single policy check evaluation against a specific resource at a specific commit. The atomic unit of compliance proof. Schema: `schemas/evidence.schema.json`.
 
 **Evidence ledger**  
-The organised collection of all evidence records. Structured as `08-evidence/collected/angirasa_risk/{repo}/{date}/`.
+The organised collection of all evidence records. Structured as `08-evidence/collected/ashuangiras/{repo}/{date}/`.
 
 **Enforcement level**  
 How strongly a gate enforces a control. One of: `block` (failure prevents the gated action), `warn` (failure generates a warning but does not block), `notify` (failure generates an alert). Set per-gate in the profile or gate criteria files.

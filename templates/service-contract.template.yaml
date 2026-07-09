@@ -11,7 +11,7 @@ service_name: "My Service"
 # Service type — from 02-taxonomy/service-types.yaml (or equivalent)
 service_type: "stateless"   # stateless | stateful | gateway | worker | batch
 
-repository_ref: "https://github.com/angirasa_risk/my-service"
+repository_ref: "https://github.com/ashuangiras/my-service"
 
 declared_profiles:
   - PROF-SERVICE-V1   # update once PROF-SERVICE-V1 is created (Phase B)
@@ -27,7 +27,7 @@ last_updated: "2026-07-09"
 #   frequency: "daily"
 #   retention: "30 days"
 #   storage_location: "Description of backup storage (no credentials)"
-#   restoration_procedure: "https://github.com/angirasa_risk/my-service/blob/main/docs/restore.md"
+#   restoration_procedure: "https://github.com/ashuangiras/my-service/blob/main/docs/restore.md"
 #   last_restore_test_date: null   # set to date after first test
 #   rto: "4 hours"
 #   rpo: "24 hours"
@@ -55,7 +55,7 @@ health_check:
 
 # ─── OPTIONAL FIELDS ──────────────────────────────────────────────────────────
 
-# api_contract_ref: "https://github.com/angirasa_risk/my-service/blob/main/openapi.yaml"
+# api_contract_ref: "https://github.com/ashuangiras/my-service/blob/main/openapi.yaml"
 
 # dependencies:
 #   - service_id: "SVC-OTHER-SERVICE"

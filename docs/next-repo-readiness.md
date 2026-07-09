@@ -83,7 +83,7 @@ Conditions 3, 5, 6, 7 are fully satisfied locally. Conditions 1, 2, 4 require th
 
 **The next platform repository may be created after:**
 
-1. This repository is pushed to GitHub at `angirasa_risk/platform-compliance`
+1. This repository is pushed to GitHub at `ashuangiras/platform-compliance`
 2. Branch protection is configured per `docs/consuming-compliance.md §3`
 3. The CI workflow completes successfully on a PR to main
 4. The `v1.0.0` tag is pushed

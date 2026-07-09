@@ -193,7 +193,7 @@ phases:
     depends_on:
     - PC-0124
   - id: PC-0128
-    title: Resolve angirasa_risk placeholder in all files with actual GitHub org
+    title: Resolve ashuangiras placeholder in all files with actual GitHub org
     status: not-started
   - id: PC-0129
     title: Write remaining templates (service-contract, control, change-record, etc.)
