@@ -51,7 +51,7 @@ phases:
     status: done
   - id: PC-0228
     title: Full CI validation of P1; merge; cut v1.3.0
-    status: not_started
+    status: done
 - id: phase-P2-go-service
   title: 'P2 — Go service: ARC, API, OBS-004, SRC-005, SUP-005, PROF-GO-SERVICE-V1'
   horizon: v1.4.0

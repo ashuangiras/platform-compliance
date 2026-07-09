@@ -153,37 +153,97 @@ PROF-PLATFORM-V1 passes profile schema validation.
 
 *No unreleased changes at this time.*
 
+---
+
+## [v1.3.0] — 2026-07-10
+
+### Summary
+
+First increment of ADR-0016 (application & code quality governance). Extends the platform
+from infrastructure-only enforcement to governing application source code, beginning with
+Go. Adds application-quality (QUA) and testing (TST) control domains and the data collection
+needed to evaluate them in CI. Go controls are context-gated and therefore report
+`not_applicable` on `platform-compliance` itself (not a Go repository).
+
+Change Records: CHG-20260710-004 (ADR-0016 ratification), CHG-20260710-005 (Phase 1).
+
 ### Added
 
-- `schemas/binding.schema.json`: Implementation binding schema
-- `schemas/policy-check.schema.json`: Policy check metadata schema
-- `schemas/service-contract.schema.json`: Service contract schema with health check, backup, and ingress policy blocks
-- `schemas/change-record.schema.json`: Change record schema (CHG-001 artifact)
-- `schemas/release-record.schema.json`: Release record schema (CHG-002 artifact)
-- `schemas/incident-record.schema.json`: Incident record schema (INC-001 artifact)
-- `schemas/adr.schema.json`: ADR metadata schema
-- `schemas/assessment.schema.json`: Assessment report schema with 5-result model
-- `schemas/evidence.schema.json`: Commit-bound evidence record schema with artifact_hash
-- `schemas/mapping.schema.json`: Standard-to-control mapping schema
-- `schemas/waiver.schema.json`: Waiver/exception schema
-- `schemas/repository-compliance.schema.json`: Repository compliance manifest schema
-- `05-mappings/mappings/`: 9 mapping files covering all active controls across all registered standards
-- `.compliance-manifest.yaml`: Self-compliance declaration (platform-compliance governs itself)
-- `templates/compliance-manifest.template.yaml`: Annotated template for new repositories
-- `08-evidence/evidence-model.md`: Evidence model specification
-- `08-evidence/evidence-types.yaml`: 28 named evidence types covering all 23 controls
-- `09-assessments/assessment-model.md`: Assessment model with evidence-to-result mapping
-- `09-assessments/waiver-model.md`: Waiver lifecycle and approval process
-- `07-policies/opa/README.md`: OPA engine guide with package naming, input format, output contract
-- `workflows/github/reusable-compliance.yml`: 7-job skeleton reusable compliance workflow
-- `workflows/github/README.md`: Consuming repository usage guide
-- `docs/commit-compliance-flow.md`: Full lifecycle diagram from local commit to deployment gate
-- `decisions/ADR-0001-platform-compliance-first.md`: Compliance-first architectural decision
-- `decisions/ADR-0002-github-primary-remote.md`: GitHub as initial root of trust
-- `decisions/ADR-0003-no-implementation-before-controls.md`: No second repo before v1.0.0 gate
-- All directory README stubs (01-sources through tools/)
+**Foundations:**
+- 4 technology contexts: `go`, `node`, `python`, `frontend` (02-taxonomy/technology-contexts.yaml)
+- 4 control domains: QUA, TST, API, ARC (02-taxonomy/control-domains.yaml)
+- `frontend-app` repository type (02-taxonomy/repository-types.yaml)
+- Standards `SRC-GO-STYLE`, `SRC-TESTING-PRACTICES` (01-sources/registry/)
 
-### Cross-checks passed (PC-0014, PC-0015)
+**Go code-quality controls (all block):**
+- QUA-001: `golangci-lint` must pass
+- QUA-002: `gofmt` formatting must pass
+- QUA-003: `go build ./...` must succeed
+- QUA-004: `go vet ./...` must pass
 
-- All control IDs referenced in `PROF-PLATFORM-V1` exist in `03-catalogs/` (CAT-001 and REL-001 are in `not_applicable` section — expected)
-- All source IDs cited in control `mapped_standards` fields exist in `01-sources/registry/`
+**Go testing controls:**
+- TST-001: tests exist and `go test` passes (block)
+- TST-002: coverage ≥ 70% (warn now; promotes to block at v2.0.0 per ADR-0016)
+- TST-003: integration/e2e test present for services (warn, service-scoped)
+
+**Enforcement:**
+- `07-policies/scripts/collect-go-info.sh`: detects `go.mod`, runs golangci-lint / gofmt /
+  go build / go vet / go test with coverage, detects integration tests; defensively reports
+  `unavailable` when the toolchain is absent
+- 7 OPA/Rego policies + 7 policy-check manifests (07-policies/opa/QUA, /TST)
+- 7 implementation bindings (06-bindings/bindings/go/)
+- `collect-all-inputs.py` wires the `go` context to `go-info.json`
+- `run-all-policies.py`: +7 context-gated POLICY_MAP entries
+
+### Changed
+
+- `schemas/control.schema.json`, `schemas/mapping-collection.schema.json`: domain enums += QUA, TST, API, ARC
+- `schemas/binding.schema.json`, `schemas/repository-compliance.schema.json`: technology_context enums += go, node, python, frontend
+- `decisions/ADR-0016-application-quality-governance.md`: accepted
+
+---
+
+## [v1.2.0] — 2026-07-10
+
+### Summary
+
+Operationalizes the compliance backbone in CI and completes a three-tier security hardening
+program. Phase A wires the reusable workflow end-to-end (input collection, policy bundle,
+evidence, assessment, gates); Groups 1–4 add the profile layer and release packaging; the
+security tiers add 17 new controls with policies and profile integration.
+
+### Added
+
+**Phase A operationalization (PC-0108–0111):**
+- Input-collection scripts (`07-policies/scripts/`) and helpers feeding the OPA engine
+- 8 remaining Phase-A OPA policies; workflow TODO placeholders replaced with real steps
+- Bootstrap waiver for single-developer merge process
+- Policy bundle packaging (`policies.tar.gz` + SHA-256 + SBOM) via the release workflow
+
+**Profile layer (PC-0124–0127):**
+- PROF-BASE, PROF-TERRAFORM-MODULE-V1, PROF-TERRAFORM-ROOT-V1, PROF-SERVICE-V1
+- ADR-0009 / ADR-0010 ratified (bundle distribution + profile inheritance)
+
+**Tier 1 security hardening (PC-0165–0187):**
+- 6 controls + 5 standards (CIS Controls v8, OWASP SAMM v2, NTIA SBOM, GitHub Security Hardening, NIST CSF v2)
+- CodeQL SAST workflow (SEC-005), upgraded to `codeql-action` v4
+
+**Tier 2 security hardening (PC-0188–0197):**
+- SUP-004, ACC-001 (2FA), SEC-007, IAC-005, AUD-001 (audit log)
+
+**Tier 3 security hardening (PC-0198–0212):**
+- Dependabot vulnerability SLA, license governance (LIC-001), and profile integration of all hardening controls
+- MIT `LICENSE` file added (closed the gap caught by LIC-001)
+
+### Changed
+
+- Migrated repository to the `ashuangiras` GitHub account; repository made public to enable branch protection
+- `self-compliance.yml`: PRs test their own branch policies (`github.head_ref`) to resolve the bootstrap chicken-and-egg
+- Domain enums extended with ACC, AUD, LIC
+
+### Fixed
+
+- Multiple CI pipeline failures: `/tmp/inputs` creation, gitleaks OS casing, `PLATFORM_ADMIN_TOKEN` for admin API calls, `secrets: inherit`, cross-job artifact passing, `pull-requests: write` permission
+- OPA `eval_conflict_error` in SEC-004/005, IAC-004, SEC-006, ACC-001 (partial-set + mutual-exclusivity refactors)
+- PyYAML parsing YAML `on:` key as Python boolean in reusable-workflow detection
+- Reusable-workflow `startup_failure` from a top-level `permissions` block
