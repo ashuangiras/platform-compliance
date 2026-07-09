@@ -1,0 +1,24 @@
+$schema: ../../schemas/control.schema.json
+id: SRC-001
+title: Default branch must be branch-protected
+domain: SRC
+type: preventive
+priority: P1
+severity: critical
+statement: The default branch of every governed repository MUST have branch protection
+  enabled with at least one required reviewer.
+rationale: Without branch protection, any developer with write access can push directly
+  to the default branch, bypassing all review and policy checks.
+mapped_standards:
+- source_id: SRC-OPENSSF-SCORECARD-V2
+  clause: Branch-Protection check
+  mapping_note: Scorecard evaluates branch protection as a scored check.
+evidence_required:
+- type: branch-protection
+  description: GitHub branch protection API response for the default branch.
+  format: json
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: '2026-07-01'

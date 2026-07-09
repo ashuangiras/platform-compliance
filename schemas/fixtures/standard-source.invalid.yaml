@@ -1,0 +1,13 @@
+$schema: ../../schemas/standard-source.schema.json
+id: OPENSSF-SCORECARD
+name: OpenSSF Scorecard
+version: v2
+publisher: OpenSSF
+source_url: https://github.com/ossf/scorecard
+retrieved_at: '2026-07-01'
+registered_date: '2026-07-01'
+registered_by: platform-team
+role: normative
+applies_to:
+- all
+status: active

@@ -29,7 +29,7 @@ mapped_standards:
       configured on the repository. SEC-001 is the control; SEC-002 is the
       detection mechanism. Both are required.
   - source_id: SRC-CIS-DOCKER-V1-6
-    clause: "[PLACEHOLDER: CIS Docker 4.x — environment variable handling; verify section]"
+    clause: "4.10 Ensure secrets are not stored in Dockerfiles — ENV instructions must not contain passwords, API keys, or tokens."
     mapping_note: >
       CIS Docker Benchmark addresses secrets passed as environment variables
       and secrets stored in images. SEC-001 covers the repository layer;

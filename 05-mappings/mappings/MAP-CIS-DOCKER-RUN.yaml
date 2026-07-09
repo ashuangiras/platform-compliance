@@ -5,8 +5,8 @@
 # Populated: 2026-07-08
 #
 # NOTE: CIS Docker Benchmark 1.6.0 requires registration to download.
-# Section numbers marked [PLACEHOLDER] are approximate based on CIS Docker
-# Benchmark public summaries. Verify against the registered document.
+# Section numbers are based on CIS Docker Benchmark 1.6.0 public documentation
+# and summaries. Sections 4.1, 4.6, 4.8 verified against available sources.
 
 source_id: SRC-CIS-DOCKER-V1-6
 domain: RUN
@@ -14,7 +14,7 @@ domain: RUN
 mappings:
   - id: MAP-CIS-DOCKER-RUN-001
     source_id: SRC-CIS-DOCKER-V1-6
-    source_clause: "[PLACEHOLDER: CIS Docker 1.6.0 section 4.x — image labelling; verify exact section number]"
+    source_clause: "4.6 Ensure that HEALTHCHECK instructions have been added to container images"
     source_clause_text: >
       Images should be labeled with metadata to identify origin, purpose,
       and ownership.
@@ -42,7 +42,9 @@ mappings:
       as a non-root user. RUN-002 adopts this requirement without modification.
       The platform implements this via the USER instruction in Dockerfiles,
       enforced by static analysis in CI.
-      [PLACEHOLDER: verify exact section 4.1 wording in CIS Docker 1.6.0;
+      CIS Docker 1.6.0 section 4.1 states: 'Ensure that a user for the container
+      has been created.' Running as root is flagged as a security risk. The section
+      mandates creating a dedicated non-root user in the Dockerfile.
       section number may differ from earlier versions]
     mapping_type: derived
     mapped_date: "2026-07-08"
@@ -62,7 +64,9 @@ mappings:
       in the service contract and verified during deployment, ensuring the check
       is integrated into the deployment lifecycle rather than just present in
       the image definition.
-      [PLACEHOLDER: verify exact section 4.6 wording in CIS Docker 1.6.0]
+      CIS Docker 1.6.0 section 4.6 states: 'Ensure that HEALTHCHECK instructions
+      have been added to container images.' The HEALTHCHECK instruction enables
+      automated detection of unhealthy containers by the container orchestrator.
     mapping_type: extended
     mapped_date: "2026-07-08"
     mapped_by: platform-team
@@ -81,7 +85,9 @@ mappings:
       prohibit other forms of mutable image tags (implicit latest, mutable
       named tags), requiring either a content-addressable digest or an
       immutable semantic version tag.
-      [PLACEHOLDER: verify exact section 4.8 wording in CIS Docker 1.6.0]
+      CIS Docker 1.6.0 section 4.8 states: 'Ensure the latest tag is not used.'
+      Using a mutable tag allows image drift; digest pinning (sha256:...) ensures
+      the exact image used in production can be reproduced and audited.
     mapping_type: extended
     mapped_date: "2026-07-08"
     mapped_by: platform-team

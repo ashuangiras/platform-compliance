@@ -26,8 +26,9 @@ mapped_standards:
       Scorecard's Code-Review check verifies that recent commits to the default
       branch were made via pull request and received review. SRC-002 directly
       satisfies this check.
-      [PLACEHOLDER: verify exact scoring criteria for Code-Review check in
-      Scorecard v2 documentation]
+      Scoring: 10/10 when all human commits in last 30 are reviewed; 7 pts deducted
+      if any human commit is unreviewed. Bot-only approvals do not count.
+      Ref: github.com/ossf/scorecard/blob/main/docs/checks.md#code-review
   - source_id: SRC-OPENGITOPS-V1
     clause: "Principle 2 — Versioned and Immutable"
     mapping_note: >

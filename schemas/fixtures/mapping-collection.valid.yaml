@@ -1,0 +1,12 @@
+$schema: ../../schemas/mapping-collection.schema.json
+source_id: SRC-OPENSSF-SCORECARD-V2
+domain: SRC
+mappings:
+- id: MAP-OPENSSF-SCORECARD-V2-SRC-001
+  source_clause: Branch-Protection check
+  control_id: SRC-001
+  rationale: Direct implementation of Scorecard branch protection check.
+  mapping_type: derived
+  mapped_date: '2026-07-01'
+  mapped_by: platform-team
+  source_id: SRC-OPENSSF-SCORECARD-V2

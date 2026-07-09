@@ -1,0 +1,33 @@
+$schema: "../../schemas/release-record.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Release ID — the exact semantic version tag
+id: "v1.0.0"
+
+schema_version: "1.0.0"
+release_date: "2026-07-09"
+
+# Change record IDs included in this release
+# Format: CHG-{YYYYMMDD}-{NNN}
+change_record_ids:
+  - "CHG-20260709-001"
+
+# Assessment report ID that approved this release (release gate must pass)
+# Format: ASSESS-{OWNER}-{REPO}-{YYYYMMDD}-{NNN}
+gate_assessment_id: "ASSESS-ASHUANGIRAS-PLATFORM-COMPLIANCE-20260709-001"
+
+# Human-readable summary of what changed in this release
+release_summary: >
+  [Describe the scope of this release: what controls were added or changed,
+  what policies were updated, what profiles were modified.]
+
+# Whether this release breaks compatibility with consuming repositories
+breaking_changes: false
+
+# Required when breaking_changes: true
+# migration_guide: >
+#   [Step-by-step instructions for what downstream repositories must do
+#   to continue passing the compliance gate after upgrading to this version.]
+
+released_by: "platform-team"

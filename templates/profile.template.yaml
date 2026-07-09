@@ -1,0 +1,96 @@
+$schema: "../../schemas/profile.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Profile ID — format: PROF-{CONTEXT}-{VARIANT}
+# Examples: PROF-BASE, PROF-TERRAFORM-MODULE-V1, PROF-SERVICE-V1
+id: "PROF-MY-CONTEXT-V1"
+
+name: "My Context Profile v1"
+description: >
+  [What class of repository or service this profile governs, and what
+  risk posture it targets. Min 10 characters.]
+
+version: "1.0.0"
+
+# Optional: inherit all controls from a parent profile
+# inherits: "PROF-BASE"
+
+# What repository/service types this profile applies to
+# Values from 02-taxonomy/repository-types.yaml
+applicable_to:
+  - "my-repo-type"
+
+# ─── CONTROL CATEGORIES ────────────────────────────────────────────────────────
+# mandatory       — must pass at every gate; failures block merging
+# automated_required — must be automated before release gate
+# manual_initially — human attestation accepted until automated
+# deferred        — planned but not yet enforced
+# not_applicable  — explicitly excluded with rationale
+
+categories:
+  mandatory:
+    description: "Controls that block all gates on failure."
+    controls:
+      - id: "SRC-001"
+      - id: "SRC-002"
+      - id: "SEC-001"
+
+  manual_initially:
+    description: "Controls accepted via human attestation until tooling exists."
+    controls:
+      - id: "BAK-001"
+
+  deferred:
+    description: "Controls planned but not yet enforced in this profile version."
+    controls:
+      - id: "REL-001"
+
+  not_applicable:
+    description: "Controls explicitly excluded from this profile."
+    controls:
+      - id: "RUN-001"
+        rationale: "This profile covers non-containerised repositories."
+
+# ─── GATE CONFIGURATION ────────────────────────────────────────────────────────
+# Define which control categories block each gate.
+
+gates:
+  merge_gate:
+    description: "Controls that must pass before any PR can merge."
+    required_controls:
+      - id: "SRC-001"
+        enforcement: "block"
+      - id: "SRC-002"
+        enforcement: "block"
+      - id: "SEC-001"
+        enforcement: "block"
+      - id: "BAK-001"
+        enforcement: "warn"    # manual_initially: warn until automated
+
+  release_gate:
+    description: "Controls that must pass before a release tag is created."
+    required_controls:
+      - id: "SRC-001"
+        enforcement: "block"
+      - id: "BAK-001"
+        enforcement: "block"   # mandatory at release
+
+  deployment_gate:
+    description: "Controls that must pass before a deployment proceeds."
+    required_controls:
+      - id: "SRC-001"
+        enforcement: "block"
+
+  continuous_audit:
+    description: "Controls evaluated on a continuous schedule."
+    required_controls:
+      - id: "SEC-001"
+        enforcement: "notify"
+
+# ─── METADATA ─────────────────────────────────────────────────────────────────
+
+status: "active"    # active | draft | deprecated | superseded
+introduced_date: "2026-07-09"
+# superseded_by: "PROF-MY-CONTEXT-V2"
+# deprecation_date: null

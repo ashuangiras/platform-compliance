@@ -25,10 +25,13 @@ mapped_standards:
       Scorecard's Signed-Releases check evaluates whether releases are signed.
       SRC-004 is broader (all commits, not just release artifacts) but the
       provenance rationale is identical.
-      [PLACEHOLDER: verify whether Scorecard has a per-commit signing check
+      Scorecard's Signed-Releases check (not per-commit) evaluates whether release
+      artifacts are cryptographically signed (*.asc, *.sig, *.intoto.jsonl). SLSA
+      provenance file scores 10/10. Per-commit signing is not a Scorecard check.
+      Ref: github.com/ossf/scorecard/blob/main/docs/checks.md#signed-releases
       distinct from Signed-Releases; SRC-004 may need a separate provenance source]
   - source_id: SRC-OPENSSF-SLSA-V1
-    clause: "[PLACEHOLDER: SLSA v1.0 Build L2+ requirement for signed provenance]"
+    clause: "Build Platform — Provenance is Authentic (Build L2): provenance MUST be tied to the build platform via a digital signature accessible only to the build platform."
     mapping_note: >
       SLSA's provenance requirements at Build L2+ include signing requirements.
       SRC-004 is a complementary control that addresses Git commit signing

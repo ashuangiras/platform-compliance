@@ -1,0 +1,12 @@
+$schema: ../../schemas/binding.schema.json
+id: BIND-SRC-001-GITHUB
+control_id: SRC-001
+technology_context: github
+specification: The repository default branch MUST have required_pull_request_reviews.required_approving_review_count
+  >= 1.
+observable_artifact: 'GitHub branch protection API: GET /repos/{owner}/{repo}/branches/{branch}/protection'
+policy_check_ids:
+- POL-SRC-001-GITHUB-001
+introduced_date: '2026-07-01'
+introduced_by: platform-team
+status: active

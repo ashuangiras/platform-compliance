@@ -23,12 +23,12 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-CIS-DOCKER-V1-6
-    clause: "[PLACEHOLDER: CIS Docker 5.x — container network configuration; verify section]"
+    clause: "5.8 Ensure that only needed ports are open on the container — exposed ports must be intentional and documented."
     mapping_note: >
       CIS Docker Benchmark addresses network configuration and port binding
       for containers.
   - source_id: SRC-AWS-WAF-2024
-    clause: "[PLACEHOLDER: AWS WAF SEC 5 — How do you protect your network resources?]"
+    clause: "SEC 05 — How do you protect your network resources? Best practice: control traffic at all layers using security groups, NACLs, and firewall rules."
     mapping_note: >
       WAF Security Pillar's network protection practices require explicit
       definition of allowed network access paths.

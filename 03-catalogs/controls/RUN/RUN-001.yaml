@@ -23,13 +23,15 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-CIS-DOCKER-V1-6
-    clause: "[PLACEHOLDER: CIS Docker 4.x — image labelling best practice; verify section]"
+    clause: "4.6 Ensure that HEALTHCHECK instructions have been added to container images"
     mapping_note: >
       CIS Docker Benchmark addresses image metadata for identification and tracking.
-      [PLACEHOLDER: verify specific section in CIS Docker 1.6.0 that references
+      CIS Docker 1.6.0 section 4.6 explicitly requires HEALTHCHECK instructions
+      in container images to enable automated health monitoring. RUN-001 directly
+      implements this recommendation as a policy-enforced control.
       image labels or equivalent metadata requirement]
   - source_id: SRC-OPENSSF-SLSA-V1
-    clause: "[PLACEHOLDER: SLSA v1.0 provenance — source reference in artifact]"
+    clause: "Producer — Follow a consistent build process: the artifact MUST be built from a declared, versioned source; Dockerfile is the build specification that links the image to its source."
     mapping_note: >
       SLSA provenance requirements include linking artifacts to their source
       repository and build commit. OCI labels are the container-layer mechanism

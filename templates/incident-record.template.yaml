@@ -1,0 +1,61 @@
+$schema: "../../schemas/incident-record.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Incident ID — format: INC-{YYYYMMDD}-{NNN}
+id: "INC-20260709-001"
+
+schema_version: "1.0.0"
+
+title: "[Brief title: what control failed, where, and what was the impact]"
+
+# Severity — only 'critical' or 'high' incidents require a formal record
+severity: "high"    # critical | high
+
+description: >
+  [Full description of the compliance incident. What was the failure?
+  Which system was affected? When was it discovered?
+  What was the business or security impact?]
+
+# Control IDs violated during this incident
+affected_control_ids:
+  - "XXX-001"
+
+# Repositories, services, or infrastructure components affected
+# type: repository | service | environment | infrastructure
+affected_resources:
+  - type: "repository"
+    identifier: "ashuangiras/my-service"
+
+# ISO 8601 timestamp when the incident was discovered
+discovered_at: "2026-07-09T00:00:00Z"
+
+# ISO 8601 timestamp when the incident was resolved
+# resolved_at: null   # leave null until resolved
+
+# Root cause analysis
+root_cause: >
+  [Why did the compliance failure occur? Trace back to the systemic cause,
+  not just the immediate trigger.]
+
+# What was done to remediate the immediate failure
+remediation: >
+  [Specific steps taken to resolve the incident and restore compliance.
+  Include the PR, change record, or waiver that closed the gap.]
+
+# What will prevent this class of incident from recurring
+recurrence_prevention: >
+  [Describe the systemic fix: policy change, control tightening, tooling
+  improvement, or process change that prevents recurrence.]
+
+# incident status
+status: "open"    # open | resolved | monitoring
+
+# ─── OPTIONAL FIELDS ──────────────────────────────────────────────────────────
+
+# If this incident generated an ADR decision
+# lessons_learned_adr_id: "ADR-0008"
+
+# Change records created as a result of this incident
+# lessons_learned_change_ids:
+#   - "CHG-20260709-002"

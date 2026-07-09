@@ -10,7 +10,7 @@ domain: DOC
 mappings:
   - id: MAP-OPENSSF-SCORECARD-DOC-001
     source_id: SRC-OPENSSF-SCORECARD-V2
-    source_clause: "[PLACEHOLDER: Scorecard v2 — verify the exact check name for README/documentation presence — may be CII-Best-Practices or Maintained check]"
+    source_clause: "CII-Best-Practices check — passing badge requires a README describing the project (https://www.bestpractices.dev/criteria/0)"
     source_clause_text: >
       Determines if the project is maintained and has documentation that
       enables new contributors to understand what the project does.

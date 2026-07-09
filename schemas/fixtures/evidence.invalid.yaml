@@ -1,0 +1,22 @@
+$schema: ../../schemas/evidence.schema.json
+id: not-a-uuid
+schema_version: 1.0.0
+repository:
+  name: platform-compliance
+  url: https://github.com/ashuangiras/platform-compliance
+  type: platform-repo
+commit_sha: abc123
+control_id: SRC-001
+profile_version: 1.0.0
+control_catalog_version: main
+policy_bundle_version: main
+workflow_run_id: '12345678'
+evaluated_at: '2026-07-09T12:00:00Z'
+result: pass
+artifact_hash: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+details:
+  message: ok
+collected_by:
+  tool: platform-compliance
+  version: main
+  workflow_run_id: '12345678'

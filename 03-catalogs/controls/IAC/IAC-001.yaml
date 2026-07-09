@@ -28,11 +28,13 @@ mapped_standards:
       validate in CI prevents syntactically invalid desired-state declarations from
       being stored in the repository.
   - source_id: SRC-AWS-WAF-2024
-    clause: "[PLACEHOLDER: AWS WAF Operational Excellence — OPS practice on code quality]"
+    clause: "OPS 05 — How do you reduce defects, ease remediation, and improve flow into production? Best practice: define and use standards for code quality, including linting and formatting."
     mapping_note: >
       WAF's operational excellence practices emphasise automated quality checks
       as a prerequisite for reliable operations.
-      [PLACEHOLDER: identify specific WAF OPS question or best practice reference]
+      AWS WAF OPS 05 covers reducing defects in code, which includes ensuring
+      infrastructure code is properly validated (terraform fmt/validate). IAC-001
+      enforces code quality by requiring all Terraform to pass format and syntax checks.
 
 implementation_expectations: >
   The CI pipeline (GitHub Actions) must include a job that:

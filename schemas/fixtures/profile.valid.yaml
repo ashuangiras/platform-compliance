@@ -1,0 +1,46 @@
+$schema: ../../schemas/profile.schema.json
+id: PROF-PLATFORM-V1
+name: Platform Repository Profile v1
+description: Compliance profile for the platform-compliance governance root repository.
+version: 1.0.0
+applicable_to:
+- platform-repo
+categories:
+  mandatory:
+    description: Must pass at every gate.
+    controls:
+    - id: SRC-001
+    - id: SRC-002
+  manual_initially:
+    description: Human attestation accepted.
+    controls:
+    - id: BAK-001
+  deferred:
+    description: Planned, not yet enforced.
+    controls:
+    - id: REL-001
+gates:
+  merge_gate:
+    description: Controls for PR merging.
+    required_controls:
+    - id: SRC-001
+      enforcement: block
+    - id: SRC-002
+      enforcement: block
+  release_gate:
+    description: Controls for releases.
+    required_controls:
+    - id: SRC-001
+      enforcement: block
+  deployment_gate:
+    description: Controls for deployments.
+    required_controls:
+    - id: SRC-001
+      enforcement: block
+  continuous_audit:
+    description: Continuously evaluated controls.
+    required_controls:
+    - id: SEC-001
+      enforcement: notify
+introduced_date: '2026-07-01'
+status: active

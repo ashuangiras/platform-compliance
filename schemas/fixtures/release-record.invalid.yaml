@@ -1,0 +1,10 @@
+$schema: ../../schemas/release-record.schema.json
+id: 1.0.0
+schema_version: 1.0.0
+release_date: '2026-07-01'
+change_record_ids:
+- CHG-20260701-001
+gate_assessment_id: ASSESS-ASHUANGIRAS-PLATFORM-COMPLIANCE-20260701-001
+release_summary: Initial release.
+breaking_changes: false
+released_by: platform-team

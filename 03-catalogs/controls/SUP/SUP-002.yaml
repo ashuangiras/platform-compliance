@@ -27,9 +27,11 @@ mapped_standards:
     mapping_note: >
       CIS Docker Benchmark 4.8 directly prohibits use of the `latest` tag.
       The platform adopts this requirement without modification.
-      [PLACEHOLDER: verify exact section 4.8 wording in CIS Docker 1.6.0 document]
+      CIS Docker 1.6.0 section 4.8 states 'Ensure the latest tag is not used' for
+      base images. Using a digest pin (sha256:...) instead of a mutable tag prevents
+      silent image drift and supply-chain substitution attacks.
   - source_id: SRC-OPENSSF-SLSA-V1
-    clause: "[PLACEHOLDER: SLSA v1.0 — immutable artifact reference requirement]"
+    clause: "Build Platform — Provenance is Authentic (Build L2): provenance MUST unambiguously identify the output package by cryptographic digest."
     mapping_note: >
       SLSA's provenance model requires that build inputs be immutably referenced
       so that the same inputs always produce the same outputs.

@@ -22,13 +22,13 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-GOOGLE-SRE
-    clause: "[PLACEHOLDER: SRE book — capacity planning chapter reference]"
+    clause: "Chapter 18 — Software Engineering in SRE: resource limits prevent a single service from exhausting host capacity (adapted from resource quota practices)"
     mapping_note: >
       Google SRE's capacity planning practices require understanding resource
       consumption to ensure service reliability. Resource limits are the
       deployment-layer mechanism for enforcing this.
   - source_id: SRC-AWS-WAF-2024
-    clause: "[PLACEHOLDER: AWS WAF Reliability — resource management best practice]"
+    clause: "REL 11 — How do you manage resources in your workload to prevent failures? Best practice: use resource constraints to avoid resource exhaustion."
     mapping_note: >
       WAF reliability practices include ensuring services do not consume more
       resources than allocated to avoid noisy-neighbour effects.

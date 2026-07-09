@@ -31,15 +31,15 @@ phases:
     status: done
   - id: PC-0009
     title: Research and fill [PLACEHOLDER] markers for Scorecard check IDs
-    status: not-started
+    status: done
     note: Requires reading Scorecard v2 documentation
   - id: PC-0010
     title: Research and fill [PLACEHOLDER] for CIS Docker 1.6.0 section references
-    status: not-started
+    status: done
     note: Requires access to the registered CIS document
   - id: PC-0011
     title: Research and fill [PLACEHOLDER] for SLSA v1.0 requirement IDs
-    status: not-started
+    status: done
     note: Requires reading SLSA v1.0 spec at slsa.dev
 - id: phase-03
   title: Control catalog and compliance profile
@@ -114,7 +114,7 @@ phases:
     status: done
   - id: PC-0033
     title: Create test fixtures (valid + invalid) for all schemas
-    status: in-progress
+    status: done
     note: Evidence fixtures (4) done. 11 other schemas need at least one valid + one
       invalid fixture.
 - id: phase-05

@@ -1,0 +1,36 @@
+$schema: "../../schemas/mapping.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Mapping ID — format: MAP-{SOURCE_SHORT}-{CONTROL_ID}
+# Examples: MAP-OPENSSF-SCORECARD-V2-SRC-001, MAP-CIS-DOCKER-16-RUN-001
+id: "MAP-SRC-CHANGEME-XXX-001"
+
+# Source ID — must match an id in 01-sources/registry/*.yaml
+# Run: grep "^id:" 01-sources/registry/*.yaml
+# Format: SRC-{PUBLISHER}-{STANDARD}-{VERSION} e.g. SRC-OPENSSF-SCORECARD-V2
+source_id: "SRC-PUBLISHER-STANDARD-V1"
+
+# The specific clause, section, or check name from the standard
+source_clause: "Section X.Y — [Exact clause title]"
+
+# Optional: verbatim text of the clause (useful for immutable standards)
+# source_clause_text: >
+#   [Paste the exact normative text from the standard here.]
+
+# Platform control this clause maps to — format: {DOMAIN}-{NNN}
+control_id: "XXX-001"
+
+# Why this standard clause supports or motivates this control
+rationale: >
+  [Explain how the standard clause maps to the control requirement.
+  Be specific about which aspect of the clause this control implements.]
+
+# Relationship type:
+#   derived  — the control directly implements the standard requirement
+#   partial  — the control covers only part of the standard requirement
+#   extended — the control goes beyond the standard requirement
+mapping_type: "derived"
+
+mapped_date: "2026-07-09"
+mapped_by: "platform-team"

@@ -23,7 +23,9 @@ mapped_standards:
     clause: "CII-Best-Practices check — CODEOWNERS"
     mapping_note: >
       OpenSSF Scorecard references CODEOWNERS as a best practice indicator.
-      [PLACEHOLDER: verify whether Scorecard v2 has a dedicated CODEOWNERS
+      Scorecard v2 does not have a standalone CODEOWNERS check. CODEOWNERS is
+      part of Branch-Protection Tier 4 (require code-owner review, 9/10 pts).
+      Ref: github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
       check or whether this is assessed as part of Branch-Protection or a
       separate check. Update clause reference accordingly.]
 

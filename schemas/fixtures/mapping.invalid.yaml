@@ -1,0 +1,9 @@
+$schema: ../../schemas/mapping.schema.json
+id: MAP-OPENSSF-SCORECARD-V2-SRC-001
+source_id: SRC-OPENSSF-SCORECARD-V2
+source_clause: Branch-Protection check
+control_id: SRC-001
+rationale: Valid rationale.
+mapping_type: speculative
+mapped_date: '2026-07-01'
+mapped_by: platform-team

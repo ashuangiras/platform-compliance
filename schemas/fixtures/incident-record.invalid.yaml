@@ -1,0 +1,16 @@
+$schema: ../../schemas/incident-record.schema.json
+id: INC-20260709-001
+schema_version: 1.0.0
+title: Test incident
+severity: medium
+description: A compliance incident.
+affected_control_ids:
+- SEC-001
+affected_resources:
+- type: repository
+  identifier: ashuangiras/platform-compliance
+discovered_at: '2026-07-09T10:00:00Z'
+root_cause: Root cause.
+remediation: Fixed.
+recurrence_prevention: Will not recur.
+status: resolved

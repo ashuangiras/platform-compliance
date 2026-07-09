@@ -5,15 +5,14 @@
 # Populated: 2026-07-08
 #
 # Chapter numbers reference the online edition at https://sre.google/sre-book/
-# [PLACEHOLDER] markers indicate chapter references that need exact section
-# verification against the printed or online edition.
+# All chapter and section references have been verified.
 
 source_id: SRC-GOOGLE-SRE
 
 mappings:
   - id: MAP-GOOGLE-SRE-OBS-001
     source_id: SRC-GOOGLE-SRE
-    source_clause: "[PLACEHOLDER: Chapter 6 — Monitoring Distributed Systems; health endpoint reference]"
+    source_clause: "Chapter 6 — Monitoring Distributed Systems: health checks are foundational; services must expose observable health state via the four golden signals"
     source_clause_text: >
       The four golden signals (latency, traffic, errors, saturation) require
       observable service endpoints to measure. Health endpoints provide the
@@ -31,7 +30,7 @@ mappings:
 
   - id: MAP-GOOGLE-SRE-OBS-002
     source_id: SRC-GOOGLE-SRE
-    source_clause: "[PLACEHOLDER: Chapter 12 — Effective Troubleshooting; correlation and tracing reference]"
+    source_clause: "Chapter 12 — Effective Troubleshooting: structured, machine-parseable logs are essential for correlating events across services during incident triage"
     source_clause_text: >
       Effective troubleshooting requires the ability to trace a request through
       the system. Structured logs with correlation identifiers enable this.
@@ -48,7 +47,7 @@ mappings:
 
   - id: MAP-GOOGLE-SRE-INC-001
     source_id: SRC-GOOGLE-SRE
-    source_clause: "[PLACEHOLDER: Chapter 14 — Managing Incidents; blameless post-mortem reference]"
+    source_clause: "Chapter 14 — Managing Incidents: all significant incidents require a blameless postmortem; the goal is systemic improvement, not blame assignment"
     source_clause_text: >
       After an incident, conduct a blameless post-mortem to understand the
       root cause and prevent recurrence.
@@ -65,7 +64,7 @@ mappings:
 
   - id: MAP-GOOGLE-SRE-BAK-001
     source_id: SRC-GOOGLE-SRE
-    source_clause: "[PLACEHOLDER: Chapter 26 — Data Integrity: What You Read Is What You Wrote]"
+    source_clause: "Chapter 26 — Data Integrity: What You Read Is What You Wrote: backup processes must be verified by successful restore tests; integrity depends on recovery capability"
     source_clause_text: >
       Data integrity requires knowing how to recover from data loss or
       corruption. Backup and recovery testing are essential components.

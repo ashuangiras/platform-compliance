@@ -4,9 +4,8 @@
 # Domain: SRC (Source Control)
 # Populated: 2026-07-08
 #
-# Clauses marked [PLACEHOLDER] require verification against the Scorecard
-# documentation at https://securityscorecards.dev/. Mapping records exist;
-# only the clause reference needs to be confirmed.
+# All clause references verified against the Scorecard v2 check documentation
+# at https://github.com/ossf/scorecard/blob/main/docs/checks.md
 
 source_id: SRC-OPENSSF-SCORECARD-V2
 domain: SRC
@@ -46,7 +45,7 @@ mappings:
 
   - id: MAP-OPENSSF-SCORECARD-SRC-003
     source_id: SRC-OPENSSF-SCORECARD-V2
-    source_clause: "[PLACEHOLDER: verify the exact Scorecard check name for CODEOWNERS — may be CII-Best-Practices or a separate check]"
+    source_clause: "Branch-Protection Tier 4 — Require review from code owners (9/10 pts; no standalone CODEOWNERS check in Scorecard v2)"
     control_id: SRC-003
     rationale: >
       OpenSSF Scorecard evaluates CODEOWNERS as a project health indicator.

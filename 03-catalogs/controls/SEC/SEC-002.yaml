@@ -43,8 +43,9 @@ implementation_expectations: >
   - The platform should define custom secret scanning patterns for any
     internal token formats (e.g., platform-issued API keys) once those
     formats are established.
-    [PLACEHOLDER: define custom pattern registration process once internal
-    services begin issuing tokens]
+    Custom patterns are registered at: Settings → Security → Secret scanning
+    → Custom patterns. Document each pattern in 09-assessments/waivers/ if
+    the pattern requires a grace period before enforcement.
 
 evidence_required:
   - type: github-secret-scanning-config

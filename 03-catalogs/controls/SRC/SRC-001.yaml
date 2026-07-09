@@ -24,10 +24,10 @@ mapped_standards:
     clause: "Branch-Protection check"
     mapping_note: >
       Scorecard's Branch-Protection check directly tests whether branch protection
-      is enabled with the required settings. The platform's SRC-001 aligns exactly
-      with the Scorecard check criteria for a passing result.
-      [PLACEHOLDER: verify exact Scorecard v2 check documentation for Branch-Protection
-      scoring criteria — ensure platform settings produce a full score]
+      is enabled with the required settings. A perfect score (10/10) requires Tier 5:
+      dismiss stale reviews, include admins, ≥2 approvers + code-owner review.
+      SRC-001 requires ≥1 approver (Tier 2), positioned for incremental hardening.
+      Ref: github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
   - source_id: SRC-OPENGITOPS-V1
     clause: "Principle 2 — Versioned and Immutable"
     mapping_note: >

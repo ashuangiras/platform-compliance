@@ -1,0 +1,9 @@
+$schema: ../../schemas/binding.schema.json
+id: BIND-SRC-001-GITHUB
+control_id: SRC-001
+technology_context: kubernetes
+specification: Spec.
+observable_artifact: Artifact.
+introduced_date: '2026-07-01'
+introduced_by: platform-team
+status: active

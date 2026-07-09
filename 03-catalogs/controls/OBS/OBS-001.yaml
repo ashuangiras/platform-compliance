@@ -23,13 +23,13 @@ rationale: >
 
 mapped_standards:
   - source_id: SRC-GOOGLE-SRE
-    clause: "[PLACEHOLDER: SRE book Chapter 6 — Monitoring and health endpoint reference]"
+    clause: "Chapter 6 — Monitoring Distributed Systems: health checks are a foundational component of monitoring; services must expose observable health state."
     mapping_note: >
       Google SRE Chapter 6 discusses the role of health checks and monitoring
       as prerequisites for service reliability. The health check is the most
       fundamental observable metric.
   - source_id: SRC-AWS-WAF-2024
-    clause: "[PLACEHOLDER: AWS WAF REL — How do you monitor your workload resources?]"
+    clause: "REL 06 — How do you monitor workload resources? Best practice: monitor all components to detect failures early and enable automated recovery."
     mapping_note: >
       WAF reliability practices require health monitoring of workloads.
       A health endpoint is the mechanism for this in containerised services.

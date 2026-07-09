@@ -1,0 +1,14 @@
+$schema: ../../schemas/policy-check.schema.json
+id: POL-SRC-001-GITHUB-001
+title: 'SRC-001: Branch protection check via GitHub API'
+binding_ids:
+- BIND-SRC-001-GITHUB
+engine: opa
+file_path: 07-policies/opa/SRC/POL-SRC-001-GITHUB-001.rego
+pass_criteria: Branch protection enabled with required_approving_review_count >= 1
+  and dismiss_stale_reviews.
+fail_criteria: Branch protection is missing, disabled, or misconfigured.
+evidence_type: branch-protection
+severity: critical
+introduced_date: '2026-07-01'
+status: active

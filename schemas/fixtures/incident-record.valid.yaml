@@ -1,0 +1,19 @@
+$schema: ../../schemas/incident-record.schema.json
+id: INC-20260709-001
+schema_version: 1.0.0
+title: 'SEC-001: false-negative allowed secret to reach main'
+severity: high
+description: A private key was committed and passed the gitleaks scan due to a misconfigured
+  ignore rule.
+affected_control_ids:
+- SEC-001
+affected_resources:
+- type: repository
+  identifier: ashuangiras/platform-compliance
+discovered_at: '2026-07-09T10:00:00Z'
+resolved_at: '2026-07-09T14:00:00Z'
+root_cause: A .gitleaksignore rule was too broad.
+remediation: Removed secret from history. Rotated credential. Tightened ignore rule.
+recurrence_prevention: Added policy test for the file pattern. Added review requirement
+  for .gitleaksignore changes.
+status: resolved
