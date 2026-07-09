@@ -93,6 +93,7 @@ for df_path in repo_root.rglob('Dockerfile*'):
             })
 
 # Also scan docker-compose files
+compose_services = []
 for compose_path in list(repo_root.rglob('docker-compose*.yml')) + list(repo_root.rglob('docker-compose*.yaml')):
     if '.git' in str(compose_path):
         continue
@@ -107,23 +108,31 @@ for compose_path in list(repo_root.rglob('docker-compose*.yml')) + list(repo_roo
         if not isinstance(svc, dict):
             continue
         image = svc.get('image', '')
-        if not image:
-            continue
-        is_digest = '@sha256:' in image
-        tag = image.split(':')[-1] if ':' in image and not is_digest else ''
-        image_references.append({
-            'file': rel_path,
-            'line': 0,
-            'reference': image,
-            'tag': tag,
-            'is_digest': is_digest
+        if image:
+            is_digest = '@sha256:' in image
+            tag = image.split(':')[-1] if ':' in image and not is_digest else ''
+            image_references.append({'file': rel_path, 'line': 0, 'reference': image, 'tag': tag, 'is_digest': is_digest})
+        # Security context fields (RUN-004 capabilities, RUN-005 read-only filesystem)
+        cap_drop = svc.get('cap_drop', [])
+        cap_add  = svc.get('cap_add', [])
+        cap_drop_list = [c.upper() for c in cap_drop] if isinstance(cap_drop, list) else []
+        cap_add_list  = [c.upper() for c in cap_add]  if isinstance(cap_add,  list) else []
+        compose_services.append({
+            'compose_file': rel_path,
+            'service': svc_name,
+            'cap_drop': cap_drop_list,
+            'cap_add': cap_add_list,
+            'caps_drop_all': 'ALL' in cap_drop_list,
+            'read_only': bool(svc.get('read_only', False)),
+            'privileged': bool(svc.get('privileged', False)),
         })
 
 output = {
     'repository': {'name': repo_name},
     'dockerfiles': dockerfiles,
-    'image_references': image_references
+    'image_references': image_references,
+    'compose_services': compose_services,
 }
 
 print(json.dumps(output, indent=2, ensure_ascii=False, default=str))
-PYTHON
+PYTHOHON

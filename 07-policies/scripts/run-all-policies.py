@@ -27,6 +27,12 @@ POLICY_MAP = {
     "SUP-002": ("SUP/POL-SUP-002-DOCKER-001.rego",       "docker-info.json",             "data.platform.sup.sup_002_docker.result",        ["docker"]),
     "OBS-001": ("OBS/POL-OBS-001-DOCKER-001.rego",       "docker-info.json",             "data.platform.obs.obs_001_docker.result",        ["docker"]),
     "SUP-001-GA": ("SUP/POL-SUP-001-GITHUB-ACTIONS-001.rego", "actions-info.json",       "data.platform.sup.sup_001_github_actions.result", ["github-actions"]),
+    "SEC-004":   ("SEC/POL-SEC-004-GITHUB-ACTIONS-001.rego", "actions-info.json",       "data.platform.sec.sec_004_github_actions.result",     ["github-actions"]),
+    "RUN-004":   ("RUN/POL-RUN-004-DOCKER-001.rego",          "dockerfile-info.json", "data.platform.run.run_004_docker.result",            ["docker"]),
+    "RUN-005":   ("RUN/POL-RUN-005-DOCKER-001.rego",          "dockerfile-info.json", "data.platform.run.run_005_docker.result",            ["docker"]),
+    "SEC-005":   ("SEC/POL-SEC-005-GITHUB-ACTIONS-001.rego", "actions-info.json",   "data.platform.sec.sec_005_github_actions.result",   ["github-actions"]),
+    "IAC-004":   ("IAC/POL-IAC-004-TERRAFORM-001.rego",       "actions-info.json",   "data.platform.iac.iac_004_terraform.result",         ["github-actions"]),
+    "SEC-006":   ("SEC/POL-SEC-006-DOCKER-001.rego",          "actions-info.json",   "data.platform.sec.sec_006_docker.result",            ["docker", "github-actions"]),
 }
 
 
@@ -77,6 +83,17 @@ def main():
 
         rego_path = str(bundle / rego_rel)
         input_path = str(inputs / input_file)
+
+        # If the policy file doesn't exist in the bundle (e.g., bootstrapping a new
+        # policy before it's been merged to main), skip gracefully rather than error.
+        if not (bundle / rego_rel).exists():
+            skipped += 1
+            (results / f"{control_id}.json").write_text(json.dumps({
+                "result": "not_applicable",
+                "details": {"message": f"{control_id}: policy file not yet in bundle ({rego_rel}). Will be enforced after next release."}
+            }))
+            print(f"  ○ {control_id}: not_applicable (policy not in bundle — bootstrapping)")
+            continue
 
         if not os.path.exists(rego_path):
             (results / f"{control_id}.json").write_text(json.dumps({

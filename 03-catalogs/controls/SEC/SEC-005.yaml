@@ -1,0 +1,69 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-005
+title: Static application security analysis (SAST) must run in CI on every change
+domain: SEC
+type: detective
+priority: P1
+severity: high
+
+statement: >
+  Every repository containing application code, scripts, or infrastructure-as-code
+  must run at least one automated SAST tool as part of its CI pipeline on every pull
+  request. Acceptable tools include: CodeQL (GitHub native), Semgrep, Bandit (Python),
+  gosec (Go), or an equivalent tool appropriate for the repository's primary language.
+
+rationale: >
+  SAST tools perform static code analysis to detect security vulnerabilities before
+  code is merged: injection flaws (SQL, command, path traversal), insecure API usage,
+  hardcoded credentials, weak cryptography, and unsafe deserialization. Running SAST
+  on every PR catches these at the lowest-cost point in the SDLC. Without SAST,
+  security vulnerabilities accumulate in codebases and are discovered only when
+  exploited or when an expensive manual audit is performed.
+
+mapped_standards:
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Verification — Security Testing — ST-2: Requirements-driven Testing (SAST at L2)"
+    mapping_note: >
+      OWASP SAMM Verification/Security Testing level 2 requires automated security
+      testing integrated into the build pipeline. SEC-005 implements this requirement
+      by mandating SAST on every PR.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 16 — Application Software Security: Safeguard 16.12 — Implement code-level security checks"
+    mapping_note: >
+      CIS Controls v8.1 Control 16.12 requires implementation of code-level security
+      checks as part of the software development pipeline. SEC-005 directly implements
+      this safeguard.
+  - source_id: SRC-GITHUB-SECURITY-HARDENING
+    clause: "Using CodeQL to detect security vulnerabilities in GitHub Actions workflows"
+    mapping_note: >
+      GitHub's security hardening guide recommends CodeQL as the native SAST tool
+      for GitHub-hosted repositories. SEC-005 accepts CodeQL or equivalent tools.
+
+implementation_expectations: >
+  The repository must have one of the following in .github/workflows/:
+  - A CodeQL analysis workflow using github/codeql-action/analyze
+  - A Semgrep scan using returntocorp/semgrep-action or equivalent
+  - Any other recognised SAST action targeting the repository language
+
+  The SAST workflow must:
+  - Trigger on: pull_request to the default branch
+  - Report results to GitHub Security (code scanning alerts) OR fail the build on findings
+  - Cover at least the primary language of the repository
+
+evidence_required:
+  - type: github-actions-workflow
+    description: >
+      GitHub Actions workflow file(s) containing a SAST step. Evidence
+      includes the action reference and whether it covers pull_request triggers.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-09"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

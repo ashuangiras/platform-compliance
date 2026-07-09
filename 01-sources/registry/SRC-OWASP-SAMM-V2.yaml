@@ -1,0 +1,39 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-OWASP-SAMM-V2
+name: OWASP Software Assurance Maturity Model (SAMM) v2
+version: "2.0"
+publisher: OWASP Foundation
+source_url: "https://owaspsamm.org/model/"
+retrieved_at: "2026-07-09"
+registered_date: "2026-07-09"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - SEC  # Security Testing (SAMM: Verification)
+  - SRC  # Secure Build, Secure Deployment (SAMM: Implementation)
+  - INC  # Incident Management (SAMM: Operations)
+  - CHG  # Policy & Compliance (SAMM: Governance)
+
+status: active
+
+notes: >
+  OWASP SAMM v2 is a maturity model for software security organized into
+  five business functions: Governance, Design, Implementation, Verification, Operations.
+
+  Platform control mappings:
+
+  - Verification / Security Testing / ST-2 (Requirements-driven Testing)
+    → Maps to SEC-005 (SAST must run in CI)
+  - Implementation / Secure Build / SB-1 (Build Process)
+    → Maps to SUP-001, SUP-004 (pinned deps, SBOM)
+  - Implementation / Secure Build / SB-2 (Software Dependencies)
+    → Maps to SEC-003, SEC-006 (CVE management, image scanning)
+  - Verification / Security Testing / ST-3 (Automated Security Testing)
+    → Maps to SEC-006 (container image scanning in pipeline)
+  - Operations / Incident Management / IM-1
+    → Maps to INC-001 (incident postmortem)
+
+  The platform targets SAMM level 1 across all functions for v1.x,
+  with level 2 in Verification and Implementation for v2.x.

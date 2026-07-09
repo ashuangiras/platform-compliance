@@ -1,0 +1,11 @@
+id: POL-IAC-004-TERRAFORM-001
+title: "Terraform security scanner (tfsec, Checkov, or equivalent) must be present in CI"
+binding_ids: [BIND-IAC-004-TERRAFORM]
+engine: opa
+file_path: "07-policies/opa/IAC/POL-IAC-004-TERRAFORM-001.rego"
+pass_criteria: "At least one recognised Terraform security scanning action in CI."
+fail_criteria: "No Terraform security scanner found in any workflow file."
+evidence_type: github-actions-workflow
+severity: high
+introduced_date: "2026-07-09"
+status: active

@@ -1,0 +1,72 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-005
+title: Container root filesystem must be read-only
+domain: RUN
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  All containerised services must be launched with a read-only root filesystem
+  (read_only: true in Docker Compose, or readOnlyRootFilesystem: true in
+  Kubernetes). Services requiring writable directories must mount specific
+  tmpfs volumes for ephemeral writes.
+
+rationale: >
+  A writable root filesystem allows an attacker who has gained code execution
+  inside a container to persist malware, modify binaries, write web shells,
+  or alter configuration files. A read-only filesystem makes the container
+  immutable at runtime — any attempt to write to the filesystem produces an
+  error. This forces the design of stateless services and prevents persistence
+  of compromise. Writable tmpfs mounts can be used for scratch space (/tmp)
+  while keeping the root filesystem protected.
+
+mapped_standards:
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "5.12 Ensure that the container's root filesystem is mounted as read only"
+    mapping_note: >
+      CIS Docker 1.6.0 section 5.12 explicitly requires mounting the root
+      filesystem as read-only. RUN-005 directly implements this recommendation
+      and extends it to require tmpfs for writable paths.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 4 — Secure Configuration: Safeguard 4.1 — Establish and maintain a secure configuration process"
+    mapping_note: >
+      Read-only root filesystem is a mandatory secure runtime configuration
+      for containerised workloads per CIS Controls v8.1 Control 4.
+  - source_id: SRC-GITHUB-SECURITY-HARDENING
+    clause: "Using permissions for the GITHUB_TOKEN: principle of least privilege extends to runtime filesystem access"
+    mapping_note: >
+      While GitHub Security Hardening primarily covers CI workflows, the
+      principle of read-only defaults and explicit writable mounts is consistent
+      with the least-privilege philosophy applied to all runtime environments.
+
+implementation_expectations: >
+  In docker-compose.yml:
+    services:
+      my-service:
+        read_only: true
+        tmpfs:
+          - /tmp           # scratch space
+          - /run           # PID files, sockets
+          - /var/cache     # if cache writes are needed
+
+  Application must be designed to not require writes to the root filesystem.
+  Log output should go to stdout/stderr (not files), which is also required by OBS-002.
+
+evidence_required:
+  - type: docker-compose-security
+    description: >
+      Docker Compose service definition showing read_only: true.
+      Evidence collected by collect-dockerfile-info.sh.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-09"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

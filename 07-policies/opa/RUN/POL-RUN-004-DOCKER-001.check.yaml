@@ -1,0 +1,16 @@
+id: POL-RUN-004-DOCKER-001
+title: "Containers must drop ALL Linux capabilities in Docker Compose"
+binding_ids:
+  - BIND-RUN-004-DOCKER
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-004-DOCKER-001.rego"
+pass_criteria: >
+  All services in docker-compose.yml declare cap_drop: [ALL].
+  No service has privileged: true.
+fail_criteria: >
+  One or more services lack cap_drop: [ALL], or one or more services
+  have privileged: true.
+evidence_type: docker-compose-security
+severity: high
+introduced_date: "2026-07-09"
+status: active

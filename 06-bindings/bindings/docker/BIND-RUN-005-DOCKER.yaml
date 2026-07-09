@@ -1,0 +1,29 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-RUN-005-DOCKER
+control_id: RUN-005
+technology_context: docker
+introduced_date: "2026-07-09"
+introduced_by: platform-team
+status: active
+
+specification: >
+  Every service defined in a docker-compose.yml file MUST have:
+    read_only: true
+  Services requiring writable scratch space must use tmpfs mounts.
+  The absence of read_only: true or read_only: false is a violation.
+
+observable_artifact: >
+  Docker Compose service definition parsed by collect-dockerfile-info.sh:
+  {
+    "compose_services": [
+      {
+        "service": "my-app",
+        "read_only": true,
+        "privileged": false
+      }
+    ]
+  }
+
+policy_check_ids:
+  - POL-RUN-005-DOCKER-001

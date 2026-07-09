@@ -1,0 +1,68 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: IAC-004
+title: Terraform code must pass automated security scanning on every PR
+domain: IAC
+type: detective
+priority: P1
+severity: high
+
+statement: >
+  Every Terraform repository must run an automated IaC security scanner
+  (tfsec, Checkov, Terrascan, or KICS) as part of its CI pipeline on every
+  pull request. The scan must fail on HIGH and CRITICAL severity findings.
+  MEDIUM findings must be reviewed and either fixed or suppressed with justification.
+
+rationale: >
+  Terraform code can silently provision insecure infrastructure: overly permissive
+  IAM policies, unencrypted storage, publicly accessible databases, missing audit logs,
+  or open security groups. These misconfigurations are invisible to `terraform fmt`
+  and `terraform validate` (IAC-001), which check syntax and validity but not security
+  semantics. IaC security scanners catch these issues before they are applied to
+  real infrastructure, when they are trivially free to fix versus expensive to remediate
+  post-deployment.
+
+mapped_standards:
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 4 — Secure Configuration: Safeguard 4.2 — Establish and maintain a secure configuration process for network infrastructure"
+    mapping_note: >
+      CIS Controls v8.1 Control 4.2 requires secure configuration of network
+      infrastructure. IaC security scanning automates verification of secure
+      configurations before they are deployed.
+  - source_id: SRC-OWASP-SAMM-V2
+    clause: "Verification — Security Testing — ST-3: Automated Security Testing in pipeline"
+    mapping_note: >
+      OWASP SAMM ST-3 requires automated security testing integrated into the
+      build pipeline covering infrastructure code. IAC-004 implements this
+      requirement for Terraform repositories.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "OPS 05 — How do you reduce defects, ease remediation, and improve flow into production?"
+    mapping_note: >
+      AWS WAF OPS 05 covers reducing defects including security misconfigurations.
+      IaC scanning automates the detection of configuration defects before deployment.
+
+implementation_expectations: >
+  The Terraform repository must include a GitHub Actions workflow that:
+  - Runs tfsec, Checkov, Terrascan, or KICS on the Terraform code
+  - Triggers on: pull_request targeting the default branch
+  - Fails on HIGH and CRITICAL severity findings (no suppressions without justification)
+  - Reports findings as PR annotations or workflow annotations
+
+  Recommended: Checkov via bridgecrew/checkov-action or tfsec via aquasecurity/tfsec-action
+
+evidence_required:
+  - type: github-actions-workflow
+    description: >
+      GitHub Actions workflow containing a Terraform security scanning step.
+      Evidence includes the action reference and severity thresholds.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-09"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

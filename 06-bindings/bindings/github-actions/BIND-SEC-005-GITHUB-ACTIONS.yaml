@@ -1,0 +1,14 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SEC-005-GITHUB-ACTIONS
+control_id: SEC-005
+technology_context: github-actions
+introduced_date: "2026-07-09"
+introduced_by: platform-team
+status: active
+specification: >
+  At least one GitHub Actions workflow must include a recognised SAST action:
+  github/codeql-action/analyze, returntocorp/semgrep-action, or equivalent.
+  The workflow must trigger on pull_request events.
+observable_artifact: "GitHub Actions workflow files parsed for SAST action references."
+policy_check_ids:
+  - POL-SEC-005-GITHUB-ACTIONS-001

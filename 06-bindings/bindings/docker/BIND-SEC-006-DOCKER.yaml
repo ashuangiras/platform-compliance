@@ -1,0 +1,14 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SEC-006-DOCKER
+control_id: SEC-006
+technology_context: docker
+introduced_date: "2026-07-09"
+introduced_by: platform-team
+status: active
+specification: >
+  At least one GitHub Actions workflow must include a recognised container image
+  vulnerability scanning action: aquasecurity/trivy-action, anchore/grype-action,
+  or snyk/actions/docker. The scan step must follow a docker build step.
+observable_artifact: "GitHub Actions workflow files parsed for image scanner references."
+policy_check_ids:
+  - POL-SEC-006-DOCKER-001

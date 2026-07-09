@@ -1,0 +1,31 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-RUN-004-DOCKER
+control_id: RUN-004
+technology_context: docker
+introduced_date: "2026-07-09"
+introduced_by: platform-team
+status: active
+
+specification: >
+  Every service defined in a docker-compose.yml file MUST have:
+    cap_drop:
+      - ALL
+  The cap_add list may contain only specifically justified capabilities.
+  The absence of cap_drop or cap_drop that does not include ALL is a violation.
+
+observable_artifact: >
+  Docker Compose service definition parsed by collect-dockerfile-info.sh:
+  {
+    "compose_services": [
+      {
+        "service": "my-app",
+        "cap_drop": ["ALL"],
+        "cap_add": [],
+        "caps_drop_all": true
+      }
+    ]
+  }
+
+policy_check_ids:
+  - POL-RUN-004-DOCKER-001

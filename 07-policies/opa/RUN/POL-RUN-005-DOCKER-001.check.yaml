@@ -1,0 +1,14 @@
+id: POL-RUN-005-DOCKER-001
+title: "Container root filesystem must be read-only in Docker Compose"
+binding_ids:
+  - BIND-RUN-005-DOCKER
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-005-DOCKER-001.rego"
+pass_criteria: >
+  All services in docker-compose.yml declare read_only: true.
+fail_criteria: >
+  One or more services do not set read_only: true (filesystem is writable).
+evidence_type: docker-compose-security
+severity: high
+introduced_date: "2026-07-09"
+status: active

@@ -1,0 +1,14 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-IAC-004-TERRAFORM
+control_id: IAC-004
+technology_context: github-actions
+introduced_date: "2026-07-09"
+introduced_by: platform-team
+status: active
+specification: >
+  At least one GitHub Actions workflow must include a recognised Terraform
+  security scanning action: aquasecurity/tfsec-action, bridgecrew/checkov-action,
+  tenable/terrascan-action, or checkmarx/kics-github-action.
+observable_artifact: "GitHub Actions workflow files parsed for Terraform scanner references."
+policy_check_ids:
+  - POL-IAC-004-TERRAFORM-001

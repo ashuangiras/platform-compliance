@@ -1,0 +1,19 @@
+id: POL-SEC-004-GITHUB-ACTIONS-001
+title: "GitHub Actions workflow tokens must use read-only permissions at the top level"
+binding_ids:
+  - BIND-SEC-004-GITHUB-ACTIONS
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-004-GITHUB-ACTIONS-001.rego"
+pass_criteria: >
+  All GitHub Actions workflow files in .github/workflows/ declare a top-level
+  permissions block that grants only read access (permissions: read-all OR
+  individual permissions all set to 'read'). Any write permissions are declared
+  at the job level only.
+fail_criteria: >
+  One or more workflow files lack a top-level permissions block (GitHub defaults
+  grant write to many scopes), OR one or more workflow files declare write
+  permissions at the top level.
+evidence_type: github-actions-workflow
+severity: high
+introduced_date: "2026-07-09"
+status: active

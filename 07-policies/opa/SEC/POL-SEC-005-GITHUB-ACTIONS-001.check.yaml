@@ -1,0 +1,11 @@
+id: POL-SEC-005-GITHUB-ACTIONS-001
+title: "SAST tool (CodeQL, Semgrep, or equivalent) must be present in CI workflow"
+binding_ids: [BIND-SEC-005-GITHUB-ACTIONS]
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-005-GITHUB-ACTIONS-001.rego"
+pass_criteria: "At least one recognised SAST action found in .github/workflows/"
+fail_criteria: "No recognised SAST action found in any workflow file."
+evidence_type: github-actions-workflow
+severity: high
+introduced_date: "2026-07-09"
+status: active

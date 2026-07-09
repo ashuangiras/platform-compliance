@@ -1,0 +1,43 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-CIS-CONTROLS-V8
+name: CIS Critical Security Controls v8.1
+version: "8.1"
+publisher: Center for Internet Security (CIS)
+source_url: "https://www.cisecurity.org/controls/v8"
+retrieved_at: "2026-07-09"
+registered_date: "2026-07-09"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - ACC  # Account Management (CIS Controls 5, 6)
+  - AUD  # Audit Log Management (CIS Control 8)
+  - SEC  # Security (CIS Controls 3, 4, 7, 16)
+  - SUP  # Supply Chain (CIS Control 2 — software asset inventory)
+  - SRC  # Source Control (CIS Control 4 — secure configuration)
+
+status: active
+
+notes: >
+  CIS Controls v8.1 (the latest version as of 2026) defines 18 controls covering
+  enterprise cybersecurity posture. Relevant controls for platform compliance:
+
+  - CIS Control 4: Secure Configuration of Enterprise Assets and Software
+    → Maps to SEC-004 (GitHub Actions token permissions), RUN-004/005/006/007 (container hardening)
+  - CIS Control 5: Account Management
+    → Maps to ACC-001 (MFA enforcement)
+  - CIS Control 6: Access Control Management
+    → Maps to ACC-001 (least privilege), SEC-008 (self-hosted runner restrictions)
+  - CIS Control 7: Continuous Vulnerability Management
+    → Maps to SEC-006 (image scanning), SEC-007 (remediation SLA)
+  - CIS Control 8: Audit Log Management
+    → Maps to AUD-001 (GitHub org audit log)
+  - CIS Control 16: Application Software Security
+    → Maps to SEC-005 (SAST in CI)
+
+  Implementation Groups (IG):
+  - IG1: Basic cyber hygiene (all organizations)
+  - IG2: Foundational hygiene (includes IG1)
+  - IG3: Advanced (includes IG1+IG2)
+  Platform targets IG2 for v1.x, IG3 for v2.x+.
