@@ -1,0 +1,13 @@
+id: POL-OBS-001-DOCKER-001
+title: All Dockerfiles declare a HEALTHCHECK instruction
+binding_ids:
+- BIND-OBS-001-DOCKER
+engine: opa
+file_path: 07-policies/opa/OBS/POL-OBS-001-DOCKER-001.rego
+pass_criteria: All Dockerfiles in the repository have a HEALTHCHECK instruction (not
+  NONE). Not applicable if no Dockerfiles exist.
+fail_criteria: One or more Dockerfiles lack a HEALTHCHECK instruction.
+evidence_type: health-check-declaration
+severity: medium
+introduced_date: '2026-07-09'
+status: active

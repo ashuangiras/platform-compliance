@@ -1,0 +1,14 @@
+id: POL-BAK-001-GITHUB-001
+title: Stateful service declares a complete backup policy in service-contract.yaml
+binding_ids:
+- BIND-BAK-001-MANUAL
+engine: opa
+file_path: 07-policies/opa/BAK/POL-BAK-001-GITHUB-001.rego
+pass_criteria: service_type is stateful AND backup_policy present with all required
+  fields. Not applicable for non-stateful services.
+fail_criteria: service_type is stateful but backup_policy is absent or missing required
+  fields.
+evidence_type: backup-policy-declaration
+severity: high
+introduced_date: '2026-07-09'
+status: active

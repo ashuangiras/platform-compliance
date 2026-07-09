@@ -1,0 +1,13 @@
+id: POL-RUN-003-DOCKER-001
+title: All containerised services declare CPU and memory resource limits
+binding_ids:
+- BIND-RUN-003-DOCKER
+engine: opa
+file_path: 07-policies/opa/RUN/POL-RUN-003-DOCKER-001.rego
+pass_criteria: All services in the deployment configuration declare cpu_limit and
+  memory_limit.
+fail_criteria: One or more services are missing cpu_limit or memory_limit declarations.
+evidence_type: container-resource-limits-declared
+severity: medium
+introduced_date: '2026-07-09'
+status: active

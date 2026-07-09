@@ -1,0 +1,13 @@
+id: POL-CHG-001-GITHUB-001
+title: PR description contains a change record reference for normative content changes
+binding_ids:
+- BIND-CHG-001-GITHUB
+engine: opa
+file_path: 07-policies/opa/CHG/POL-CHG-001-GITHUB-001.rego
+pass_criteria: 'PR body matches pattern /change record: CHG-YYYYMMDD-NNN/i, or no
+  normative files were changed, or not a platform-repo type.'
+fail_criteria: Normative files changed but PR body lacks a CHG-YYYYMMDD-NNN reference.
+evidence_type: change-record-pr-reference
+severity: medium
+introduced_date: '2026-07-09'
+status: active

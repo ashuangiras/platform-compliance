@@ -1,0 +1,13 @@
+id: POL-IAC-003-TERRAFORM-001
+title: No hardcoded environment-specific values in Terraform module code
+binding_ids:
+- BIND-IAC-003-TERRAFORM
+engine: opa
+file_path: 07-policies/opa/IAC/POL-IAC-003-TERRAFORM-001.rego
+pass_criteria: Static scan finds zero hardcoded IP addresses, account IDs, or environment
+  names in module .tf files.
+fail_criteria: One or more hardcoded environment-specific values detected.
+evidence_type: iac-hardcoded-value-scan
+severity: medium
+introduced_date: '2026-07-09'
+status: active

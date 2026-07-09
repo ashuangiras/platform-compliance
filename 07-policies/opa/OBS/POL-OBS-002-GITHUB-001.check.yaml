@@ -1,0 +1,13 @@
+id: POL-OBS-002-GITHUB-001
+title: Service has a structured logging attestation on record
+binding_ids:
+- BIND-OBS-002-MANUAL
+engine: opa
+file_path: 07-policies/opa/OBS/POL-OBS-002-GITHUB-001.rego
+pass_criteria: attestation_present is true with a named attestor and date. Not applicable
+  for non-service repositories.
+fail_criteria: No structured logging attestation on record for this service.
+evidence_type: structured-log-format-attestation
+severity: medium
+introduced_date: '2026-07-09'
+status: active

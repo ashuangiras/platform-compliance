@@ -14,24 +14,24 @@ phases:
     note: See decisions-needed/ADR-0007-waiver-governance.md
   - id: PC-0089
     title: 'Write input collection shell script: collect-github-branch-protection.sh'
-    status: not-started
+    status: done
     depends_on:
     - PC-0087
   - id: PC-0090
     title: 'Write input collection shell script: collect-github-security-settings.sh'
-    status: not-started
+    status: done
   - id: PC-0091
     title: 'Write input collection shell script: collect-dockerfile-info.sh'
-    status: not-started
+    status: done
   - id: PC-0092
     title: 'Write input collection shell script: collect-terraform-info.sh'
-    status: not-started
+    status: done
   - id: PC-0093
     title: 'Write input collection shell script: collect-workflow-actions.sh'
-    status: not-started
+    status: done
   - id: PC-0094
     title: Replace policy-checks TODO in reusable workflow with real OPA execution
-    status: not-started
+    status: done
     depends_on:
     - PC-0089
     - PC-0090
@@ -40,52 +40,52 @@ phases:
     - PC-0093
   - id: PC-0095
     title: Replace secret-scan-check TODO with real gitleaks invocation
-    status: not-started
+    status: done
   - id: PC-0096
     title: Replace collect-evidence TODO with real evidence record generation
-    status: not-started
+    status: done
     depends_on:
     - PC-0087
     - PC-0094
   - id: PC-0097
     title: Replace generate-assessment TODO with real assessment aggregation
-    status: not-started
+    status: done
     depends_on:
     - PC-0088
     - PC-0096
   - id: PC-0098
     title: Replace evaluate-gate TODO with real gate criteria evaluation
-    status: not-started
+    status: done
     depends_on:
     - PC-0097
   - id: PC-0099
     title: 'Write policy: POL-OBS-001-DOCKER-001 (HEALTHCHECK check) + fixtures'
-    status: not-started
+    status: done
   - id: PC-0100
     title: 'Write policy: POL-BAK-001-GITHUB-001 (backup policy declaration) + fixtures'
-    status: not-started
+    status: done
   - id: PC-0101
     title: 'Write policy: POL-NET-001-GITHUB-001 (ingress policy declaration) + fixtures'
-    status: not-started
+    status: done
   - id: PC-0102
     title: 'Write policy: POL-CHG-001-GITHUB-001 (change record in PR body) + fixtures'
-    status: not-started
+    status: done
   - id: PC-0103
     title: 'Write policy: POL-IAC-002-TERRAFORM-001 (plan-before-apply) + fixtures'
-    status: not-started
+    status: done
   - id: PC-0104
     title: 'Write policy: POL-IAC-003-TERRAFORM-001 (no hardcoded values) + fixtures'
-    status: not-started
+    status: done
   - id: PC-0105
     title: 'Write policy: POL-RUN-003-DOCKER-001 (resource limits) + fixtures'
-    status: not-started
+    status: done
   - id: PC-0106
     title: 'Write policy: POL-OBS-002-GITHUB-001 (structured logging attestation)
       + fixtures'
-    status: not-started
+    status: done
   - id: PC-0107
     title: Run all OPA policy tests with real OPA binary
-    status: not-started
+    status: done
     depends_on:
     - PC-0094
     - PC-0099

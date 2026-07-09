@@ -1,0 +1,13 @@
+id: POL-NET-001-GITHUB-001
+title: Externally exposed service declares an ingress policy in service-contract.yaml
+binding_ids:
+- BIND-NET-001-SERVICE-CONTRACT
+engine: opa
+file_path: 07-policies/opa/NET/POL-NET-001-GITHUB-001.rego
+pass_criteria: externally_exposed is true AND ingress_policy present with allowed_sources
+  and allowed_protocols. Not applicable if externally_exposed is false.
+fail_criteria: externally_exposed is true but ingress_policy is absent or incomplete.
+evidence_type: ingress-policy-declaration
+severity: high
+introduced_date: '2026-07-09'
+status: active
