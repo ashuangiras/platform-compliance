@@ -1,0 +1,162 @@
+$schema: "../schemas/profile.schema.json"
+
+# PROF-BASE — Minimal universal compliance baseline
+#
+# Every governed repository declares at least this profile.
+# It covers only the controls that apply universally regardless of
+# technology context, repository type, or deployment model.
+#
+# Specialized profiles (PROF-TERRAFORM-MODULE-V1, PROF-SERVICE-V1, etc.)
+# inherit this profile and add domain-specific controls.
+
+id: PROF-BASE
+name: "Platform Base Profile v1"
+description: >
+  The minimum compliance baseline for every governed repository on the platform.
+  Controls in this profile apply universally — regardless of whether the repository
+  contains Terraform, containers, application code, or documentation. All other
+  platform profiles inherit from PROF-BASE.
+
+version: "1.0.0"
+
+applicable_to:
+  - platform-repo
+  - terraform-module
+  - terraform-root
+  - service
+  - library
+  - documentation
+
+introduced_date: "2026-07-09"
+status: active
+
+categories:
+
+  mandatory:
+    description: >
+      Controls that every governed repository must pass at every applicable gate.
+      These controls have zero scope conditions — they apply to everything.
+    controls:
+      - id: SRC-001
+      - id: SRC-002
+      - id: SEC-001
+      - id: SEC-002
+      - id: DOC-001
+      - id: CHG-002
+
+  manual_initially:
+    description: >
+      Controls accepted via human attestation until automated tooling is available.
+      These controls warn at the merge gate and block at the release gate.
+    controls:
+      - id: SRC-003
+
+  deferred:
+    description: >
+      Controls declared as planned for a future profile version. Not checked now.
+    controls:
+      - id: SRC-004
+      - id: SUP-003
+
+  not_applicable:
+    description: >
+      Controls that require a specific technology context not covered by this base profile.
+      Specialized profiles activate these controls for the appropriate repository types.
+    controls:
+      - id: IAC-001
+        rationale: "Terraform-specific. Activated by PROF-TERRAFORM-MODULE-V1."
+      - id: IAC-002
+        rationale: "Terraform deployment-specific. Activated by PROF-TERRAFORM-ROOT-V1."
+      - id: IAC-003
+        rationale: "Terraform-specific. Activated by PROF-TERRAFORM-MODULE-V1."
+      - id: SUP-001
+        rationale: "Language/framework-specific pinning. Activated by specialized profiles."
+      - id: SUP-002
+        rationale: "Container image-specific. Activated by PROF-SERVICE-V1."
+      - id: SEC-003
+        rationale: "Dependency vulnerability scanning. Activated by profiles with code dependencies."
+      - id: RUN-001
+        rationale: "Container-specific. Activated by PROF-SERVICE-V1."
+      - id: RUN-002
+        rationale: "Container-specific. Activated by PROF-SERVICE-V1."
+      - id: RUN-003
+        rationale: "Container-specific. Activated by PROF-SERVICE-V1."
+      - id: OBS-001
+        rationale: "Service-specific. Activated by PROF-SERVICE-V1."
+      - id: OBS-002
+        rationale: "Service-specific. Activated by PROF-SERVICE-V1."
+      - id: BAK-001
+        rationale: "Stateful service-specific. Activated by PROF-SERVICE-V1 with scope condition."
+      - id: NET-001
+        rationale: "Externally-exposed service-specific. Activated by PROF-SERVICE-V1 with scope condition."
+      - id: CHG-001
+        rationale: "Platform-repo change record tracking. Activated by PROF-PLATFORM-V1."
+      - id: DOC-002
+        rationale: "Architecture decision records. Activated by PROF-PLATFORM-V1."
+      - id: INC-001
+        rationale: "Service incident postmortem. Activated by PROF-SERVICE-V1."
+
+gates:
+
+  merge_gate:
+    description: >
+      Controls evaluated before any PR may be merged to the default branch.
+      All must be automated and complete within 5 minutes.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: SRC-003
+        enforcement: warn
+      - id: DOC-001
+        enforcement: warn
+
+  release_gate:
+    description: >
+      Controls evaluated before a version tag may be published.
+      Includes all merge gate controls plus release-specific checks.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: SRC-003
+        enforcement: block
+      - id: DOC-001
+        enforcement: block
+      - id: CHG-002
+        enforcement: block
+
+  deployment_gate:
+    description: >
+      Controls evaluated before a deployment may proceed.
+      Inherits all release gate requirements.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: CHG-002
+        enforcement: block
+
+  continuous_audit:
+    description: >
+      Controls evaluated on a scheduled basis independent of deployments.
+    required_controls:
+      - id: SEC-001
+        enforcement: notify
+      - id: SEC-002
+        enforcement: notify

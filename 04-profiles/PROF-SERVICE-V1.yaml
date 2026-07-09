@@ -1,0 +1,205 @@
+$schema: "../schemas/profile.schema.json"
+
+# PROF-SERVICE-V1 — Application services (containerised)
+#
+# Applies to repositories that build and deploy application services.
+# Services are containerised, have health check endpoints, emit structured
+# logs, and may be externally exposed.
+#
+# Inherits PROF-BASE (SRC-001/002, SEC-001/002, DOC-001, CHG-002, SRC-003)
+# and adds container, observability, reliability, and operational controls.
+
+id: PROF-SERVICE-V1
+name: "Service Profile v1"
+description: >
+  Compliance profile for application services. Inherits the universal baseline
+  from PROF-BASE and adds controls specific to containerised services: HEALTHCHECK
+  declarations, non-root containers, immutable image tags, health check endpoints,
+  structured logging, resource limits, and operational controls for backup and
+  incident management (scope-conditioned on service characteristics).
+
+version: "1.0.0"
+inherits: "PROF-BASE"
+
+applicable_to:
+  - service
+
+introduced_date: "2026-07-09"
+status: active
+
+categories:
+
+  mandatory:
+    description: >
+      Inherited from PROF-BASE plus container and service-specific controls
+      that must pass at the merge gate. Scope conditions apply where noted.
+    controls:
+      # ── Inherited from PROF-BASE ──────────────────────────────────────────
+      - id: SRC-001
+      - id: SRC-002
+      - id: SEC-001
+      - id: SEC-002
+      - id: DOC-001
+      - id: CHG-002
+      # ── Container controls (all containerised services) ───────────────────
+      - id: RUN-001   # HEALTHCHECK instruction in Dockerfile
+      - id: RUN-002   # non-root USER instruction in Dockerfile
+      - id: SUP-002   # no :latest tag — digest or version pinned
+      - id: SUP-001   # all dependency versions pinned
+      - id: SEC-003   # critical/high CVEs must be resolved
+      # ── Observability (all services) ──────────────────────────────────────
+      - id: OBS-001   # health check endpoint declared in service contract
+      # ── Reliability (stateful services) ──────────────────────────────────
+      - id: BAK-001
+        scope_condition: "service.type == 'stateful'"
+      # ── Network (externally exposed services) ─────────────────────────────
+      - id: NET-001
+        scope_condition: "service.externally_exposed == true"
+
+  manual_initially:
+    description: >
+      Controls accepted via human attestation or service contract declaration
+      until automated tooling is available. Automation targets before v2.
+    controls:
+      - id: SRC-003
+      - id: RUN-003   # CPU and memory resource limits declared in service contract
+      - id: OBS-002   # structured logging attestation in service contract
+      - id: INC-001   # incident postmortem process declared
+        scope_condition: "service.type is defined"
+
+  deferred:
+    description: >
+      Planned controls not yet enforced.
+    controls:
+      - id: SRC-004
+      - id: SUP-003
+
+  not_applicable:
+    description: >
+      Controls that do not apply to application services.
+    controls:
+      - id: IAC-001
+        rationale: "Terraform-specific. Not applicable to service repositories."
+      - id: IAC-002
+        rationale: "Terraform deployment-specific. Not applicable to service repositories."
+      - id: IAC-003
+        rationale: "Terraform-specific. Not applicable to service repositories."
+      - id: CHG-001
+        rationale: "Platform-repo change tracking. Not applicable to service repositories."
+      - id: DOC-002
+        rationale: "Architecture decision records. Not required for service repositories."
+
+gates:
+
+  merge_gate:
+    description: >
+      Evaluated before any service change PR is merged. Container controls
+      (HEALTHCHECK, non-root, pinned images) are checked on every commit.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: RUN-001
+        enforcement: block
+      - id: RUN-002
+        enforcement: block
+      - id: SUP-002
+        enforcement: block
+      - id: SUP-001
+        enforcement: block
+      - id: OBS-001
+        enforcement: warn
+      - id: SRC-003
+        enforcement: warn
+      - id: DOC-001
+        enforcement: warn
+      - id: RUN-003
+        enforcement: warn
+      - id: NET-001
+        enforcement: warn
+        scope_condition: "service.externally_exposed == true"
+
+  release_gate:
+    description: >
+      Evaluated before a service version tag is published. All mandatory
+      controls must pass, plus health endpoint, resource limits, logging
+      attestation, and backup declaration for stateful services.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: RUN-001
+        enforcement: block
+      - id: RUN-002
+        enforcement: block
+      - id: SUP-002
+        enforcement: block
+      - id: SUP-001
+        enforcement: block
+      - id: SEC-003
+        enforcement: block
+      - id: OBS-001
+        enforcement: block
+      - id: SRC-003
+        enforcement: block
+      - id: DOC-001
+        enforcement: block
+      - id: CHG-002
+        enforcement: block
+      - id: RUN-003
+        enforcement: block
+      - id: OBS-002
+        enforcement: warn
+      - id: BAK-001
+        enforcement: block
+        scope_condition: "service.type == 'stateful'"
+      - id: NET-001
+        enforcement: block
+        scope_condition: "service.externally_exposed == true"
+
+  deployment_gate:
+    description: >
+      Evaluated before a service deployment proceeds to any environment.
+      Container integrity and health declarations are mandatory.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: RUN-001
+        enforcement: block
+      - id: RUN-002
+        enforcement: block
+      - id: SUP-002
+        enforcement: block
+      - id: OBS-001
+        enforcement: block
+      - id: BAK-001
+        enforcement: block
+        scope_condition: "service.type == 'stateful'"
+      - id: NET-001
+        enforcement: block
+        scope_condition: "service.externally_exposed == true"
+
+  continuous_audit:
+    description: >
+      Scheduled scanning for secrets, vulnerabilities, and dependency drift.
+    required_controls:
+      - id: SEC-001
+        enforcement: notify
+      - id: SEC-002
+        enforcement: notify
+      - id: SEC-003
+        enforcement: notify
+      - id: SUP-002
+        enforcement: notify
