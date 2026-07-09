@@ -10,13 +10,15 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+"
       - "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"
 
-permissions:
-  contents: write   # needed to upload release assets
+# Write permission scoped to job level only (SEC-004).
+permissions: read-all
 
 jobs:
   package-bundle:
     name: "Package and publish OPA policy bundle"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to upload release assets
 
     steps:
       - name: Checkout at tagged ref

@@ -4,6 +4,9 @@ name: "Self-Compliance Check"
 # This workflow runs the compliance pipeline against platform-compliance's
 # own repository, validating that the governance root passes its own rules.
 
+# All write permissions declared at the job level (SEC-004).
+permissions: read-all
+
 on:
   pull_request:
     branches: [main]
