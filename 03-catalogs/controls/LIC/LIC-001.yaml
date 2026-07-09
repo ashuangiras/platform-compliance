@@ -1,0 +1,67 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: LIC-001
+title: Repository must declare a license and must not use incompatible open-source dependencies
+domain: LIC
+type: preventive
+priority: P3
+severity: medium
+
+statement: >
+  Every governed repository must:
+  1. Declare an open-source license via a LICENSE file at the repository root
+  2. Not use dependencies licensed under copyleft licenses (GPL-2.0, GPL-3.0,
+     AGPL-3.0) unless the platform has an explicit policy permitting their use
+     (e.g., the platform itself is open-source under a compatible license)
+
+rationale: >
+  Using GPL or AGPL dependencies in a proprietary or business-critical platform
+  can impose copyleft obligations that require publishing the entire platform
+  codebase under the same license. This creates legal risk that can prevent the
+  platform from being used, deployed, or commercially leveraged. An undeclared
+  or incompatible license is also a liability in supply chain audits and
+  enterprise procurement processes. Detecting this early in CI costs nothing;
+  discovering it after deployment can cost significant legal fees.
+
+mapped_standards:
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 2 — Inventory and Control of Software Assets: Safeguard 2.3 — Address unauthorized software"
+    mapping_note: >
+      CIS Controls v8.1 includes managing software assets with known, controlled
+      licenses. LIC-001 ensures the legal status of all software components is
+      known and acceptable.
+  - source_id: SRC-NTIA-SBOM-2021
+    clause: "NTIA SBOM Minimum Elements: license information is a recommended field in SBOM data"
+    mapping_note: >
+      NTIA SBOM minimum elements include license information for each component.
+      LIC-001 complements SUP-004 by requiring that license compatibility is
+      verified at the point where the SBOM is generated.
+
+implementation_expectations: >
+  Every repository must have a LICENSE file in the root directory declaring
+  the license under which the code is distributed.
+
+  For dependency license scanning:
+  - Add a license scanning action: FOSSA (fossa-contrib/fossa-action),
+    GitHub's Licensed (github/licensed), or similar tool
+  - Configure the tool to fail on copyleft licenses if the platform does not
+    permit copyleft dependencies
+
+  The platform-compliance repository itself is governed by the platform team
+  and uses only permissive dependencies (MIT, Apache 2.0).
+
+evidence_required:
+  - type: github-license
+    description: >
+      GitHub API response confirming a LICENSE file exists and its SPDX
+      identifier is known and compatible.
+    format: json
+
+automation_status: partially-automated
+assessment_cadence: per-release
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - release_gate

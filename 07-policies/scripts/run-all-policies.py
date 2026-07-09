@@ -33,6 +33,13 @@ POLICY_MAP = {
     "SEC-005":   ("SEC/POL-SEC-005-GITHUB-ACTIONS-001.rego", "actions-info.json",   "data.platform.sec.sec_005_github_actions.result",   ["github-actions"]),
     "IAC-004":   ("IAC/POL-IAC-004-TERRAFORM-001.rego",       "actions-info.json",   "data.platform.iac.iac_004_terraform.result",         ["terraform"]),
     "SEC-006":   ("SEC/POL-SEC-006-DOCKER-001.rego",          "actions-info.json",   "data.platform.sec.sec_006_docker.result",            ["docker"]),
+    # ── Tier 3 ──────────────────────────────────────────────────────────────
+    "RUN-006":   ("RUN/POL-RUN-006-DOCKER-001.rego",            "dockerfile-info.json", "data.platform.run.run_006_docker.result",            ["docker"]),
+    "RUN-007":   ("RUN/POL-RUN-007-DOCKER-001.rego",            "dockerfile-info.json", "data.platform.run.run_007_docker.result",            ["docker"]),
+    "OBS-003":   ("OBS/POL-OBS-003-DOCKER-001.rego",            "dockerfile-info.json", "data.platform.obs.obs_003_docker.result",            ["docker"]),
+    "LIC-001":   ("LIC/POL-LIC-001-GITHUB-001.rego",            "lic-info.json",        "data.platform.lic.lic_001_github.result",            ["github"]),
+    "SEC-008":   ("SEC/POL-SEC-008-GITHUB-ACTIONS-001.rego",    "actions-info.json",    "data.platform.sec.sec_008_github_actions.result",    ["github-actions"]),
+
     # ── Tier 2 ──────────────────────────────────────────────────────────────
     "SUP-004":   ("SUP/POL-SUP-004-GITHUB-ACTIONS-001.rego",  "actions-info.json",   "data.platform.sup.sup_004_github_actions.result",   ["github-actions"]),
     "ACC-001":   ("ACC/POL-ACC-001-GITHUB-001.rego",           "acc-security.json",   "data.platform.acc.acc_001_github.result",            ["github"]),

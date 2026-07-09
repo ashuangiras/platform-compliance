@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SEC-008-GITHUB-ACTIONS
+control_id: SEC-008
+technology_context: github-actions
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: "No GitHub Actions job may use runs-on: self-hosted or [self-hosted, ...] without a documented justification (ADR or waiver)."
+observable_artifact: "GitHub Actions workflow files parsed for jobs.*.runs-on values."
+policy_check_ids: [POL-SEC-008-GITHUB-ACTIONS-001]

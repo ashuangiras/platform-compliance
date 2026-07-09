@@ -1,0 +1,59 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-007
+title: Containers must not share host network, PID, or IPC namespaces
+domain: RUN
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Container services must not be configured to share the host's network
+  namespace (network_mode: host), PID namespace (pid: host), or IPC namespace
+  (ipc: host). Each container must run in its own isolated namespaces.
+
+rationale: >
+  Namespace sharing erodes the fundamental isolation provided by containers:
+  - network_mode: host — container can see and bind to all host network interfaces,
+    bypassing network segmentation and potentially exposing internal services
+  - pid: host — container can see all host processes, enabling process injection
+    or surveillance of other containers and services
+  - ipc: host — container can communicate with host IPC channels (shared memory,
+    semaphores), enabling data exfiltration between otherwise isolated processes.
+  Any namespace sharing is a significant security boundary violation.
+
+mapped_standards:
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "5.9 Ensure that the host network namespace is not shared; 5.15 Ensure that the host process namespace is not shared; 5.16 Ensure that the host IPC namespace is not shared"
+    mapping_note: >
+      CIS Docker 1.6.0 sections 5.9, 5.15, and 5.16 explicitly prohibit sharing
+      host namespaces. RUN-007 combines all three into a single platform control.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 4 — Secure Configuration: container namespace isolation is a required secure configuration"
+    mapping_note: >
+      Namespace isolation is a mandatory component of container secure configuration.
+
+implementation_expectations: >
+  In docker-compose.yml, the following must NOT appear:
+    network_mode: host
+    pid: host
+    ipc: host
+
+  If these are absent (the default), the control is satisfied.
+
+evidence_required:
+  - type: docker-compose-security
+    description: >
+      Docker Compose service definitions showing no host namespace sharing
+      (network_mode, pid, ipc fields absent or not set to "host").
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

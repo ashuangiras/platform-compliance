@@ -137,11 +137,40 @@ if workflows_dir.exists():
             'triggers': triggers_dict,
         })
 
+# ── Self-hosted runner detection (SEC-008) ──────────────────────────────────
+self_hosted_jobs = []
+for wf_path in workflows_dir.glob('*.yml'):
+    if '.git' in str(wf_path):
+        continue
+    wf_rel = str(wf_path.relative_to(repo_root))
+    try:
+        content_wf = wf_path.read_text(encoding='utf-8')
+        try:
+            import yaml as _yaml2
+            wf_data2 = _yaml2.safe_load(content_wf) or {}
+        except Exception:
+            wf_data2 = {}
+        jobs = wf_data2.get('jobs', {}) or {}
+        for job_id, job in (jobs.items() if isinstance(jobs, dict) else []):
+            if not isinstance(job, dict):
+                continue
+            runs_on = job.get('runs-on', '')
+            runs_on_str = str(runs_on).lower()
+            if 'self-hosted' in runs_on_str or (isinstance(runs_on, list) and any('self-hosted' in str(r).lower() for r in runs_on)):
+                self_hosted_jobs.append({
+                    'workflow': wf_rel,
+                    'job': job_id,
+                    'runs_on': runs_on,
+                })
+    except Exception:
+        pass
+
 output = {
     'repository': {'name': repo_name},
     'workflow_files': workflow_files,
     'workflow_files_detail': workflow_files_detail,
-    'action_references': action_references
+    'action_references': action_references,
+    'self_hosted_jobs': self_hosted_jobs,
 }
 
 print(json.dumps(output, indent=2, ensure_ascii=False, default=str))

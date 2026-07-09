@@ -1,0 +1,63 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-006
+title: Privileged containers are not allowed
+domain: RUN
+type: preventive
+priority: P1
+severity: critical
+
+statement: >
+  No container in any governed platform service may run with privileged mode
+  enabled (privileged: true in Docker Compose, or securityContext.privileged: true
+  in Kubernetes manifests). Privileged mode grants the container root-equivalent
+  access to the host system and must never be used except in explicitly approved
+  infrastructure tooling with a documented waiver.
+
+rationale: >
+  A privileged container bypasses virtually all container isolation: it can
+  access all host devices, mount arbitrary filesystems, modify the host kernel
+  via sysctl, and escape the container to compromise the host system. A privileged
+  container is essentially running as root on the host. Even a single compromised
+  privileged container gives an attacker full host access, which in turn gives
+  access to all other containers, secrets, and cloud credentials on that host.
+
+mapped_standards:
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "5.4 Ensure that privileged containers are not used"
+    mapping_note: >
+      CIS Docker 1.6.0 section 5.4 explicitly prohibits privileged containers.
+      RUN-006 directly implements this recommendation as a blocking control.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 4 — Secure Configuration: Safeguard 4.1 — Establish and maintain a secure configuration process"
+    mapping_note: >
+      Running containers as privileged is a fundamental secure configuration
+      failure. CIS Controls v8.1 Control 4.1 requires secure configuration as
+      the baseline; privileged containers violate this baseline.
+
+implementation_expectations: >
+  In docker-compose.yml, verify no service has:
+    privileged: true
+
+  If a tool genuinely requires privileged mode (e.g., a system-level monitoring
+  agent), create a waiver with:
+  - Rationale explaining why the specific privilege is required
+  - Mitigating controls in place (e.g., host isolation, network policy)
+  - Review cadence (maximum 90-day waiver lifetime)
+
+evidence_required:
+  - type: docker-compose-security
+    description: >
+      Docker Compose service definitions showing privileged: false or absent
+      for all services.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

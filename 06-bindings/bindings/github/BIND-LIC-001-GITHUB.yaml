@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-LIC-001-GITHUB
+control_id: LIC-001
+technology_context: github
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: "Repository must have a LICENSE file with a known, non-copyleft SPDX identifier. Verified via GitHub API GET /repos/{owner}/{repo}."
+observable_artifact: "GitHub API repo response showing license.spdx_id and license.name."
+policy_check_ids: [POL-LIC-001-GITHUB-001]

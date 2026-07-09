@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-RUN-006-DOCKER
+control_id: RUN-006
+technology_context: docker
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: "No service in docker-compose.yml may have privileged: true."
+observable_artifact: "Docker Compose service definitions showing privileged field."
+policy_check_ids: [POL-RUN-006-DOCKER-001]

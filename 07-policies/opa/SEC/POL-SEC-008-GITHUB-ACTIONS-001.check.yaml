@@ -1,0 +1,11 @@
+id: POL-SEC-008-GITHUB-ACTIONS-001
+title: "No self-hosted GitHub Actions runners without justification"
+binding_ids: [BIND-SEC-008-GITHUB-ACTIONS]
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-008-GITHUB-ACTIONS-001.rego"
+pass_criteria: "No jobs use runs-on: self-hosted."
+fail_criteria: "One or more jobs use self-hosted runners without documented justification."
+evidence_type: github-actions-workflow
+severity: high
+introduced_date: "2026-07-10"
+status: active
