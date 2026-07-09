@@ -88,12 +88,15 @@ if workflows_dir.exists():
             wf_data = {}
 
         # Detect if this is a reusable workflow (called via workflow_call)
-        triggers = wf_data.get('on', {})
+        # PyYAML parses 'on' as boolean True, so check both string and bool key
+        triggers = wf_data.get('on', wf_data.get(True, {}))
         is_reusable = False
         if isinstance(triggers, dict):
             is_reusable = 'workflow_call' in triggers
         elif isinstance(triggers, list):
             is_reusable = 'workflow_call' in triggers
+        elif isinstance(triggers, str):
+            is_reusable = triggers == 'workflow_call'
 
         top_perms = wf_data.get('permissions', None)
         # Analyse top-level permissions

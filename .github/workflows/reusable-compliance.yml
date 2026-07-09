@@ -257,9 +257,6 @@ jobs:
           # Copy SEC-001 scan result (produced by previous job)
           [ -f /tmp/inputs/sec-secrets.json ] || echo '{"repository":{"name":"${{ github.event.repository.name }}"},"scan_tool":"none","scan_tool_version":"unavailable","findings":[],"github_alerts_open":0}' > /tmp/inputs/sec-secrets.json
 
-          # DEBUG: Show actions-info.json structure for troubleshooting SEC-005 error
-          echo "=== actions-info.json (first 20 lines) ===" && head -20 /tmp/inputs/actions-info.json 2>/dev/null || echo "(not found)"
-
           # Run all policies via the helper script
           python3 07-policies/scripts/run-all-policies.py \
             --bundle /tmp/platform-compliance-policies \

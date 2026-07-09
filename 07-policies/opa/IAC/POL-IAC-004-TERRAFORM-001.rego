@@ -69,9 +69,16 @@ result := {
     found_scanner == ""
 }
 
+# Partial set: collects all matching found_scanner references (avoids complete rule conflict)
+found_scanners[action] if {
+	some ref in input.action_references
+	some prefix in iac_scanner_prefixes
+	startswith(ref.uses, prefix)
+	action := ref.uses
+}
+
 found_scanner := action if {
-    some ref in input.action_references
-    some prefix in iac_scanner_prefixes
-    startswith(ref.uses, prefix)
-    action := ref.uses
+	some action in found_scanners
 } else := ""
+
+found_scanner_detected if count(found_scanners) > 0
