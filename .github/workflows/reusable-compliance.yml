@@ -462,6 +462,7 @@ jobs:
 
       - name: Post gate result to PR
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
