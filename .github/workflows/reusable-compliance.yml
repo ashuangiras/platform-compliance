@@ -185,9 +185,6 @@ jobs:
     name: "4 — OPA policy checks"
     runs-on: ubuntu-latest
     needs: [validate-manifest, check-required-files]
-    permissions:
-      contents: read
-      administration: read
     outputs:
       policy-results-path: ${{ steps.run-policies.outputs.results-path }}
 
@@ -223,7 +220,7 @@ jobs:
       - name: Run all applicable policy checks
         id: run-policies
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN || github.token }}
           REPO: ${{ github.repository }}
           REPO_TYPE: ${{ inputs.repository-type }}
           CONTEXTS: ${{ inputs.technology-contexts }}
