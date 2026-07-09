@@ -427,7 +427,7 @@ phases:
     - PC-0206
   - id: PC-0208
     title: Add Tier 1 controls to PROF-BASE (mandatory) and update gates
-    status: not_started
+    status: done
     tier: 1
     depends_on:
     - PC-0172
@@ -436,7 +436,7 @@ phases:
     - PC-0181
   - id: PC-0209
     title: Add container controls (RUN-004/005, SEC-006) to PROF-SERVICE-V1
-    status: not_started
+    status: done
     tier: 1
     depends_on:
     - PC-0175
@@ -444,7 +444,7 @@ phases:
     - PC-0187
   - id: PC-0210
     title: Add IAC-004 to PROF-TERRAFORM-MODULE-V1 and PROF-TERRAFORM-ROOT-V1
-    status: not_started
+    status: done
     tier: 1
     depends_on:
     - PC-0184
