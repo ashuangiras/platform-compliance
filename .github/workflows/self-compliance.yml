@@ -14,6 +14,7 @@ jobs:
   merge-gate:
     name: "Compliance: Merge Gate"
     uses: ./.github/workflows/reusable-compliance.yml
+    secrets: inherit
     with:
       gate: merge_gate
       profile-id: PROF-PLATFORM-V1
@@ -26,6 +27,7 @@ jobs:
     name: "Compliance: Release Gate"
     if: startsWith(github.ref, 'refs/tags/v')
     uses: ./.github/workflows/reusable-compliance.yml
+    secrets: inherit
     with:
       gate: release_gate
       profile-id: PROF-PLATFORM-V1

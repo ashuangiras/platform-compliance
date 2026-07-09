@@ -171,7 +171,7 @@ jobs:
 
       - name: "SEC-002 — Verify GitHub secret scanning status"
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.PLATFORM_ADMIN_TOKEN || github.token }}
         run: |
           status=$(gh api "repos/${{ github.repository }}" --jq '.security_and_analysis.secret_scanning.status // "unknown"' 2>/dev/null || echo "unknown")
           push_prot=$(gh api "repos/${{ github.repository }}" --jq '.security_and_analysis.secret_scanning_push_protection.status // "unknown"' 2>/dev/null || echo "unknown")
