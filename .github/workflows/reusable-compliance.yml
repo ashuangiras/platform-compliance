@@ -67,8 +67,9 @@ env:
   PLATFORM_COMPLIANCE_REF: ${{ inputs.platform-compliance-ref }}
   OPA_VERSION: "0.70.0"
 
-# All jobs declare write permissions only where needed at the job level.
-permissions: read-all
+# Note: this is a reusable workflow (workflow_call). Top-level permissions
+# are not set here — callers control permissions per ADR. Individual jobs
+# declare their required permissions (pull-requests: write, statuses: write).
 
 jobs:
 

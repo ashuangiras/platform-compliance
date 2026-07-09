@@ -81,11 +81,22 @@ if workflows_dir.exists():
             })
 
         # ── Parse top-level permissions block (SEC-004) ────────────────────
-        import yaml as _yaml
         try:
+            import yaml as _yaml
             wf_data = _yaml.safe_load(content) or {}
         except Exception:
             wf_data = {}
+
+        # Detect if this is a reusable workflow (called via workflow_call)
+        # PyYAML parses 'on' as boolean True, so check both string and bool key
+        triggers = wf_data.get('on', wf_data.get(True, {}))
+        is_reusable = False
+        if isinstance(triggers, dict):
+            is_reusable = 'workflow_call' in triggers
+        elif isinstance(triggers, list):
+            is_reusable = 'workflow_call' in triggers
+        elif isinstance(triggers, str):
+            is_reusable = triggers == 'workflow_call'
 
         top_perms = wf_data.get('permissions', None)
         # Analyse top-level permissions
@@ -117,6 +128,7 @@ if workflows_dir.exists():
             'permissions_declared': perms_declared,
             'top_level_has_write': top_level_write,
             'top_level_read_only': top_level_read_only,
+            'is_reusable': is_reusable,
         })
 
 output = {

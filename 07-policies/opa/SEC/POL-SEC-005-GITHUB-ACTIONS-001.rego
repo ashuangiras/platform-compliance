@@ -70,10 +70,16 @@ result := {
     found_sast_action == ""
 }
 
-# Find the first matching SAST action reference
+# Partial set: collects all matching found_sast_action references (avoids complete rule conflict)
+found_sast_actions[action] if {
+	some ref in input.action_references
+	some prefix in sast_action_prefixes
+	startswith(ref.uses, prefix)
+	action := ref.uses
+}
+
 found_sast_action := action if {
-    some ref in input.action_references
-    some prefix in sast_action_prefixes
-    startswith(ref.uses, prefix)
-    action := ref.uses
+	some action in found_sast_actions
 } else := ""
+
+found_sast_action_detected if count(found_sast_actions) > 0
