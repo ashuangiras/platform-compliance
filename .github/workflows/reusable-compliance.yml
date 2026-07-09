@@ -200,21 +200,33 @@ jobs:
       - name: Fetch policy bundle from platform-compliance
         run: |
           mkdir -p /tmp/platform-compliance-policies /tmp/pc-extract
-          # Handle both tag refs (v1.0.0) and branch refs (main)
           REF="${PLATFORM_COMPLIANCE_REF}"
           OWNER="${{ github.repository_owner }}"
-          TAG_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/tags/${REF}.tar.gz"
-          BRANCH_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/heads/${REF}.tar.gz"
-          if curl -sSfL "${TAG_URL}" -o /tmp/bundle.tar.gz 2>/dev/null; then
-            echo "Fetched tag bundle: ${REF}"
+
+          # Try release asset first (for tag refs, per ADR-0009)
+          RELEASE_URL="https://github.com/${OWNER}/platform-compliance/releases/download/${REF}/policies.tar.gz"
+          if curl -sSfL "${RELEASE_URL}" -o /tmp/policies.tar.gz 2>/dev/null; then
+            echo "Fetched release bundle: ${REF}"
+            # Verify SHA-256 if checksum is available
+            if curl -sSfL "${RELEASE_URL}.sha256" -o /tmp/policies.tar.gz.sha256 2>/dev/null; then
+              (cd /tmp && sha256sum --check policies.tar.gz.sha256)
+              echo "SHA-256 verified ✓"
+            fi
+            tar -xz -f /tmp/policies.tar.gz -C /tmp/platform-compliance-policies
           else
-            curl -sSfL "${BRANCH_URL}" -o /tmp/bundle.tar.gz
-            echo "Fetched branch bundle: ${REF}"
+            # Fall back to branch archive (for main or branch refs)
+            TAG_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/tags/${REF}.tar.gz"
+            BRANCH_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/heads/${REF}.tar.gz"
+            if curl -sSfL "${TAG_URL}" -o /tmp/bundle.tar.gz 2>/dev/null; then
+              echo "Fetched tag archive: ${REF}"
+            else
+              curl -sSfL "${BRANCH_URL}" -o /tmp/bundle.tar.gz
+              echo "Fetched branch archive: ${REF}"
+            fi
+            tar -xz -f /tmp/bundle.tar.gz -C /tmp/pc-extract
+            cp -r /tmp/pc-extract/*/07-policies/opa/. /tmp/platform-compliance-policies/
           fi
-          # Extract to temp dir, then copy just the OPA policies
-          tar -xz -f /tmp/bundle.tar.gz -C /tmp/pc-extract
-          cp -r /tmp/pc-extract/*/07-policies/opa/. /tmp/platform-compliance-policies/
-          echo "Policy bundle ready:"
+          echo "Policy bundle ready: $(find /tmp/platform-compliance-policies -name '*.rego' | wc -l) rego files"
 
 
       - name: Run all applicable policy checks

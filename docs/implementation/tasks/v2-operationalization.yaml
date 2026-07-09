@@ -134,16 +134,16 @@ phases:
   tasks:
   - id: PC-0115
     title: Ratify ADR-0009 (OPA policy bundle distribution)
-    status: not-started
+    status: done
   - id: PC-0116
     title: Ratify ADR-0010 (platform versioning and release cadence)
-    status: not-started
+    status: done
   - id: PC-0117
     title: Ratify ADR-0011 (plt CLI technology selection)
     status: not-started
   - id: PC-0118
     title: Implement policy bundle packaging step in release workflow
-    status: not-started
+    status: done
     depends_on:
     - PC-0115
   - id: PC-0119
