@@ -176,20 +176,20 @@ phases:
     - PC-0122
   - id: PC-0124
     title: Create PROF-BASE (minimal universal profile)
-    status: not-started
+    status: done
   - id: PC-0125
     title: Create PROF-TERRAFORM-MODULE-V1 (inherits PROF-BASE)
-    status: not-started
+    status: done
     depends_on:
     - PC-0124
   - id: PC-0126
     title: Create PROF-TERRAFORM-ROOT-V1 (inherits PROF-TERRAFORM-MODULE-V1)
-    status: not-started
+    status: done
     depends_on:
     - PC-0125
   - id: PC-0127
     title: Create PROF-SERVICE-V1 (inherits PROF-BASE)
-    status: not-started
+    status: done
     depends_on:
     - PC-0124
   - id: PC-0128
