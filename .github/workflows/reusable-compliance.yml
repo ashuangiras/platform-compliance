@@ -254,6 +254,13 @@ jobs:
           echo "Policy checks complete. Results in /tmp/results/"
           ls /tmp/results/
 
+      - name: Upload policy results
+        uses: actions/upload-artifact@v4
+        with:
+          name: "policy-results-${{ github.run_id }}"
+          path: /tmp/results/
+          retention-days: 1
+
   collect-evidence:
     name: "5 — Collect evidence"
     runs-on: ubuntu-latest
@@ -263,7 +270,10 @@ jobs:
 
     steps:
       - name: Download policy results
-        run: mkdir -p /tmp/results  # already populated from previous job via path
+        uses: actions/download-artifact@v4
+        with:
+          name: "policy-results-${{ github.run_id }}"
+          path: /tmp/results/
 
       - name: Assemble evidence records
         env:
