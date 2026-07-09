@@ -31,8 +31,8 @@ POLICY_MAP = {
     "RUN-004":   ("RUN/POL-RUN-004-DOCKER-001.rego",          "dockerfile-info.json", "data.platform.run.run_004_docker.result",            ["docker"]),
     "RUN-005":   ("RUN/POL-RUN-005-DOCKER-001.rego",          "dockerfile-info.json", "data.platform.run.run_005_docker.result",            ["docker"]),
     "SEC-005":   ("SEC/POL-SEC-005-GITHUB-ACTIONS-001.rego", "actions-info.json",   "data.platform.sec.sec_005_github_actions.result",   ["github-actions"]),
-    "IAC-004":   ("IAC/POL-IAC-004-TERRAFORM-001.rego",       "actions-info.json",   "data.platform.iac.iac_004_terraform.result",         ["github-actions"]),
-    "SEC-006":   ("SEC/POL-SEC-006-DOCKER-001.rego",          "actions-info.json",   "data.platform.sec.sec_006_docker.result",            ["docker", "github-actions"]),
+    "IAC-004":   ("IAC/POL-IAC-004-TERRAFORM-001.rego",       "actions-info.json",   "data.platform.iac.iac_004_terraform.result",         ["terraform"]),
+    "SEC-006":   ("SEC/POL-SEC-006-DOCKER-001.rego",          "actions-info.json",   "data.platform.sec.sec_006_docker.result",            ["docker"]),
 }
 
 

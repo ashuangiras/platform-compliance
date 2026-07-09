@@ -67,6 +67,9 @@ env:
   PLATFORM_COMPLIANCE_REF: ${{ inputs.platform-compliance-ref }}
   OPA_VERSION: "0.70.0"
 
+# All jobs declare write permissions only where needed at the job level.
+permissions: read-all
+
 jobs:
 
   validate-manifest:

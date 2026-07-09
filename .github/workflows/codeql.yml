@@ -1,0 +1,49 @@
+name: "CodeQL Security Analysis"
+
+# Runs SAST on the Python collection scripts and any other code in the repo.
+# Satisfies SEC-005 — SAST must run in CI on every change.
+# CodeQL analyses Python scripts in 07-policies/scripts/ and any other
+# Python or JSON/YAML tooling code.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    # Weekly scan to catch newly-published vulnerability signatures
+    - cron: "0 6 * * 1"
+
+# Read-only at top level — SEC-004 compliance.
+permissions: read-all
+
+jobs:
+  codeql-analysis:
+    name: "SAST — CodeQL (Python)"
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write   # required to upload SARIF results to GitHub
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          # Target only the policy scripts — not the YAML/Rego files
+          # (CodeQL analyses Python; Rego and YAML have separate linting)
+          config: |
+            paths:
+              - 07-policies/scripts
+              - .github/workflows
+            paths-ignore:
+              - "**/*.yaml"
+              - "**/*.yml"
+              - "**/*.rego"
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python"
