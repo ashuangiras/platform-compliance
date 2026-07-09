@@ -8,41 +8,41 @@
 # See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # Default owner for everything in the repository
-*                               @platform-team
+*                               @ashuangiras
 
 # Standards source registry — requires review of any new standard registration
-01-sources/                     @platform-team
+01-sources/                     @ashuangiras
 
 # Platform taxonomy — vocabulary changes affect every other domain
-02-taxonomy/                    @platform-team
+02-taxonomy/                    @ashuangiras
 
 # Control catalog — changes to controls affect all governed repositories
-03-catalogs/                    @platform-team
+03-catalogs/                    @ashuangiras
 
 # Compliance profiles — gate criteria changes affect all consuming repositories
-04-profiles/                    @platform-team
+04-profiles/                    @ashuangiras
 
 # Mapping records — provenance chain integrity
-05-mappings/                    @platform-team
+05-mappings/                    @ashuangiras
 
 # Implementation bindings — specification layer for policy authors
-06-bindings/                    @platform-team
+06-bindings/                    @ashuangiras
 
 # Policy-as-code — executable compliance rules
-07-policies/                    @platform-team
+07-policies/                    @ashuangiras
 
 # Evidence system — immutable record infrastructure
-08-evidence/                    @platform-team
+08-evidence/                    @ashuangiras
 
 # Assessment system — gate criteria and waiver governance
-09-assessments/                 @platform-team
+09-assessments/                 @ashuangiras
 
 # Schemas — contract definitions used by all tooling
-schemas/                        @platform-team
+schemas/                        @ashuangiras
 
 # Architecture decisions — immutable once accepted
-decisions/                      @platform-team
+decisions/                      @ashuangiras
 
 # Workflows — CI/CD pipeline definitions consumed by downstream repos
-.github/                        @platform-team
-workflows/                      @platform-team
+.github/                        @ashuangiras
+workflows/                      @ashuangiras

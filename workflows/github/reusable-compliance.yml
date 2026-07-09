@@ -12,7 +12,7 @@ name: "Reusable Platform Compliance Check"
 #
 #   jobs:
 #     compliance:
-#       uses: angirasa_risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+#       uses: ashuangiras/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
 #       with:
 #         gate: merge_gate
 #         profile-id: PROF-PLATFORM-V1
@@ -125,7 +125,7 @@ jobs:
           echo "TODO: Download schemas/repository-compliance.schema.json from"
           echo "platform-compliance@${PLATFORM_COMPLIANCE_REF}"
           # Implementation:
-          # curl -sSL "https://raw.githubusercontent.com/angirasa_risk/platform-compliance/${PLATFORM_COMPLIANCE_REF}/schemas/repository-compliance.schema.json" \
+          # curl -sSL "https://raw.githubusercontent.com/ashuangiras/platform-compliance/${PLATFORM_COMPLIANCE_REF}/schemas/repository-compliance.schema.json" \
           #   -o /tmp/repository-compliance.schema.json
 
       - name: Validate manifest schema
@@ -474,7 +474,7 @@ jobs:
               blocking ? `**Blocking controls:** \`${blocking}\`\n\nFix these controls before this PR can be merged.` : '',
               `**Workflow run:** ${runId}`,
               '',
-              `*Governed by [PROF-PLATFORM-V1](https://github.com/angirasa_risk/platform-compliance/blob/main/04-profiles/PROF-PLATFORM-V1.yaml)*`
+              `*Governed by [PROF-PLATFORM-V1](https://github.com/ashuangiras/platform-compliance/blob/main/04-profiles/PROF-PLATFORM-V1.yaml)*`
             ].filter(Boolean).join('\n');
 
             await github.rest.issues.createComment({

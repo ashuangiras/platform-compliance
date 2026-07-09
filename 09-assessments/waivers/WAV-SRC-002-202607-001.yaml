@@ -7,11 +7,11 @@ control_id: "SRC-002"
 
 resource_ref:
   type: repository
-  identifier: "https://github.com/angirasa_risk/platform-compliance"
+  identifier: "https://github.com/ashuangiras/platform-compliance"
 
 rationale: >
   GitHub prohibits users from approving their own pull requests. The platform is
-  currently operated by a single contributor (angirasa_risk). During this bootstrap
+  currently operated by a single contributor (ashuangiras). During this bootstrap
   phase, no second contributor exists to provide a review. Requiring PR approval
   therefore makes all changes to this repository unmergeable without the bootstrap
   workaround documented in ADR-0003 (temporary reduction of required_approving_review_count
@@ -37,7 +37,7 @@ compensating_controls:
   - DOC-001    # README must still be present
   - CHG-001    # change records still required
 
-approved_by: "angirasa_risk (platform-team)"
+approved_by: "ashuangiras (platform-team)"
 approved_date: "2026-07-09"
 expiry_date: "2026-10-07"
 review_date: "2026-08-09"

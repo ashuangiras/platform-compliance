@@ -98,7 +98,7 @@ The `evidence-collect` workflow (see `../workflows/github/reusable-compliance.ym
 3. Runs each applicable policy check via the OPA evaluator
 4. Converts the structured OPA output to an evidence record
 5. Computes the `artifact_hash`
-6. Writes the record to `../08-evidence/collected/angirasa_risk/{repo}/`
+6. Writes the record to `../08-evidence/collected/ashuangiras/{repo}/`
 
 ### Manual collection (fallback)
 

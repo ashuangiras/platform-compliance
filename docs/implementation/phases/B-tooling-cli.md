@@ -38,7 +38,7 @@ Consuming repos reference the bundle at a pinned version:
 # In the reusable workflow
 - name: Fetch policy bundle
   run: |
-    curl -sSfL "https://github.com/angirasa_risk/platform-compliance/releases/download/v1.1.0/policies.tar.gz" \
+    curl -sSfL "https://github.com/ashuangiras/platform-compliance/releases/download/v1.1.0/policies.tar.gz" \
       | tar -xz -C /tmp/policy-bundle
 ```
 

@@ -73,4 +73,4 @@ See [`tasks/v3-platform.yaml`](../tasks/v3-platform.yaml)
 - `platform-infrastructure` has completed at least one full deployment gate + terraform apply cycle
 - `platform-services` has at least one service with a passing deployment gate assessment
 - CAT-001 is active and all services have registered service contracts
-- No `angirasa_risk` placeholder remains in any file in any governed repository
+- No `ashuangiras` placeholder remains in any file in any governed repository
