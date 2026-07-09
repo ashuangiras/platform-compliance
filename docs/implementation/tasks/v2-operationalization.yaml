@@ -377,51 +377,51 @@ phases:
     - PC-0196
   - id: PC-0198
     title: Define RUN-006 (privileged containers are not allowed)
-    status: not_started
+    status: done
     tier: 3
   - id: PC-0199
     title: Write binding BIND-RUN-006-DOCKER and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 3
     depends_on:
     - PC-0198
   - id: PC-0200
     title: Define RUN-007 (containers must not share host network/PID/IPC namespaces)
-    status: not_started
+    status: done
     tier: 3
   - id: PC-0201
     title: Write binding BIND-RUN-007-DOCKER and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 3
     depends_on:
     - PC-0200
   - id: PC-0202
     title: Define OBS-003 (services must expose Prometheus metrics endpoint)
-    status: not_started
+    status: done
     tier: 3
   - id: PC-0203
     title: Write binding BIND-OBS-003-GITHUB and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 3
     depends_on:
     - PC-0202
   - id: PC-0204
     title: Define LIC-001 (open source licenses must be compatible with usage terms)
-    status: not_started
+    status: done
     tier: 3
   - id: PC-0205
     title: Write binding BIND-LIC-001-GITHUB-ACTIONS and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 3
     depends_on:
     - PC-0204
   - id: PC-0206
     title: Define SEC-008 (no self-hosted runners without documented justification)
-    status: not_started
+    status: done
     tier: 3
   - id: PC-0207
     title: Write binding BIND-SEC-008-GITHUB-ACTIONS and OPA policy + fixture
-    status: not_started
+    status: done
     tier: 3
     depends_on:
     - PC-0206
@@ -450,7 +450,7 @@ phases:
     - PC-0184
   - id: PC-0211
     title: Add Tier 2 controls to profiles and run full CI validation
-    status: not_started
+    status: done
     tier: 2
     depends_on:
     - PC-0189
@@ -459,7 +459,7 @@ phases:
     - PC-0197
   - id: PC-0212
     title: Add Tier 3 controls to profiles and run full CI validation
-    status: not_started
+    status: done
     tier: 3
     depends_on:
     - PC-0199

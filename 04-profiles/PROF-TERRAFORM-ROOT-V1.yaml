@@ -38,6 +38,7 @@ categories:
     controls:
     - id: SRC-003
     - id: IAC-003
+    - id: IAC-005
   deferred:
     description: 'Planned controls not yet enforced in this profile version.
 
@@ -168,4 +169,6 @@ gates:
     - id: SUP-001
       enforcement: notify
     - id: IAC-004
+      enforcement: notify
+    - id: IAC-005
       enforcement: notify

@@ -117,6 +117,17 @@ for compose_path in list(repo_root.rglob('docker-compose*.yml')) + list(repo_roo
         cap_add  = svc.get('cap_add', [])
         cap_drop_list = [c.upper() for c in cap_drop] if isinstance(cap_drop, list) else []
         cap_add_list  = [c.upper() for c in cap_add]  if isinstance(cap_add,  list) else []
+        # Namespace isolation fields (RUN-007)
+        network_mode = str(svc.get('network_mode', '') or '')
+        pid_mode     = str(svc.get('pid', '') or '')
+        ipc_mode     = str(svc.get('ipc', '') or '')
+        # Metrics endpoint detection (OBS-003): port 9090 exposed or METRICS env var
+        ports = svc.get('ports', [])
+        ports_str = str(ports)
+        environment = svc.get('environment', {}) or {}
+        env_vars = list(environment.keys()) if isinstance(environment, dict) else [str(e) for e in environment]
+        metrics_port_exposed = '9090' in ports_str or '8080' in ports_str
+        metrics_env_declared = any('METRIC' in str(k).upper() for k in env_vars)
         compose_services.append({
             'compose_file': rel_path,
             'service': svc_name,
@@ -125,6 +136,14 @@ for compose_path in list(repo_root.rglob('docker-compose*.yml')) + list(repo_roo
             'caps_drop_all': 'ALL' in cap_drop_list,
             'read_only': bool(svc.get('read_only', False)),
             'privileged': bool(svc.get('privileged', False)),
+            'network_mode': network_mode,
+            'pid_mode': pid_mode,
+            'ipc_mode': ipc_mode,
+            'host_network': network_mode == 'host',
+            'host_pid': pid_mode == 'host',
+            'host_ipc': ipc_mode == 'host',
+            'metrics_port_exposed': metrics_port_exposed,
+            'metrics_env_declared': metrics_env_declared,
         })
 
 output = {

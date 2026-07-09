@@ -1,0 +1,68 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: OBS-003
+title: Services must expose a Prometheus-compatible metrics endpoint
+domain: OBS
+type: detective
+priority: P2
+severity: medium
+
+statement: >
+  Every platform service (PROF-SERVICE-V1) must expose a metrics endpoint
+  compatible with the Prometheus scrape format (HTTP GET /metrics returning
+  text/plain Prometheus exposition format). The endpoint must be declared in
+  the service contract and must be reachable from the monitoring infrastructure.
+  Port 9090 (Prometheus default) or an alternative documented port is acceptable.
+
+rationale: >
+  Without a metrics endpoint, SLO tracking (REL-001) is impossible, anomaly
+  detection cannot function, and the platform cannot automatically alert on
+  capacity, latency, or error rate issues before they become outages. Prometheus
+  is the de-facto standard for containerised service metrics; its exposition
+  format is supported by all major observability platforms (Grafana, Datadog,
+  NewRelic, etc.). A missing metrics endpoint is a significant observability gap
+  that increases mean-time-to-detect (MTTD) during incidents.
+
+mapped_standards:
+  - source_id: SRC-GOOGLE-SRE
+    clause: "Chapter 6 — Monitoring Distributed Systems: the four golden signals (latency, traffic, errors, saturation) require metrics instrumentation"
+    mapping_note: >
+      Google SRE Chapter 6 describes the four golden signals that every service
+      must expose. A Prometheus metrics endpoint is the implementation mechanism
+      that makes these signals observable.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "REL 06 — How do you monitor workload resources? Best practice: all components expose metrics for monitoring"
+    mapping_note: >
+      AWS WAF REL 06 requires monitoring all workload components. OBS-003 mandates
+      the technical mechanism (Prometheus metrics) that makes monitoring possible.
+
+implementation_expectations: >
+  The service must:
+  1. Expose GET /metrics (or documented alternative path) returning Prometheus
+     exposition format (text/plain with # HELP and # TYPE comments)
+  2. Expose the metrics port in docker-compose.yml (port 9090 or documented alternative)
+  3. Declare the metrics endpoint in the service contract file OR in an environment
+     variable METRICS_PORT or METRICS_PATH
+
+  Common implementations:
+  - Python: prometheus_client library
+  - Go: prometheus/client_golang
+  - Java/Spring: micrometer with prometheus registry
+  - Node.js: prom-client
+  - Direct: OpenMetrics-compatible /metrics endpoint
+
+evidence_required:
+  - type: docker-compose-security
+    description: >
+      Docker Compose service definition showing port 9090 or a METRICS_PORT
+      environment variable declared.
+    format: json
+
+automation_status: automation-target
+assessment_cadence: per-merge
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - release_gate

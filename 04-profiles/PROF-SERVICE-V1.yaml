@@ -40,6 +40,8 @@ categories:
     - id: RUN-004
     - id: RUN-005
     - id: SEC-006
+    - id: RUN-006
+    - id: RUN-007
   manual_initially:
     description: 'Controls accepted via human attestation or service contract declaration
       until automated tooling is available. Automation targets before v2.
@@ -51,6 +53,7 @@ categories:
     - id: OBS-002
     - id: INC-001
       scope_condition: service.type is defined
+    - id: OBS-003
   deferred:
     description: 'Planned controls not yet enforced.
 
@@ -113,6 +116,10 @@ gates:
       enforcement: block
     - id: SEC-006
       enforcement: block
+    - id: RUN-006
+      enforcement: block
+    - id: RUN-007
+      enforcement: block
   release_gate:
     description: 'Evaluated before a service version tag is published. All mandatory
       controls must pass, plus health endpoint, resource limits, logging attestation,
@@ -162,6 +169,12 @@ gates:
       enforcement: block
     - id: SEC-006
       enforcement: block
+    - id: RUN-006
+      enforcement: block
+    - id: RUN-007
+      enforcement: block
+    - id: OBS-003
+      enforcement: warn
   deployment_gate:
     description: 'Evaluated before a service deployment proceeds to any environment.
       Container integrity and health declarations are mandatory.
@@ -189,6 +202,10 @@ gates:
     - id: RUN-004
       enforcement: block
     - id: RUN-005
+      enforcement: block
+    - id: RUN-006
+      enforcement: block
+    - id: RUN-007
       enforcement: block
   continuous_audit:
     description: 'Scheduled scanning for secrets, vulnerabilities, and dependency

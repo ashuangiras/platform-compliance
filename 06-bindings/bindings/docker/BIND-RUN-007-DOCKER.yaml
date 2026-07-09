@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-RUN-007-DOCKER
+control_id: RUN-007
+technology_context: docker
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: "No service in docker-compose.yml may use network_mode: host, pid: host, or ipc: host."
+observable_artifact: "Docker Compose service definitions showing namespace fields."
+policy_check_ids: [POL-RUN-007-DOCKER-001]

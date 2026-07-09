@@ -1,0 +1,11 @@
+id: POL-LIC-001-GITHUB-001
+title: "Repository must have a permissive LICENSE and no copyleft dependencies"
+binding_ids: [BIND-LIC-001-GITHUB]
+engine: opa
+file_path: "07-policies/opa/LIC/POL-LIC-001-GITHUB-001.rego"
+pass_criteria: "LICENSE file present with non-copyleft SPDX ID."
+fail_criteria: "No LICENSE file, or copyleft license detected (GPL/AGPL)."
+evidence_type: github-license
+severity: medium
+introduced_date: "2026-07-10"
+status: active

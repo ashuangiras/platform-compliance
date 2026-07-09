@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-OBS-003-DOCKER
+control_id: OBS-003
+technology_context: docker
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: "Services in docker-compose.yml must expose port 9090 or declare a METRICS_PORT/METRICS_PATH environment variable."
+observable_artifact: "Docker Compose service definitions showing ports and environment variables."
+policy_check_ids: [POL-OBS-003-DOCKER-001]

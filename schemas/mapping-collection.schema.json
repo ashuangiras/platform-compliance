@@ -36,7 +36,8 @@
         "REL",
         "DOC",
         "ACC",
-        "AUD"
+        "AUD",
+        "LIC"
       ],
       "description": "Primary control domain this collection covers. Informational."
     },

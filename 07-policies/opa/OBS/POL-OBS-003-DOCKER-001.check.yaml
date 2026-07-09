@@ -1,0 +1,11 @@
+id: POL-OBS-003-DOCKER-001
+title: "Service must expose Prometheus metrics endpoint (port 9090 or METRICS env var)"
+binding_ids: [BIND-OBS-003-DOCKER]
+engine: opa
+file_path: "07-policies/opa/OBS/POL-OBS-003-DOCKER-001.rego"
+pass_criteria: "At least one service exposes port 9090 or has a METRICS env var."
+fail_criteria: "No metrics endpoint evidence found in any service."
+evidence_type: docker-compose-security
+severity: medium
+introduced_date: "2026-07-10"
+status: active

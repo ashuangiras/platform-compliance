@@ -166,3 +166,16 @@ domains:
       - Cloud provider CloudTrail / Cloud Audit Logs enabled
       - Log integrity (tamper-evident storage)
       - Minimum retention periods
+
+  LIC:
+    name: License Compliance
+    description: >
+      Controls governing open-source license usage and compatibility. Covers
+      declaring the repository's own license, inventorying dependency licenses,
+      and preventing copyleft license obligations that conflict with platform
+      usage terms.
+    examples:
+      - LICENSE file present and permissive
+      - No GPL/AGPL transitive dependencies without explicit waiver
+      - License scanning in CI pipeline
+      - SBOM includes license identifiers

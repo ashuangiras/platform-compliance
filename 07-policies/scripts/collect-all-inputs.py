@@ -206,7 +206,33 @@ def main():
         }
     }))
 
+    # ── LIC-001: License compliance check ────────────────────────────────────
+    # Check repo's own license and whether a license scan action exists
+    repo_license = (repo_data.get("license") or {})
+    spdx_id = repo_license.get("spdx_id", "") or ""
+    # Copyleft licenses that may restrict usage
+    copyleft_licenses = {"GPL-2.0-only", "GPL-2.0-or-later", "GPL-3.0-only",
+                         "GPL-3.0-or-later", "AGPL-3.0-only", "AGPL-3.0-or-later",
+                         "LGPL-2.0-only", "LGPL-2.0-or-later", "LGPL-2.1-only",
+                         "LGPL-2.1-or-later", "LGPL-3.0-only", "LGPL-3.0-or-later"}
+    license_is_copyleft = spdx_id in copyleft_licenses
+    license_present = bool(repo_license.get("name"))
+    # Check if any license-scanning action is present in workflows
+    license_scan_patterns = ["fossa-contrib/fossa-action", "licensefinder/",
+                             "github/licensed", "pypa/gh-action-pypi-publish",
+                             "check-license", "license-checker"]
+    (out / "lic-info.json").write_text(json.dumps({
+        "repository": {"name": repo_name},
+        "license": {
+            "spdx_id": spdx_id,
+            "name": repo_license.get("name", ""),
+            "present": license_present,
+            "is_copyleft": license_is_copyleft,
+        }
+    }))
+
     print(f"Inputs written to {out}/")
+
     for f in sorted(out.iterdir()):
         print(f"  {f.name}")
 

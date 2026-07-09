@@ -1,0 +1,11 @@
+id: POL-RUN-007-DOCKER-001
+title: "Containers must not share host network, PID, or IPC namespaces"
+binding_ids: [BIND-RUN-007-DOCKER]
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-007-DOCKER-001.rego"
+pass_criteria: "No service uses network_mode/pid/ipc: host."
+fail_criteria: "One or more services share a host namespace."
+evidence_type: docker-compose-security
+severity: high
+introduced_date: "2026-07-10"
+status: active

@@ -1,0 +1,11 @@
+id: POL-RUN-006-DOCKER-001
+title: "Privileged containers are not allowed in Docker Compose"
+binding_ids: [BIND-RUN-006-DOCKER]
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-006-DOCKER-001.rego"
+pass_criteria: "No service has privileged: true."
+fail_criteria: "One or more services have privileged: true."
+evidence_type: docker-compose-security
+severity: critical
+introduced_date: "2026-07-10"
+status: active

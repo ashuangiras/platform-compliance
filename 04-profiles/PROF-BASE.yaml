@@ -31,6 +31,7 @@ categories:
     - id: DOC-001
     - id: CHG-002
     - id: SEC-004
+    - id: SEC-007
   manual_initially:
     description: 'Controls accepted via human attestation until automated tooling
       is available. These controls warn at the merge gate and block at the release
@@ -40,6 +41,11 @@ categories:
     controls:
     - id: SRC-003
     - id: SEC-005
+    - id: SUP-004
+    - id: ACC-001
+    - id: AUD-001
+    - id: SEC-008
+    - id: LIC-001
   deferred:
     description: 'Controls declared as planned for a future profile version. Not checked
       now.
@@ -113,6 +119,10 @@ gates:
       enforcement: block
     - id: SEC-005
       enforcement: warn
+    - id: SEC-007
+      enforcement: warn
+    - id: SEC-008
+      enforcement: warn
   release_gate:
     description: 'Controls evaluated before a version tag may be published. Includes
       all merge gate controls plus release-specific checks.
@@ -137,6 +147,16 @@ gates:
       enforcement: block
     - id: SEC-005
       enforcement: block
+    - id: SEC-007
+      enforcement: block
+    - id: SUP-004
+      enforcement: warn
+    - id: ACC-001
+      enforcement: warn
+    - id: SEC-008
+      enforcement: warn
+    - id: LIC-001
+      enforcement: warn
   deployment_gate:
     description: 'Controls evaluated before a deployment may proceed. Inherits all
       release gate requirements.
@@ -165,4 +185,8 @@ gates:
     - id: SEC-002
       enforcement: notify
     - id: SEC-004
+      enforcement: notify
+    - id: SEC-007
+      enforcement: notify
+    - id: AUD-001
       enforcement: notify
