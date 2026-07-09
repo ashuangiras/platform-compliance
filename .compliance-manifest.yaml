@@ -2,7 +2,7 @@ schema_version: "1.0.0"
 
 repository:
   name: platform-compliance
-  url: "https://github.com/angirasa-risk/platform-compliance"
+  url: "https://github.com/angirasa_risk/platform-compliance"
   type: platform-repo
   has_container_images: false
 
