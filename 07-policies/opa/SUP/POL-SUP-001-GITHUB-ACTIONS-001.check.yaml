@@ -1,0 +1,18 @@
+id: POL-SUP-001-GITHUB-ACTIONS-001
+title: "All GitHub Actions 'uses:' references are pinned to tags or commit SHAs"
+binding_ids:
+  - BIND-SUP-001-GITHUB-ACTIONS
+engine: opa
+file_path: "07-policies/opa/SUP/POL-SUP-001-GITHUB-ACTIONS-001.rego"
+pass_criteria: >
+  All 'uses:' references in .github/workflows/*.yml files are pinned to either
+  a version tag (e.g., @v4) or a full commit SHA (e.g., @abc123...40chars).
+  Docker container actions (uses: docker://...) are excluded — governed by SUP-002.
+  result: not_applicable if no action references are found.
+fail_criteria: >
+  One or more 'uses:' references use a branch name (@main, @master), have no pin
+  at all, or use any mutable reference that could resolve to different code.
+evidence_type: dependency-pin-check
+severity: high
+introduced_date: "2026-07-08"
+status: active

@@ -1,0 +1,53 @@
+$schema: "../../schemas/change-record.schema.json"
+
+id: "CHG-20260708-001"
+schema_version: "1.0.0"
+
+change_type: "control"
+
+description: >
+  Initial build of platform-compliance v1.0.0. Establishes the complete compliance
+  backbone: standards source registry, platform taxonomy, control catalog (23 controls),
+  compliance profiles, standard-to-control mappings, implementation bindings, OPA
+  policy checks, evidence model, assessment model, reusable CI/CD workflows,
+  and all governance schemas.
+
+  This change record covers the entire v1.0.0 initial build as a single bootstrap
+  record. From v1.0.1 onwards, individual changes will each have their own change record.
+
+affected_object_ids:
+  - "SRC-001"
+  - "SRC-002"
+  - "SRC-003"
+  - "SRC-004"
+  - "SUP-001"
+  - "SUP-002"
+  - "SUP-003"
+  - "IAC-001"
+  - "IAC-002"
+  - "IAC-003"
+  - "SEC-001"
+  - "SEC-002"
+  - "SEC-003"
+  - "RUN-001"
+  - "RUN-002"
+  - "RUN-003"
+  - "OBS-001"
+  - "OBS-002"
+  - "BAK-001"
+  - "CHG-001"
+  - "CHG-002"
+  - "DOC-001"
+  - "DOC-002"
+  - "INC-001"
+  - "NET-001"
+  - "PROF-PLATFORM-V1"
+
+related_adr_id: "ADR-0001"
+
+breaking: false
+
+author: "platform-team"
+date: "2026-07-08"
+
+review_refs: []

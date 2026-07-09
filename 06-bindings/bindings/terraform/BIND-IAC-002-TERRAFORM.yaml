@@ -1,0 +1,42 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-IAC-002-TERRAFORM
+control_id: IAC-002
+technology_context: terraform
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  Before any terraform apply is executed against a production or staging
+  environment, the following must be true:
+
+  1. A terraform plan was generated against the same commit SHA being applied
+  2. The plan output was posted as a comment on the PR that introduced the
+     change (or attached as a CI artifact with a link in the PR)
+  3. The PR received at least one approving review after the plan was posted
+     (i.e., the approval was not granted before the most recent plan)
+  4. The apply uses the plan file from step 1 (plan-file based apply, not
+     a fresh apply that may diverge from the reviewed plan)
+
+  This binding applies to repositories of type terraform-root only.
+  Terraform module repositories run plan in CI for validation but do not apply.
+
+observable_artifact: >
+  a) CI artifact or PR comment confirming plan was generated:
+  {
+    "plan_generated": true,
+    "plan_commit_sha": "abc123...",
+    "plan_posted_at": "2026-07-08T14:00:00Z",
+    "plan_summary": {"add": 2, "change": 1, "destroy": 0},
+    "plan_artifact_url": "https://..."
+  }
+
+  b) GitHub PR review confirming approval after plan:
+  GET /repos/{owner}/{repo}/pulls/{number}/reviews
+  Filter: reviews with state=APPROVED and submitted_at > plan_posted_at
+
+  c) Apply step reference: the workflow confirms it is using the plan file
+  from the approved PR rather than running a fresh speculative plan.
+
+policy_check_ids: []
+# Planned policy: POL-IAC-002-TERRAFORM-001 (requires CI tooling integration — partially-automated)

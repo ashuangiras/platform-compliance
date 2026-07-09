@@ -1,0 +1,118 @@
+# Mappings: OpenGitOps → SRC, IAC, SUP domain controls
+#
+# Source: SRC-OPENGITOPS-V1
+# Domains: SRC, IAC, SUP
+# Populated: 2026-07-08
+#
+# OpenGitOps defines four principles. Principles 1 and 2 are normative for
+# the current platform phase. Principles 3 and 4 are informative (deferred
+# to when a GitOps reconciliation runtime is adopted).
+
+source_id: SRC-OPENGITOPS-V1
+
+mappings:
+  - id: MAP-OPENGITOPS-SRC-001
+    source_id: SRC-OPENGITOPS-V1
+    source_clause: "Principle 2 — Versioned and Immutable"
+    source_clause_text: >
+      The desired state is stored in a way that enforces immutability and
+      versioning, retaining a complete version history.
+    control_id: SRC-001
+    rationale: >
+      GitOps Principle 2 requires that desired state be stored with complete
+      version history and immutability guarantees. Branch protection (SRC-001)
+      enforces immutability at the Git layer by preventing history rewriting
+      (force pushes) and preventing deletion of the default branch. Without
+      branch protection, the "complete version history" guarantee is violated.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENGITOPS-SRC-002
+    source_id: SRC-OPENGITOPS-V1
+    source_clause: "Principle 2 — Versioned and Immutable"
+    control_id: SRC-002
+    rationale: >
+      Pull requests with required reviews are the mechanism by which all
+      changes to desired state are versioned with associated review evidence.
+      A merge without a PR removes this evidentiary link from the change
+      to its review context.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENGITOPS-IAC-001
+    source_id: SRC-OPENGITOPS-V1
+    source_clause: "Principle 1 — Declarative"
+    source_clause_text: >
+      A system managed by GitOps must have its desired state expressed
+      declaratively.
+    control_id: IAC-001
+    rationale: >
+      Terraform code that fails `fmt` or `validate` cannot correctly express
+      desired state — it either has syntax errors (validate) or inconsistent
+      formatting that signals poor-quality declarative definition (fmt).
+      Enforcing both checks ensures that the committed desired state is valid
+      and canonical.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENGITOPS-IAC-002
+    source_id: SRC-OPENGITOPS-V1
+    source_clause: "Principle 3 — Pulled Automatically (adapted for human-initiated apply phase)"
+    source_clause_text: >
+      Software agents automatically pull the desired state declarations.
+    control_id: IAC-002
+    rationale: >
+      In the platform's current phase (human-initiated apply), plan-before-apply
+      is the manual equivalent of the GitOps reconciliation review. While full
+      automated reconciliation is deferred, the plan review gate ensures that
+      proposed infrastructure changes are explicitly reviewed before application,
+      consistent with the intent of Principle 3.
+      Mapping type: adapted — the principle is implemented in a manual form
+      appropriate for the current platform maturity level.
+    mapping_type: partial
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENGITOPS-IAC-003
+    source_id: SRC-OPENGITOPS-V1
+    source_clause: "Principle 1 — Declarative"
+    control_id: IAC-003
+    rationale: >
+      A module with hardcoded environment-specific values is not fully
+      declarative — part of the actual desired state is embedded in code rather
+      than in the configuration passed to it. Parameterising all environment
+      values ensures the module is a pure declarative expression of desired
+      structure.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENGITOPS-SUP-001
+    source_id: SRC-OPENGITOPS-V1
+    source_clause: "Principle 2 — Versioned and Immutable"
+    control_id: SUP-001
+    rationale: >
+      Unpinned dependencies mean the same Git commit can produce different
+      infrastructure when a dependency is updated upstream. This violates
+      Principle 2's immutability guarantee: the desired state is not truly
+      versioned if its inputs can change without a corresponding change to
+      the committed code.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENGITOPS-SUP-002
+    source_id: SRC-OPENGITOPS-V1
+    source_clause: "Principle 2 — Versioned and Immutable"
+    control_id: SUP-002
+    rationale: >
+      A mutable container image tag (e.g., `latest`) violates the immutability
+      principle for the same reason as a floating dependency version: the same
+      Git commit can deploy different container images over time, making the
+      deployed state non-deterministic with respect to source control.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

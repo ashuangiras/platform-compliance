@@ -1,0 +1,81 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: INC-001
+title: Service incidents meeting severity threshold must produce incident records
+domain: INC
+type: detective
+priority: P2
+severity: medium
+
+statement: >
+  Any incident affecting a platform-managed service that meets the defined severity
+  threshold must have a formal incident record created within 48 hours of
+  resolution. The incident record must document root cause, remediation steps,
+  and lessons learned.
+
+rationale: >
+  Incidents that are resolved without a written record leave no trace in the
+  platform's compliance and operational history. Recurring issues cannot be
+  identified without records. Systemic weaknesses that are revealed by incidents
+  cannot be traced back to specific controls. The 48-hour window after resolution
+  balances the need for accurate, fresh recollection with the operational pressure
+  immediately following an incident.
+
+mapped_standards:
+  - source_id: SRC-GOOGLE-SRE
+    clause: "[PLACEHOLDER: SRE book Chapter 14 — Managing Incidents; postmortem reference]"
+    mapping_note: >
+      Google SRE Chapter 14 describes the incident management lifecycle including
+      the blameless post-mortem as a standard practice. INC-001 adapts this to
+      a lightweight incident record rather than a full post-mortem process.
+  - source_id: SRC-ITIL-ADAPTED
+    clause: "Incident Management practice (adapted)"
+    mapping_note: >
+      ITIL 4 Incident Management requires that incidents be recorded and their
+      resolution documented. The platform adapts this to structured incident
+      records.
+
+implementation_expectations: >
+  Severity threshold for INC-001:
+  - High severity: any incident causing service unavailability for > 15 minutes
+  - Critical severity: any incident causing data loss, security breach, or
+    widespread service unavailability
+
+  Low and medium severity incidents are tracked as GitHub Issues but do not
+  require a formal incident record.
+
+  The incident record must be created in 09-assessments/incidents/ (or a
+  designated directory to be defined) within 48 hours of incident resolution.
+
+  Required incident record fields:
+  - id, title, severity
+  - description (what happened)
+  - affected controls (which controls were violated or exposed as inadequate)
+  - discovered_at, resolved_at
+  - root_cause
+  - remediation (what was done to resolve)
+  - recurrence_prevention (what changes will prevent recurrence)
+  - follow-up actions with owners and dates
+
+evidence_required:
+  - type: incident-record-file
+    description: >
+      Incident record YAML file created within 48 hours of incident resolution,
+      conforming to schemas/incident-record.schema.yaml.
+    format: yaml
+
+automation_status: not-automatable
+assessment_cadence: continuous
+failure_behavior: notify
+failure_applies_to:
+  - continuous_audit
+
+lifecycle_status: active
+introduced_date: "2026-07-08"
+
+notes: >
+  The notification behavior means that overdue incident records (no record
+  created within 48 hours of a threshold-meeting incident) generate an alert
+  to the compliance contact. The continuous audit checks for incidents that
+  have been reported (via GitHub Issues tagged as incidents) but do not have
+  a corresponding formal record.

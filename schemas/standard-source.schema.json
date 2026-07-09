@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/standard-source.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Standard Source",
+  "description": "A registered external standard in the platform standards source registry (01-sources/registry/). A standard must be registered here before any platform control may cite it as provenance.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "version",
+    "publisher",
+    "source_url",
+    "retrieved_at",
+    "registered_date",
+    "registered_by",
+    "role",
+    "applies_to",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema reference (optional, for editor tooling)"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^SRC-[A-Z0-9]+-[A-Z0-9-]+$",
+      "description": "Stable identifier. Format: SRC-{ISSUER}-{STANDARD}-{VERSION_SLUG}. Never changes once assigned.",
+      "examples": ["SRC-OPENSSF-SLSA-V1", "SRC-CIS-DOCKER-V1-6"]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Full canonical name of the standard as published by its issuing body."
+    },
+    "version": {
+      "type": "string",
+      "description": "Version string exactly as published by the issuing body."
+    },
+    "publisher": {
+      "type": "string",
+      "description": "Organisation that publishes and maintains this standard."
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Canonical URL for this specific version of the standard."
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this version was retrieved and reviewed before registration (ISO 8601)."
+    },
+    "registered_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this entry was added to the registry (ISO 8601)."
+    },
+    "registered_by": {
+      "type": "string",
+      "description": "Identity of the person or role that registered this entry."
+    },
+    "role": {
+      "type": "string",
+      "enum": ["normative", "adopted", "adapted", "informative", "deferred"],
+      "description": "normative: controls derived directly from requirements. adopted: practices applied as-is. adapted: intent adopted but tailored; adaptation documented in notes. informative: context only. deferred: registered but not yet active."
+    },
+    "applies_to": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "Domain codes or taxonomy values indicating the platform scope this standard addresses."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "deprecated", "superseded"],
+      "description": "active: in use; deprecated: not recommended but existing citations valid; superseded: replaced, superseded_by must be set."
+    },
+    "superseded_by": {
+      "type": "string",
+      "pattern": "^SRC-[A-Z0-9]+-[A-Z0-9-]+$",
+      "description": "Required when status is superseded. The source ID of the replacing entry."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Platform-level notes on scope, applicability, or adaptation rationale. Required when role is adapted."
+    }
+  },
+  "if": {
+    "properties": { "role": { "const": "adapted" } },
+    "required": ["role"]
+  },
+  "then": {
+    "required": ["notes"],
+    "properties": {
+      "notes": { "minLength": 10 }
+    }
+  }
+}

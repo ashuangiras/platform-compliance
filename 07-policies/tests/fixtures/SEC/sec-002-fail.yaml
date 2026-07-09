@@ -1,0 +1,8 @@
+
+repository:
+  name: insecure-repo
+  security_and_analysis:
+    secret_scanning:
+      status: disabled
+    secret_scanning_push_protection:
+      status: disabled

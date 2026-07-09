@@ -1,0 +1,49 @@
+# Platform Technology Contexts
+#
+# Technology context identifiers used in implementation bindings (06-bindings/).
+# A binding is specific to one technology context — it describes how a control
+# is satisfied when the platform component uses that technology.
+#
+# When a repository uses multiple technology contexts (e.g., a service repo
+# that uses both GitHub and Docker), the applicable bindings from each context
+# are combined.
+
+contexts:
+  github:
+    code: github
+    description: >
+      The repository is hosted on GitHub. Applicable to all platform repositories.
+      Bindings in this context cover: branch protection, GitHub Actions, secret
+      scanning, Dependabot, CODEOWNERS, repository settings.
+    applies_when: "always (all platform repositories are GitHub-hosted)"
+
+  terraform:
+    code: terraform
+    description: >
+      The repository contains Terraform or OpenTofu code. Bindings in this context
+      cover: module structure, provider pinning, fmt/validate, plan process, and
+      module documentation.
+    applies_when: "repository.type in ['terraform-module', 'terraform-root']"
+
+  docker:
+    code: docker
+    description: >
+      The repository builds or manages Docker images. Bindings in this context
+      cover: Dockerfile structure, image labelling, non-root user, image pinning,
+      and healthcheck declarations.
+    applies_when: "repository declares has_container_images: true"
+
+  runtime-linux:
+    code: runtime-linux
+    description: >
+      The service runs on a Linux host managed by the platform. Bindings in this
+      context cover: resource limits, process isolation, and host-level security.
+    applies_when: "service.runtime == 'linux-host'"
+
+  github-actions:
+    code: github-actions
+    description: >
+      The repository uses GitHub Actions for CI/CD. Bindings in this context
+      cover: workflow permissions, pinned action versions, secret usage in workflows,
+      and required workflow steps.
+    applies_when: "repository uses GitHub Actions (all platform repos)"

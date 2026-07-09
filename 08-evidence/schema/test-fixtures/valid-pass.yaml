@@ -1,0 +1,35 @@
+# Valid evidence record — result: pass
+# Validates against: ../../schemas/evidence.schema.json
+# Use to verify: schema accepts a correctly formed passing evidence record
+
+id: "550e8400-e29b-41d4-a716-446655440000"
+schema_version: "1.0.0"
+
+repository:
+  name: "platform-compliance"
+  url: "https://github.com/acme-org/platform-compliance"
+  type: "platform-repo"
+
+commit_sha: "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
+control_id: "SRC-001"
+policy_check_id: "POL-SRC-001-GITHUB-001"
+
+profile_version: "1.0.0"
+control_catalog_version: "v1.0.0"
+policy_bundle_version: "v1.0.0"
+workflow_run_id: "12345678901"
+
+evaluated_at: "2026-07-08T14:30:00Z"
+result: "pass"
+artifact_hash: "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+details:
+  checked: "GitHub branch protection settings for default branch 'main'"
+  found: "All required settings enabled"
+  expected: "Branch protection with required PR reviews, status checks, no force-push, no deletion"
+  message: "SRC-001: Branch protection is correctly configured"
+
+collected_by:
+  tool: "platform-compliance-opa"
+  version: "1.0.0"
+  workflow_run_id: "12345678901"

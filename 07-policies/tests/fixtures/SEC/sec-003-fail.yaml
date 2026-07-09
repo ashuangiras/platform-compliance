@@ -1,0 +1,17 @@
+
+alerts:
+- advisory:
+    ghsa_id: GHSA-crit-0001
+    summary: Critical RCE vulnerability
+  created_at: '2026-06-25T10:00:00Z'
+  number: 5
+  severity: critical
+- advisory:
+    ghsa_id: GHSA-high-0002
+    summary: High severity SSRF
+  created_at: '2026-06-01T10:00:00Z'
+  number: 6
+  severity: high
+evaluation_timestamp: '2026-07-08T14:00:00Z'
+repository:
+  name: vulnerable-repo

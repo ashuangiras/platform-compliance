@@ -1,0 +1,80 @@
+# Repository Compliance Manifest Template
+#
+# Copy this file to the root of your repository as .compliance-manifest.yaml
+# and fill in the fields. Every platform repository must have this file.
+#
+# Schema: schemas/repository-compliance.schema.json
+# Guide:  docs/consuming-compliance.md
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Schema version — do not change this value; update when adopting a new schema
+schema_version: "1.0.0"
+
+repository:
+  # Short repository name (no org prefix)
+  name: "your-repo-name"
+
+  # Full HTTPS URL to the repository
+  url: "https://github.com/angirasa-risk/your-repo-name"
+
+  # Repository type — choose one from 02-taxonomy/repository-types.yaml:
+  #   terraform-module   A reusable Terraform module (no backend, no apply)
+  #   terraform-root     A Terraform root configuration (has backend, runs apply)
+  #   service            A deployable containerised or process-based service
+  #   platform-repo      A platform governance or tooling repository
+  #   library            A shared code library (no deploy)
+  #   documentation      Documentation only (no code)
+  type: "terraform-module"
+
+  # Whether this repository builds or references Docker container images.
+  # Set to true if your repo has Dockerfiles or references images in Terraform.
+  # Activates: RUN-001, RUN-002, RUN-003, SUP-002 controls.
+  has_container_images: false
+
+  # --- For service-type repositories only ---
+  # Remove or leave commented if type is not 'service'
+  # service:
+  #   # Service classification — choose one:
+  #   #   stateless  (no persistent data → BAK-001 not required)
+  #   #   stateful   (manages persistent data → BAK-001 required)
+  #   #   gateway    (reverse proxy / API gateway)
+  #   #   worker     (background processor)
+  #   #   batch      (scheduled batch job)
+  #   type: "stateless"
+  #
+  #   # Whether this service is accessible from outside the private network.
+  #   # Set to true to activate NET-001 (ingress policy declaration required).
+  #   externally_exposed: false
+
+# Compliance profile(s) this repository is governed by.
+# Must reference an ID from 04-profiles/ in platform-compliance.
+# At least one profile is required.
+declared_profiles:
+  - PROF-PLATFORM-V1
+
+# Technology contexts that apply to this repository.
+# Must be values from 02-taxonomy/technology-contexts.yaml.
+# Choose all that apply:
+#   github           Always include (all repos are GitHub-hosted)
+#   github-actions   Include if you use GitHub Actions CI/CD
+#   terraform        Include if repo contains Terraform/OpenTofu code
+#   docker           Include if repo builds or runs Docker images
+#   runtime-linux    Include if repo manages Linux host configuration
+technology_contexts:
+  - github
+  - github-actions
+
+# ─── OPTIONAL FIELDS ──────────────────────────────────────────────────────────
+
+# Active waiver IDs from 09-assessments/waivers/ in platform-compliance.
+# Only list waivers that are currently active (status: active, not expired).
+# Leave empty if no waivers apply.
+waiver_ids: []
+
+# Team or individual responsible for this repository's compliance state.
+# Receives compliance failure notifications from the continuous audit.
+compliance_contact: "your-team-name"
+
+# Date this manifest was last reviewed (ISO 8601 date)
+last_updated: "2026-07-08"

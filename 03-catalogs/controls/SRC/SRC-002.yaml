@@ -1,0 +1,72 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SRC-002
+title: Pull requests required for all changes to protected branches
+domain: SRC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  All changes to any protected branch must be made via pull request. A pull request
+  must receive at least one approving review from a reviewer who is not the author
+  of the changes before it may be merged.
+
+rationale: >
+  Pull requests create a mandatory review step that enables peer verification of
+  changes before they affect protected branches. The review requirement ensures
+  that a second person has assessed the change for correctness, compliance, and
+  intent. This also creates an audit trail: each merge is associated with an
+  approval and a set of automated check results.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "Code-Review check"
+    mapping_note: >
+      Scorecard's Code-Review check verifies that recent commits to the default
+      branch were made via pull request and received review. SRC-002 directly
+      satisfies this check.
+      [PLACEHOLDER: verify exact scoring criteria for Code-Review check in
+      Scorecard v2 documentation]
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "Principle 2 — Versioned and Immutable"
+    mapping_note: >
+      Pull requests are the mechanism by which all changes are versioned with
+      associated review evidence. Merging without a PR removes this evidentiary
+      record.
+
+implementation_expectations: >
+  In GitHub branch protection settings:
+  - "Require a pull request before merging" must be enabled
+  - "Required approvals" must be set to at minimum 1
+  - "Dismiss stale reviews when new commits are pushed" must be enabled
+  - Self-approval (author approving their own PR) must be prevented via
+    "Require review from Code Owners" or team settings
+
+  Automation note: If the repository is configured for auto-merge, the
+  auto-merge must only be triggered after the required approvals have been
+  granted and all required status checks have passed.
+
+evidence_required:
+  - type: github-branch-protection-api-response
+    description: >
+      Same API response as SRC-001 evidence. Demonstrates that pull requests
+      are required and approval count is set appropriately.
+    format: json
+  - type: github-pr-merge-audit
+    description: >
+      Spot-check of recent merges to the default branch, confirming that each
+      was merged via pull request with at least one approving review.
+      Collected as part of continuous audit assessment.
+    format: json
+
+automation_status: automated
+assessment_cadence: continuous
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+  - release_gate
+  - continuous_audit
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

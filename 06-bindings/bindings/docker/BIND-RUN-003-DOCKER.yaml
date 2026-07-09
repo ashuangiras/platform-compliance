@@ -1,0 +1,43 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-RUN-003-DOCKER
+control_id: RUN-003
+technology_context: docker
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  Every containerised service deployment configuration (Docker Compose or
+  equivalent) must declare explicit CPU and memory limits.
+
+  In Docker Compose (deploy.resources.limits):
+    services:
+      my-service:
+        deploy:
+          resources:
+            limits:
+              cpus: '0.50'      # required
+              memory: 512M      # required
+            reservations:       # recommended
+              cpus: '0.25'
+              memory: 256M
+
+  Limits must be realistic (not trivially large values like "128g memory").
+  The values must be present and non-empty.
+
+  This control also applies to any Kubernetes-style deployment manifests if
+  used in the future.
+
+observable_artifact: >
+  Parsed deployment configuration:
+  {
+    "service_name": "my-service",
+    "cpu_limit": "0.50",
+    "memory_limit": "512M",
+    "cpu_reservation": "0.25",
+    "memory_reservation": "256M",
+    "limits_declared": true
+  }
+
+policy_check_ids: []
+# Planned policy: POL-RUN-003-DOCKER-001 (automation-target)

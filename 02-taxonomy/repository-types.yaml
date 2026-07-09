@@ -1,0 +1,76 @@
+# Platform Repository Types
+#
+# Classification of platform repositories. Every repository must declare
+# exactly one type in its .compliance-manifest.yaml. The declared type
+# determines which compliance profile is applicable and which
+# scope_conditions evaluate to true.
+
+types:
+  terraform-module:
+    code: terraform-module
+    description: >
+      A reusable Terraform module. Not a root configuration; does not contain
+      a backend or provider block. Intended to be consumed by other repositories.
+    applicable_profiles:
+      - PROF-PLATFORM-V1
+    implied_domains:
+      - IAC
+      - SUP
+
+  terraform-root:
+    code: terraform-root
+    description: >
+      A Terraform root configuration that manages real infrastructure.
+      Contains a backend configuration and provider declarations.
+      Applies to an environment (staging, production, etc.).
+    applicable_profiles:
+      - PROF-PLATFORM-V1
+    implied_domains:
+      - IAC
+      - SUP
+      - NET
+
+  service:
+    code: service
+    description: >
+      A repository containing a deployable service. May include container
+      definitions, application code, and service-specific infrastructure.
+      Services have runtime behaviour and must declare health checks.
+    applicable_profiles:
+      - PROF-PLATFORM-V1
+    implied_domains:
+      - RUN
+      - OBS
+      - CAT
+
+  platform-repo:
+    code: platform-repo
+    description: >
+      A repository that is part of the platform infrastructure itself.
+      Includes platform-compliance and other governance repositories.
+      Subject to the strictest profile requirements.
+    applicable_profiles:
+      - PROF-PLATFORM-V1
+    implied_domains:
+      - CHG
+      - DOC
+
+  library:
+    code: library
+    description: >
+      A shared code library consumed by other repositories.
+      Does not deploy infrastructure or services directly.
+    applicable_profiles:
+      - PROF-PLATFORM-V1
+    implied_domains:
+      - SUP
+
+  documentation:
+    code: documentation
+    description: >
+      A repository containing only documentation, runbooks, or reference
+      material. No deployable code or infrastructure.
+    applicable_profiles:
+      - PROF-PLATFORM-V1
+    implied_domains:
+      - DOC

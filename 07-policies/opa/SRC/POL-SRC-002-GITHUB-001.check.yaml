@@ -1,0 +1,16 @@
+id: POL-SRC-002-GITHUB-001
+title: "Pull requests required with at least one approval and stale review dismissal"
+binding_ids:
+  - BIND-SRC-002-GITHUB
+engine: opa
+file_path: "07-policies/opa/SRC/POL-SRC-002-GITHUB-001.rego"
+pass_criteria: >
+  Branch protection has required_pull_request_reviews configured with
+  required_approving_review_count >= 1 and dismiss_stale_reviews: true.
+fail_criteria: >
+  Pull request reviews not required, or required approvals < 1,
+  or stale review dismissal disabled.
+evidence_type: github-branch-protection-api-response
+severity: high
+introduced_date: "2026-07-08"
+status: active

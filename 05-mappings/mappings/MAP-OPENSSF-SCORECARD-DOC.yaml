@@ -1,0 +1,25 @@
+# Mappings: OpenSSF Scorecard → DOC domain controls
+#
+# Source: SRC-OPENSSF-SCORECARD-V2
+# Domain: DOC (Documentation)
+# Populated: 2026-07-08
+
+source_id: SRC-OPENSSF-SCORECARD-V2
+domain: DOC
+
+mappings:
+  - id: MAP-OPENSSF-SCORECARD-DOC-001
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "[PLACEHOLDER: Scorecard v2 — verify the exact check name for README/documentation presence — may be CII-Best-Practices or Maintained check]"
+    source_clause_text: >
+      Determines if the project is maintained and has documentation that
+      enables new contributors to understand what the project does.
+    control_id: DOC-001
+    rationale: >
+      OpenSSF Scorecard evaluates project documentation as part of health
+      indicators. DOC-001 makes the README a hard requirement rather than a
+      health signal: every platform repository must have a README.md with
+      meaningful content as a gate-blocking requirement (at the release gate).
+    mapping_type: extended
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

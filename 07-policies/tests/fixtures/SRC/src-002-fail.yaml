@@ -1,0 +1,9 @@
+
+branch_protection:
+  required_pull_request_reviews:
+    dismiss_stale_reviews: false
+    required_approving_review_count: 0
+default_branch: main
+repository:
+  name: no-review-repo
+  type: service

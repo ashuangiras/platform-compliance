@@ -1,0 +1,49 @@
+# Platform Risk Levels
+#
+# Risk levels express the severity of a control failure — the impact on the
+# platform if the control is not satisfied. Used in control definitions,
+# waiver approvals, and incident records.
+#
+# Risk levels are distinct from priority levels:
+#   - Priority = urgency of achieving compliance (process to get an exception)
+#   - Severity  = impact of a failure if the control is not satisfied
+
+levels:
+  critical:
+    code: critical
+    description: >
+      Failure poses an immediate, severe risk: data breach, credential exposure,
+      unrecoverable data loss, or systemic platform outage. Controls at this
+      level must be remediated without delay. Waivers require executive approval.
+    sla_remediation: "24 hours"
+
+  high:
+    code: high
+    description: >
+      Failure poses a significant risk that is likely to cause material harm if
+      exploited or left unresolved: security vulnerability, significant data
+      exposure, or service degradation. Waivers require platform-owner approval.
+    sla_remediation: "7 days"
+
+  medium:
+    code: medium
+    description: >
+      Failure introduces a notable risk that could cause harm under specific
+      conditions. Remediation is important but not emergency-level.
+      Waivers require change record with justification.
+    sla_remediation: "30 days"
+
+  low:
+    code: low
+    description: >
+      Failure introduces a minor risk or represents a deviation from best
+      practice without immediate operational impact. Remediation is tracked
+      but not time-critical.
+    sla_remediation: "90 days"
+
+  informational:
+    code: informational
+    description: >
+      Failure is a hygiene or consistency issue with no measurable risk impact.
+      Tracked for awareness and future improvement.
+    sla_remediation: "next release cycle"

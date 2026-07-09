@@ -1,0 +1,40 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-CHG-001-GITHUB
+control_id: CHG-001
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  For repositories of type platform-repo, every pull request that modifies
+  normative content (files in 03-catalogs/, 04-profiles/, 05-mappings/,
+  06-bindings/, 07-policies/, schemas/, or 09-assessments/gates/) must include
+  a change record reference in the PR description.
+
+  The reference must match the pattern: "Change Record: CHG-YYYYMMDD-NNN"
+  (case-insensitive match; the pattern may appear anywhere in the PR body).
+
+  A PR that modifies only documentation, READMEs, or test fixtures does not
+  require a change record reference.
+
+observable_artifact: >
+  GitHub REST API response:
+  GET /repos/{owner}/{repo}/pulls/{pull_number}
+
+  Fields evaluated:
+  - body: contains the pattern /change record:\s*CHG-\d{8}-\d{3}/i
+  - files changed: any file path matching the normative content paths listed above
+
+  Logic: if any changed file matches a normative path AND the PR body does not
+  contain the change record pattern → fail.
+  If no normative files changed → not_applicable.
+
+policy_check_ids: []
+# Planned policy: POL-CHG-001-GITHUB-001 (PR body change-record pattern check — automation-target)
+
+notes: >
+  This binding only applies to repositories with type: platform-repo in their
+  .compliance-manifest.yaml. The scope_condition in PROF-PLATFORM-V1 enforces
+  this restriction. The policy must check the repository type from the manifest
+  input before evaluating the PR body.

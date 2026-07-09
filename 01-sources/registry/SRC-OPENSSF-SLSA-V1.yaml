@@ -1,0 +1,31 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-OPENSSF-SLSA-V1
+name: Supply-chain Levels for Software Artifacts (SLSA)
+version: "1.0"
+publisher: OpenSSF (Open Source Security Foundation)
+source_url: "https://slsa.dev/spec/v1.0/"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - SUP  # Supply Chain
+  - IAC  # Infrastructure as Code (artifact provenance)
+  - CHG  # Change and Release (provenance in release records)
+
+status: active
+
+notes: >
+  SLSA defines four levels of supply chain integrity guarantees for software
+  artifacts. The platform targets SLSA Build L2 as a practical initial goal:
+  all build steps must occur in a hosted CI platform (GitHub Actions), and
+  provenance must be available for all released artifacts.
+
+  SLSA L1 (provenance exists) is the minimum baseline for all platform repos.
+  SLSA L3+ (tamper-resistant provenance) is deferred to a future maturity level.
+
+  Specific clause mappings for SUP-001 and SUP-002 reference SLSA's requirements
+  on using immutable references and hermetic builds. Exact requirement IDs:
+  [PLACEHOLDER: map to SLSA v1.0 Build track requirement IDs once fully reviewed]

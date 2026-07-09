@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/release-record.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Release Record",
+  "description": "The record of a versioned release of platform-compliance. A release cannot be tagged until this record exists and the release gate assessment passes. Lives in 09-assessments/releases/v{VERSION}.yaml. Links the release tag to the compliance evidence.",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "release_date",
+    "change_record_ids",
+    "gate_assessment_id",
+    "release_summary",
+    "breaking_changes",
+    "released_by"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version string matching the Git tag. Format: v{MAJOR}.{MINOR}.{PATCH}.",
+      "examples": ["v1.0.0", "v1.1.0", "v2.0.0"]
+    },
+    "schema_version": { "type": "string" },
+    "release_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "change_record_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^CHG-[0-9]{8}-[0-9]{3}$"
+      },
+      "description": "All change record IDs included in this release."
+    },
+    "gate_assessment_id": {
+      "type": "string",
+      "pattern": "^ASSESS-[A-Z0-9-]+-[0-9]{8}-[0-9]{3}$",
+      "description": "Assessment report ID for the release gate evaluation. The referenced report must have overall_result: pass or pass-with-waivers."
+    },
+    "release_summary": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Human-readable summary of what this release contains."
+    },
+    "breaking_changes": {
+      "type": "boolean",
+      "description": "Whether any included change record has breaking: true."
+    },
+    "migration_guide": {
+      "type": "string",
+      "description": "Required when breaking_changes is true. Instructions for downstream repositories."
+    },
+    "released_by": {
+      "type": "string"
+    }
+  },
+  "if": {
+    "properties": { "breaking_changes": { "const": true } },
+    "required": ["breaking_changes"]
+  },
+  "then": {
+    "required": ["migration_guide"],
+    "properties": { "migration_guide": { "minLength": 10 } }
+  }
+}

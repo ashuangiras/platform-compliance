@@ -1,0 +1,69 @@
+$schema: "../../schemas/service-contract.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Service ID — format: SVC-{SERVICE_SLUG}
+id: "SVC-MY-SERVICE"
+
+schema_version: "1.0.0"
+service_name: "My Service"
+
+# Service type — from 02-taxonomy/service-types.yaml (or equivalent)
+service_type: "stateless"   # stateless | stateful | gateway | worker | batch
+
+repository_ref: "https://github.com/angirasa-risk/my-service"
+
+declared_profiles:
+  - PROF-SERVICE-V1   # update once PROF-SERVICE-V1 is created (Phase B)
+
+externally_exposed: false
+
+last_updated: "2026-07-09"
+
+# ─── CONDITIONAL FIELDS ──────────────────────────────────────────────────────
+
+# ── Required when service_type == 'stateful' (BAK-001) ────────────────────────
+# backup_policy:
+#   frequency: "daily"
+#   retention: "30 days"
+#   storage_location: "Description of backup storage (no credentials)"
+#   restoration_procedure: "https://github.com/angirasa-risk/my-service/blob/main/docs/restore.md"
+#   last_restore_test_date: null   # set to date after first test
+#   rto: "4 hours"
+#   rpo: "24 hours"
+
+# ── Required when externally_exposed == true (NET-001) ────────────────────────
+# ingress_policy:
+#   allowed_sources:
+#     - description: "Public internet"
+#       cidr: "0.0.0.0/0"
+#   allowed_protocols:
+#     - protocol: HTTPS
+#       port: 443
+#       tls_required: true
+#       tls_minimum_version: "1.2"
+#   authentication_required: true
+#   notes: "Reverse proxy handles TLS termination."
+
+# ── Required for all services (OBS-001) ────────────────────────────────────────
+health_check:
+  mechanism: http            # http | tcp | exec
+  endpoint_or_command: "/healthz"
+  timeout_seconds: 10
+  failure_threshold: 3
+  expected_status: 200
+
+# ─── OPTIONAL FIELDS ──────────────────────────────────────────────────────────
+
+# api_contract_ref: "https://github.com/angirasa-risk/my-service/blob/main/openapi.yaml"
+
+# dependencies:
+#   - service_id: "SVC-OTHER-SERVICE"
+#     required_version_range: ">= 1.0.0"
+#     dependency_type: runtime   # runtime | build | test | optional
+
+# resource_limits:
+#   cpu_limit: "0.50"
+#   memory_limit: "512M"
+#   cpu_reservation: "0.25"
+#   memory_reservation: "256M"

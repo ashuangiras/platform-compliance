@@ -1,0 +1,52 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-GOOGLE-SRE
+name: Site Reliability Engineering — How Google Runs Production Systems
+version: "2016 (1st edition)"
+publisher: Google / O'Reilly Media
+source_url: "https://sre.google/sre-book/table-of-contents/"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: adopted
+
+applies_to:
+  - OBS  # Observability
+  - REL  # Reliability
+  - INC  # Incident and Problem
+  - BAK  # Backup and Recovery
+
+status: active
+
+notes: >
+  The Google SRE book is used as an adopted source for observability, reliability,
+  and incident management controls. The platform adopts SRE concepts directly
+  where they are applicable to a self-hosted single-operator context, without
+  requiring the full SRE organisational model.
+
+  Key chapters and concepts informing platform controls:
+
+  - Chapter 6: Monitoring Distributed Systems
+    → Concept: The four golden signals (latency, traffic, errors, saturation)
+    → Informs: OBS-001 (health check), OBS-002 (structured logging)
+    [PLACEHOLDER: verify chapter number in final edition; reference specific
+    section on health endpoint definitions]
+
+  - Chapter 12: Effective Troubleshooting
+    → Concept: Observability prerequisites for effective diagnosis
+    → Informs: OBS-002 (structured log format with correlation IDs)
+
+  - Chapter 14: Managing Incidents
+    → Concept: Incident lifecycle and structured post-mortems
+    → Informs: INC-001 (incident record requirement)
+
+  - Chapter 26: Data Integrity: What You Read Is What You Wrote
+    → Concept: Backup and recovery requirements
+    → Informs: BAK-001 (backup policy declaration)
+
+  - Chapter 4: Service Level Objectives
+    → Concept: SLI/SLO definitions as contractual service quality declarations
+    → Informs: REL domain controls (deferred in v1)
+
+  Note: The online version at sre.google provides the same content as the book
+  and is freely accessible. Platform citations reference the online edition.

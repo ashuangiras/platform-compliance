@@ -1,0 +1,16 @@
+id: POL-IAC-001-TERRAFORM-001
+title: "Terraform code passes fmt -check and validate"
+binding_ids:
+  - BIND-IAC-001-TERRAFORM
+engine: opa
+file_path: "07-policies/opa/IAC/POL-IAC-001-TERRAFORM-001.rego"
+pass_criteria: >
+  terraform fmt -check exits 0 (no formatting differences) AND
+  terraform validate exits 0 (no syntax or configuration errors).
+fail_criteria: >
+  terraform fmt -check exits non-zero (formatting differences exist), OR
+  terraform validate exits non-zero (syntax or configuration errors).
+evidence_type: ci-fmt-validate-result
+severity: medium
+introduced_date: "2026-07-08"
+status: active

@@ -1,0 +1,28 @@
+# INVALID evidence record — missing required fields
+# Validates against: ../../schemas/evidence.schema.json
+# Expected result: schema validation FAILS
+# Purpose: Verify that the schema correctly rejects malformed records
+#
+# Missing: commit_sha, profile_version, control_catalog_version,
+#          policy_bundle_version, workflow_run_id, artifact_hash
+
+id: "aaaabbbb-cccc-dddd-eeee-ffffffffffff"
+schema_version: "1.0.0"
+
+repository:
+  name: "incomplete-repo"
+  url: "https://github.com/acme-org/incomplete-repo"
+
+# commit_sha: MISSING — required field
+control_id: "SRC-001"
+# profile_version: MISSING — required field
+# control_catalog_version: MISSING — required field
+# policy_bundle_version: MISSING — required field
+# workflow_run_id: MISSING — required field
+
+evaluated_at: "2026-07-08T14:00:00Z"
+result: "pass"
+# artifact_hash: MISSING — required field
+
+details:
+  message: "This record is invalid and should fail schema validation"

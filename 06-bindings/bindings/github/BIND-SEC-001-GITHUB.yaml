@@ -1,0 +1,51 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SEC-001-GITHUB
+control_id: SEC-001
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  No file committed to the repository at any revision reachable from the default
+  branch may contain credentials, API keys, tokens, private keys, passwords,
+  connection strings, or other secrets — in any form including plaintext,
+  base64-encoded, URL-encoded, or otherwise obfuscated.
+
+  Verification is performed by:
+
+  1. Secret scanning tool (gitleaks or detect-secrets) against the full commit
+     history accessible from the current branch HEAD. The scan must cover both
+     committed file content and git history.
+
+  2. GitHub secret scanning API: the repository must have no open secret scanning
+     alerts with state "open".
+
+  3. .gitignore presence check: the repository must have a .gitignore file that
+     includes patterns for common secret file types (*.pem, *.key, .env, *.tfvars,
+     secrets/). This is a directive check; its absence does not cause immediate
+     fail but contributes to the overall SEC-001 evidence.
+
+  A pass result requires: the scanning tool produces zero findings AND GitHub
+  secret scanning reports zero open alerts.
+
+observable_artifact: >
+  a) gitleaks scan output: JSON report with "findings" array (empty = pass)
+     Command: gitleaks detect --source . --report-format json --report-path /tmp/gitleaks.json
+
+  b) GitHub REST API:
+     GET /repos/{owner}/{repo}/secret-scanning/alerts?state=open
+     Pass condition: empty array
+
+  c) Repository file tree:
+     Presence of .gitignore with common secret patterns
+
+policy_check_ids:
+  - POL-SEC-001-GITHUB-001
+
+notes: >
+  Secret scanning has two components with different collection methods:
+  - The gitleaks/detect-secrets scan is a local filesystem check (shell script input)
+  - The GitHub API check is a remote API check (shell script collects, OPA evaluates)
+  Both must pass for the evidence record to show result: pass.
+  SEC-002 separately requires that GitHub's built-in secret scanning is configured.

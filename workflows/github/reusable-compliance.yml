@@ -1,0 +1,494 @@
+name: "Reusable Platform Compliance Check"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REUSABLE WORKFLOW — platform-compliance
+#
+# This workflow is called by downstream repositories to run the full
+# compliance check pipeline. It validates the compliance manifest,
+# runs applicable policy checks, collects evidence, generates an
+# assessment report, and evaluates the specified gate.
+#
+# Usage in a consuming repository:
+#
+#   jobs:
+#     compliance:
+#       uses: angirasa-risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+#       with:
+#         gate: merge_gate
+#         profile-id: PROF-PLATFORM-V1
+#         repository-type: terraform-module
+#         technology-contexts: "github,terraform,github-actions"
+#
+# NOTE ON PLACEMENT:
+#   This file is the design artifact in workflows/github/.
+#   The deployed version must live at .github/workflows/reusable-compliance.yml
+#   in the platform-compliance repository to be callable by GitHub Actions.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_call:
+    inputs:
+
+      gate:
+        description: "Gate to evaluate after evidence collection."
+        type: string
+        required: true
+        # Valid values: merge_gate | release_gate | deployment_gate | continuous_audit
+
+      profile-id:
+        description: "Compliance profile ID declared by the calling repository."
+        type: string
+        required: true
+        # Example: PROF-PLATFORM-V1
+
+      repository-type:
+        description: "Repository type from 02-taxonomy/repository-types.yaml."
+        type: string
+        required: true
+        # Example: terraform-module | service | platform-repo
+
+      technology-contexts:
+        description: "Comma-separated technology contexts from 02-taxonomy/technology-contexts.yaml."
+        type: string
+        required: false
+        default: "github,github-actions"
+        # Example: "github,terraform,github-actions"
+
+      has-container-images:
+        description: "Whether the repository builds or references container images."
+        type: boolean
+        required: false
+        default: false
+
+      platform-compliance-ref:
+        description: "Git ref of platform-compliance to use for schemas and gate criteria."
+        type: string
+        required: false
+        default: "v1.0.0"
+        # Downstream repos should pin this. Do not use 'main'.
+
+    outputs:
+
+      compliance-result:
+        description: "Gate evaluation result: pass | fail | pass-with-warnings | held"
+        value: ${{ jobs.evaluate-gate.outputs.result }}
+
+      assessment-report-path:
+        description: "Path to the generated assessment report artifact."
+        value: ${{ jobs.generate-assessment.outputs.report-path }}
+
+      evidence-bundle-hash:
+        description: "SHA-256 hash of the complete evidence bundle for this run."
+        value: ${{ jobs.collect-evidence.outputs.bundle-hash }}
+
+      blocking-controls:
+        description: "Comma-separated list of control IDs blocking the gate (empty if passing)."
+        value: ${{ jobs.evaluate-gate.outputs.blocking-controls }}
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+env:
+  PLATFORM_COMPLIANCE_REF: ${{ inputs.platform-compliance-ref }}
+  EVIDENCE_SCHEMA_VERSION: "1.0.0"
+  OPA_VERSION: "0.70.0"  # TODO: make this a parameter or pin via tool manifest
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+jobs:
+
+  # ── JOB 1: Validate manifest ──────────────────────────────────────────────
+  validate-manifest:
+    name: "Validate compliance manifest"
+    runs-on: ubuntu-latest
+    outputs:
+      manifest-valid: ${{ steps.validate.outputs.valid }}
+      declared-profile: ${{ steps.parse.outputs.profile }}
+
+    steps:
+      - name: Checkout calling repository
+        uses: actions/checkout@v4
+
+      - name: Check .compliance-manifest.yaml exists
+        id: check-exists
+        run: |
+          if [ ! -f ".compliance-manifest.yaml" ]; then
+            echo "::error file=.compliance-manifest.yaml::COMPLIANCE GATE FAIL: .compliance-manifest.yaml not found."
+            echo "::error::Every platform repository must declare a compliance manifest. See docs/consuming-compliance.md in platform-compliance."
+            exit 1
+          fi
+          echo "Manifest found."
+
+      - name: Fetch platform-compliance schemas
+        # TODO [Phase 10]: Replace with pinned artifact download or cached checkout
+        # For now this is a placeholder showing the intent
+        run: |
+          echo "TODO: Download schemas/repository-compliance.schema.json from"
+          echo "platform-compliance@${PLATFORM_COMPLIANCE_REF}"
+          # Implementation:
+          # curl -sSL "https://raw.githubusercontent.com/angirasa-risk/platform-compliance/${PLATFORM_COMPLIANCE_REF}/schemas/repository-compliance.schema.json" \
+          #   -o /tmp/repository-compliance.schema.json
+
+      - name: Validate manifest schema
+        id: validate
+        run: |
+          # TODO [Phase 10]: Replace with check-jsonschema or ajv invocation
+          # Implementation:
+          # pip install check-jsonschema
+          # check-jsonschema --schemafile /tmp/repository-compliance.schema.json .compliance-manifest.yaml
+          echo "TODO: Schema validation against repository-compliance.schema.json"
+          echo "valid=true" >> "$GITHUB_OUTPUT"
+
+      - name: Parse declared profile
+        id: parse
+        run: |
+          profile=$(grep "^  - " .compliance-manifest.yaml | head -1 | awk '{print $2}')
+          echo "profile=${profile}" >> "$GITHUB_OUTPUT"
+          echo "Declared profile: ${profile}"
+
+  # ── JOB 2: Check required files ───────────────────────────────────────────
+  check-required-files:
+    name: "Check required files"
+    runs-on: ubuntu-latest
+    needs: validate-manifest
+    outputs:
+      files-result: ${{ steps.check.outputs.result }}
+
+    steps:
+      - name: Checkout calling repository
+        uses: actions/checkout@v4
+
+      - name: Check README.md (DOC-001)
+        id: check-readme
+        run: |
+          if [ ! -f "README.md" ]; then
+            echo "::warning file=README.md::DOC-001 WARNING: README.md not found at repository root."
+            echo "readme_present=false" >> "$GITHUB_OUTPUT"
+          else
+            char_count=$(wc -c < README.md)
+            if [ "$char_count" -lt 100 ]; then
+              echo "::warning file=README.md::DOC-001 WARNING: README.md exists but appears to be empty or near-empty (${char_count} bytes)."
+            fi
+            echo "readme_present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check CODEOWNERS (SRC-003)
+        id: check-codeowners
+        run: |
+          if [ -f "CODEOWNERS" ] || [ -f ".github/CODEOWNERS" ] || [ -f "docs/CODEOWNERS" ]; then
+            echo "codeowners_present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::SRC-003: CODEOWNERS file not found. Required before release gate."
+            echo "codeowners_present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check .gitignore secret patterns (SEC-001 prerequisite)
+        run: |
+          if [ -f ".gitignore" ]; then
+            for pattern in "*.pem" "*.key" ".env" "*.tfvars" "secrets/"; do
+              if ! grep -qF "$pattern" .gitignore 2>/dev/null; then
+                echo "::warning::.gitignore is missing common secret pattern: ${pattern}"
+              fi
+            done
+          else
+            echo "::warning::No .gitignore found. Recommended for SEC-001 compliance."
+          fi
+
+      - name: Summarise file checks
+        id: check
+        run: |
+          echo "result=complete" >> "$GITHUB_OUTPUT"
+
+  # ── JOB 3: Secret scan check (SEC-001, SEC-002) ──────────────────────────
+  secret-scan-check:
+    name: "Secret scanning check"
+    runs-on: ubuntu-latest
+    needs: validate-manifest
+
+    steps:
+      - name: Checkout calling repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history needed for comprehensive secret scanning
+
+      - name: Check for secrets in repository (SEC-001)
+        # TODO [Phase 7]: Replace with actual gitleaks or detect-secrets invocation
+        # Implementation:
+        # uses: gitleaks/gitleaks-action@v2
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #   GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        run: |
+          echo "TODO [Phase 7]: Run gitleaks or detect-secrets against repository"
+          echo "Control: SEC-001 — No plaintext secrets in repositories"
+          echo "Evidence type: secret-scan-clean"
+          echo "PLACEHOLDER: Secret scan result (pass assumed for skeleton)"
+
+      - name: Verify GitHub secret scanning is enabled (SEC-002)
+        # TODO [Phase 7]: Replace with GitHub API call
+        # Implementation:
+        # curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+        #   "https://api.github.com/repos/${{ github.repository }}" \
+        #   | jq '.security_and_analysis.secret_scanning.status'
+        run: |
+          echo "TODO [Phase 7]: Check GitHub API for secret scanning + push protection status"
+          echo "Control: SEC-002 — GitHub secret scanning with push protection must be enabled"
+          echo "Evidence type: github-secret-scanning-config"
+          echo "PLACEHOLDER: Secret scanning status check (pass assumed for skeleton)"
+
+  # ── JOB 4: Run OPA policy checks ──────────────────────────────────────────
+  policy-checks:
+    name: "OPA policy checks"
+    runs-on: ubuntu-latest
+    needs: [validate-manifest, check-required-files]
+    outputs:
+      policy-results-path: ${{ steps.run-policies.outputs.results-path }}
+
+    steps:
+      - name: Checkout calling repository
+        uses: actions/checkout@v4
+
+      - name: Fetch platform-compliance policy bundle
+        # TODO [Phase 10]: Download the pinned policy bundle from platform-compliance releases
+        run: |
+          echo "TODO [Phase 10]: Download 07-policies/ bundle from"
+          echo "platform-compliance@${PLATFORM_COMPLIANCE_REF}"
+          echo "policy_bundle_version=${PLATFORM_COMPLIANCE_REF}" >> "$GITHUB_ENV"
+
+      - name: Install OPA
+        # TODO [Phase 7]: Pin OPA version via tool manifest (actions/setup-opa or similar)
+        run: |
+          echo "TODO [Phase 7]: Install OPA ${OPA_VERSION}"
+          # Implementation:
+          # curl -L -o opa https://openpolicyagent.org/downloads/v${OPA_VERSION}/opa_linux_amd64_static
+          # chmod +x opa && sudo mv opa /usr/local/bin/
+
+      - name: Collect GitHub context input
+        id: collect-input
+        run: |
+          # TODO [Phase 7]: Collect real inputs from GitHub API for applicable controls
+          # This creates the structured input document passed to OPA policies
+          echo "TODO: Collect branch protection settings (SRC-001, SRC-002)"
+          echo "TODO: Collect CODEOWNERS presence (SRC-003)"
+          echo "TODO: Collect secret scanning config (SEC-002)"
+          echo "TODO: Create input.json for OPA evaluation"
+
+      - name: Run OPA policy checks
+        id: run-policies
+        run: |
+          # TODO [Phase 7]: Run OPA against each applicable policy
+          # The scope conditions from the profile determine which policies run.
+          # Implementation sketch:
+          #
+          # for policy in $(find /tmp/policy-bundle/opa -name "*.rego"); do
+          #   control_id=$(grep "^# control:" "$policy" | awk '{print $3}')
+          #   opa eval \
+          #     --data "$policy" \
+          #     --input /tmp/context/input.json \
+          #     "data.platform.result" \
+          #     --format json > "/tmp/results/${control_id}.json"
+          # done
+          echo "TODO [Phase 7]: Run OPA policy checks based on declared profile and contexts"
+          echo "Gate: ${{ inputs.gate }}"
+          echo "Profile: ${{ inputs.profile-id }}"
+          echo "Contexts: ${{ inputs.technology-contexts }}"
+          mkdir -p /tmp/policy-results
+          echo '{"placeholder": true}' > /tmp/policy-results/results.json
+          echo "results-path=/tmp/policy-results/results.json" >> "$GITHUB_OUTPUT"
+
+  # ── JOB 5: Collect and write evidence ─────────────────────────────────────
+  collect-evidence:
+    name: "Collect and write evidence"
+    runs-on: ubuntu-latest
+    needs: [validate-manifest, policy-checks, secret-scan-check]
+    outputs:
+      bundle-hash: ${{ steps.hash.outputs.bundle-hash }}
+      evidence-artifact-name: ${{ steps.write.outputs.artifact-name }}
+
+    steps:
+      - name: Checkout calling repository
+        uses: actions/checkout@v4
+
+      - name: Assemble evidence records
+        id: assemble
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+          PROFILE_VERSION: "1.0.0"
+        run: |
+          # TODO [Phase 8]: Convert policy results to evidence records conforming
+          # to schemas/evidence.schema.json
+          #
+          # Each record must include:
+          #   - id (UUID v4)
+          #   - repository.name, repository.url
+          #   - commit_sha (40-char SHA)
+          #   - control_id
+          #   - profile_version
+          #   - control_catalog_version (= PLATFORM_COMPLIANCE_REF)
+          #   - policy_bundle_version
+          #   - workflow_run_id
+          #   - evaluated_at (ISO 8601)
+          #   - result (pass|fail|manual_review|not_applicable|waived|error)
+          #   - artifact_hash (sha256:{hex} of serialized details)
+          #
+          mkdir -p /tmp/evidence
+          echo "TODO [Phase 8]: Generate evidence records from policy results"
+          echo "PLACEHOLDER evidence bundle created"
+
+      - name: Compute evidence bundle hash
+        id: hash
+        run: |
+          # TODO [Phase 8]: Hash the complete evidence bundle
+          # Implementation:
+          # bundle_hash="sha256:$(find /tmp/evidence -type f | sort | xargs cat | sha256sum | awk '{print $1}')"
+          bundle_hash="sha256:placeholder-$(echo ${{ github.sha }} | cut -c1-16)"
+          echo "bundle-hash=${bundle_hash}" >> "$GITHUB_OUTPUT"
+
+      - name: Write evidence records to artifact
+        id: write
+        run: |
+          artifact_name="evidence-${{ github.repository_id }}-${{ github.run_id }}"
+          echo "artifact-name=${artifact_name}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload evidence bundle as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "evidence-${{ github.run_id }}"
+          path: /tmp/evidence/
+          retention-days: 90
+          if-no-files-found: warn
+
+  # ── JOB 6: Generate assessment report ─────────────────────────────────────
+  generate-assessment:
+    name: "Generate assessment report"
+    runs-on: ubuntu-latest
+    needs: collect-evidence
+    outputs:
+      report-path: ${{ steps.generate.outputs.report-path }}
+      overall-result: ${{ steps.generate.outputs.overall-result }}
+
+    steps:
+      - name: Download evidence bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: "evidence-${{ github.run_id }}"
+          path: /tmp/evidence/
+
+      - name: Fetch gate criteria
+        run: |
+          echo "TODO [Phase 10]: Fetch gate criteria from platform-compliance"
+          echo "Gate: ${{ inputs.gate }}"
+          echo "File: 09-assessments/gates/${{ inputs.gate }}.yaml"
+
+      - name: Generate assessment report
+        id: generate
+        env:
+          ASSESSMENT_DATE: ${{ github.event.repository.updated_at }}
+        run: |
+          # TODO [Phase 9]: Aggregate evidence records into an assessment report
+          # conforming to schemas/assessment.schema.json
+          #
+          # The report must:
+          # - Include one control_result entry per in-scope control
+          # - Apply active waivers from 09-assessments/waivers/
+          # - Compute summary counts (pass, fail, waived, etc.)
+          # - Set overall_result based on mandatory control results
+          # - Include gate_evaluation if tied to a specific gate
+          #
+          report_path="/tmp/assessment/ASSESS-$(echo ${{ github.repository }} | tr '/' '-')-$(date +%Y%m%d)-001.yaml"
+          mkdir -p /tmp/assessment
+          echo "TODO [Phase 9]: Generate assessment report at ${report_path}"
+          echo "report-path=${report_path}" >> "$GITHUB_OUTPUT"
+          echo "overall-result=inconclusive" >> "$GITHUB_OUTPUT"
+
+      - name: Upload assessment report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "assessment-report-${{ github.run_id }}"
+          path: /tmp/assessment/
+          retention-days: 365
+
+  # ── JOB 7: Evaluate gate ──────────────────────────────────────────────────
+  evaluate-gate:
+    name: "Evaluate ${{ inputs.gate }}"
+    runs-on: ubuntu-latest
+    needs: generate-assessment
+    outputs:
+      result: ${{ steps.evaluate.outputs.result }}
+      blocking-controls: ${{ steps.evaluate.outputs.blocking-controls }}
+
+    steps:
+      - name: Download assessment report
+        uses: actions/download-artifact@v4
+        with:
+          name: "assessment-report-${{ github.run_id }}"
+          path: /tmp/assessment/
+
+      - name: Evaluate gate
+        id: evaluate
+        env:
+          GATE: ${{ inputs.gate }}
+          OVERALL_RESULT: ${{ needs.generate-assessment.outputs.overall-result }}
+        run: |
+          # TODO [Phase 10]: Implement gate evaluation against gate criteria
+          #
+          # Logic:
+          #   Read 09-assessments/gates/${GATE}.yaml from platform-compliance
+          #   For each required_control in gate:
+          #     Look up control_result in assessment report
+          #     If result is "fail" or "error" AND enforcement is "block":
+          #       Add to blocking_controls list
+          #       Set gate_result = "fail"
+          #     If result is "fail" AND enforcement is "warn":
+          #       Set gate_result = "pass-with-warnings" (if not already "fail")
+          #
+          echo "TODO [Phase 10]: Evaluate ${GATE} against assessment report"
+          echo "Current overall_result: ${OVERALL_RESULT}"
+
+          # SKELETON BEHAVIOR: pass the gate if assessment is not conclusively failing
+          # Real implementation will evaluate per-control blocking status
+          if [ "${OVERALL_RESULT}" = "fail" ]; then
+            echo "result=fail" >> "$GITHUB_OUTPUT"
+            echo "blocking-controls=UNKNOWN" >> "$GITHUB_OUTPUT"
+            echo "::error::Gate ${GATE} FAILED. See assessment report for blocking controls."
+          else
+            echo "result=pass" >> "$GITHUB_OUTPUT"
+            echo "blocking-controls=" >> "$GITHUB_OUTPUT"
+            echo "Gate ${GATE}: PASS (skeleton mode — full evaluation pending Phase 10)"
+          fi
+
+      - name: Post gate result to pull request
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ steps.evaluate.outputs.result }}';
+            const gate = '${{ inputs.gate }}';
+            const blocking = '${{ steps.evaluate.outputs.blocking-controls }}';
+            const runId = '${{ github.run_id }}';
+
+            const emoji = result === 'pass' ? '✅' : result === 'pass-with-warnings' ? '⚠️' : '❌';
+            const body = [
+              `## ${emoji} Platform Compliance Gate: \`${gate}\``,
+              `**Result:** \`${result}\``,
+              blocking ? `**Blocking controls:** \`${blocking}\`\n\nFix these controls before this PR can be merged.` : '',
+              `**Workflow run:** ${runId}`,
+              '',
+              `*Governed by [PROF-PLATFORM-V1](https://github.com/angirasa-risk/platform-compliance/blob/main/04-profiles/PROF-PLATFORM-V1.yaml)*`
+            ].filter(Boolean).join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+      - name: Fail workflow if gate fails
+        if: steps.evaluate.outputs.result == 'fail'
+        run: |
+          echo "::error::Platform compliance gate '${{ inputs.gate }}' FAILED."
+          echo "::error::Blocking controls: ${{ steps.evaluate.outputs.blocking-controls }}"
+          echo "::error::Review the assessment report artifact for details."
+          echo "::error::To proceed: fix the failing controls OR request a waiver."
+          exit 1

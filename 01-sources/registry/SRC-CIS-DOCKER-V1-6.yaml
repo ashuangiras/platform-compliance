@@ -1,0 +1,55 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-CIS-DOCKER-V1-6
+name: CIS Docker Benchmark
+version: "1.6.0"
+publisher: Center for Internet Security (CIS)
+source_url: "https://www.cisecurity.org/benchmark/docker"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - RUN  # Runtime / Docker
+  - SEC  # Security and Secrets (container security)
+  - NET  # Network (container networking)
+
+status: active
+
+notes: >
+  The CIS Docker Benchmark is used as a normative source for container security
+  and runtime controls. The platform applies the benchmark's "Level 1 — Docker"
+  profile as the baseline, which represents the minimum security configuration
+  for all containerised services.
+
+  Level 2 recommendations are deferred for initial platform phase. An ADR will
+  be created once the container runtime controls are fully specified.
+
+  Specific sections informing platform controls:
+
+  Section 3: Docker daemon configuration
+  [PLACEHOLDER: identify which section 3 items are relevant to self-hosted
+  Docker management without Docker Enterprise; some items may be N/A]
+
+  Section 4: Container Images and Build Files
+  - 4.1: Ensure a user for the container has been created → RUN-002
+  - 4.6: Ensure that HEALTHCHECK instructions have been added → OBS-001
+         (Docker healthcheck is one acceptable implementation of OBS-001)
+  - 4.8: Ensure the latest tag is not used → SUP-002
+  [PLACEHOLDER: verify 4.x section numbers in v1.6.0 — section numbering
+  may differ between versions]
+
+  Section 5: Container Runtime
+  - 5.x: Various container runtime security settings → RUN-002, RUN-003
+  [PLACEHOLDER: map specific 5.x items to RUN controls once runtime
+  management approach is finalised — Docker daemon vs. compose vs. other]
+
+  Section 6: Docker Security Operations
+  - 6.x: Operational security practices
+  [PLACEHOLDER: map relevant operational items to OBS and CHG controls]
+
+  Note: CIS Benchmark requires registration to download the full document.
+  The public URL points to the benchmark page; full text requires free CIS
+  membership. Ensure the retrieved version (1.6.0) is stored in the platform
+  evidence archive as a registered document.

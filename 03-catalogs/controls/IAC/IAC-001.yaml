@@ -1,0 +1,69 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: IAC-001
+title: Terraform code must pass fmt check and validate
+domain: IAC
+type: preventive
+priority: P1
+severity: medium
+
+statement: >
+  All Terraform and OpenTofu code in the repository must pass `terraform fmt -check`
+  and `terraform validate` as part of the CI pipeline on every pull request.
+  Unformatted code and code that fails validation must not be merged to any
+  protected branch.
+
+rationale: >
+  `terraform fmt` enforces a canonical code style, reducing noise in code review
+  and ensuring consistent readability across the platform's infrastructure code.
+  `terraform validate` catches syntactic and type errors before the code is applied,
+  preventing invalid configurations from entering the codebase. Both checks are
+  fast, cheap, and should have zero false positives on valid code.
+
+mapped_standards:
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "Principle 1 — Declarative"
+    mapping_note: >
+      Code that fails `validate` cannot correctly declare desired state. Enforcing
+      validate in CI prevents syntactically invalid desired-state declarations from
+      being stored in the repository.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "[PLACEHOLDER: AWS WAF Operational Excellence — OPS practice on code quality]"
+    mapping_note: >
+      WAF's operational excellence practices emphasise automated quality checks
+      as a prerequisite for reliable operations.
+      [PLACEHOLDER: identify specific WAF OPS question or best practice reference]
+
+implementation_expectations: >
+  The CI pipeline (GitHub Actions) must include a job that:
+  1. Checks out the repository
+  2. Sets up the pinned Terraform/OpenTofu version
+  3. Runs `terraform fmt -check -recursive` from the repository root
+  4. For each Terraform root or module directory, runs `terraform init -backend=false`
+     followed by `terraform validate`
+  5. Fails the CI job if either command returns a non-zero exit code
+
+  The Terraform version used in CI must match the `required_version` constraint
+  in the Terraform configuration.
+
+evidence_required:
+  - type: ci-fmt-validate-result
+    description: >
+      CI job logs or structured output confirming that terraform fmt -check
+      and terraform validate both passed for the assessed commit.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+  - release_gate
+
+scope_conditions:
+  - condition: "repository.type in ['terraform-module', 'terraform-root']"
+    rationale: >
+      Only applies to repositories containing Terraform or OpenTofu code.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

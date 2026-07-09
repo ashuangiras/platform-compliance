@@ -1,0 +1,93 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: OBS-001
+title: Every service must declare and implement a health check
+domain: OBS
+type: directive
+priority: P1
+severity: medium
+
+statement: >
+  Every service deployed by the platform must declare at least one health check
+  mechanism in its service contract. The health check must be verified as
+  functional during the deployment process before traffic is routed to the
+  new version.
+
+rationale: >
+  Without a declared and verified health check, the platform has no way to
+  distinguish a service that has started successfully from one that has started
+  but is not functioning correctly. Health checks are the foundation of all
+  automated deployment safety: they enable deployment orchestration to detect
+  failed deployments before they affect users, and they enable the platform's
+  continuous monitoring to detect service degradation after deployment.
+
+mapped_standards:
+  - source_id: SRC-GOOGLE-SRE
+    clause: "[PLACEHOLDER: SRE book Chapter 6 — Monitoring and health endpoint reference]"
+    mapping_note: >
+      Google SRE Chapter 6 discusses the role of health checks and monitoring
+      as prerequisites for service reliability. The health check is the most
+      fundamental observable metric.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "[PLACEHOLDER: AWS WAF REL — How do you monitor your workload resources?]"
+    mapping_note: >
+      WAF reliability practices require health monitoring of workloads.
+      A health endpoint is the mechanism for this in containerised services.
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "4.6 Ensure that HEALTHCHECK instructions have been added to container images"
+    mapping_note: >
+      CIS Docker 4.6 requires HEALTHCHECK to be defined in Docker images.
+      OBS-001 is broader (health check mechanism must be declared and verified,
+      not just defined in the Dockerfile).
+
+implementation_expectations: >
+  The service must implement one of the following health check mechanisms:
+
+  Option A — HTTP endpoint:
+  - Expose a /health or /healthz endpoint that returns HTTP 200 when the
+    service is healthy and a 4xx/5xx status or connection failure when not
+  - The endpoint must check that the service can handle requests (not just
+    that the process is running)
+
+  Option B — TCP check:
+  - If an HTTP endpoint is not appropriate, a TCP port check is acceptable
+    as a minimum viable health check
+
+  The Dockerfile must include a HEALTHCHECK instruction that matches the
+  declared mechanism.
+
+  At deployment time, the deployment process must:
+  1. Start the container
+  2. Wait for the health check to pass (with defined timeout and retry limits)
+  3. Only consider the deployment successful after health check passes
+  4. Roll back automatically if health check does not pass within the timeout
+
+  The health check endpoint, timeout, and retry configuration must be declared
+  in the service contract.
+
+evidence_required:
+  - type: health-check-declaration
+    description: >
+      Service contract entry confirming the health check mechanism, endpoint,
+      timeout, and retry configuration.
+    format: yaml
+  - type: deployment-health-check-result
+    description: >
+      Deployment log or structured output confirming health check passed
+      during the assessed deployment.
+    format: json
+
+automation_status: partially-automated
+assessment_cadence: per-deployment
+failure_behavior: block
+failure_applies_to:
+  - deployment_gate
+
+scope_conditions:
+  - condition: "service.type is defined"
+    rationale: >
+      Applies to service-type repositories. Pure infrastructure repositories
+      (terraform-module, terraform-root) are not services and have no health check.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

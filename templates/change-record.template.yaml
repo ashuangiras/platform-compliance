@@ -1,0 +1,40 @@
+$schema: "../../schemas/change-record.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Change record ID — format: CHG-{YYYYMMDD}-{NNN}
+# Use today's date and the next sequential number
+id: "CHG-20260709-001"
+
+schema_version: "1.0.0"
+
+# Type of object changed
+change_type: "control"   # control | profile | policy | binding | schema | workflow | tool | mapping | source | taxonomy
+
+# What changed and why (be specific — this is the permanent record)
+description: >
+  [Describe what changed, why it changed, and what the impact is.
+  Reference the control IDs, profile IDs, or schema names affected.]
+
+# IDs of all objects modified (control IDs, profile IDs, schema filenames, etc.)
+affected_object_ids:
+  - "XXX-001"
+
+# ─── OPTIONAL FIELDS ──────────────────────────────────────────────────────────
+
+# If this change was driven by an ADR, reference it here
+# related_adr_id: "ADR-0005"
+
+# Does this change break existing consuming repositories?
+breaking: false
+
+# Required when breaking: true
+# migration_guidance: >
+#   [Instructions for what downstream repositories must do.]
+
+author: "platform-team"
+date: "2026-07-09"
+
+# Pull request URL or review reference
+# review_refs:
+#   - "https://github.com/angirasa-risk/platform-compliance/pull/1"

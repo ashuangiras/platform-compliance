@@ -1,0 +1,17 @@
+id: POL-CHG-002-GITHUB-001
+title: "Release record exists for every semantic version tag"
+binding_ids:
+  - BIND-CHG-002-GITHUB
+engine: opa
+file_path: "07-policies/opa/CHG/POL-CHG-002-GITHUB-001.rego"
+pass_criteria: >
+  A release record YAML file exists at 09-assessments/releases/{tag}.yaml
+  with all required fields: id, change_record_ids (non-empty),
+  gate_assessment_id, and release_summary.
+fail_criteria: >
+  The release record file is absent, or present but missing required fields.
+  Result is not_applicable for tags that are not semantic version release tags.
+evidence_type: release-record-file
+severity: medium
+introduced_date: "2026-07-08"
+status: active

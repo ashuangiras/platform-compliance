@@ -1,0 +1,10 @@
+# Fixture: SRC-001 — FAIL (no branch protection at all)
+# Scenario: Newly created repository with no branch protection configured.
+# GitHub API returns null for the branch_protection field (or 404).
+# Expected policy result: { "result": "fail", violation: "Branch protection is not enabled" }
+branch_protection: null
+default_branch: main
+repository:
+  name: my-ungoverned-repo
+  type: terraform-module
+  url: https://github.com/org/my-ungoverned-repo

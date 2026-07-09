@@ -1,0 +1,72 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: CHG-002
+title: Every tagged release must have a corresponding release record
+domain: CHG
+type: directive
+priority: P1
+severity: medium
+
+statement: >
+  Every Git tag that represents a release (any tag matching the platform's
+  release tag format) must have a corresponding release record that includes:
+  a list of included changes, a reference to the release gate assessment
+  report, and a summary of what changed.
+
+rationale: >
+  A tagged version without a release record is a version of unknown provenance.
+  The release record closes the loop between the code history (Git tags) and the
+  compliance system (assessments, change records). It creates a point-in-time
+  snapshot of the compliance state at release, enabling future audit queries such
+  as "what was the compliance posture when version X was deployed?" The release
+  record is also the mechanism by which downstream repositories know that a new
+  version of platform-compliance has been assessed and is safe to consume.
+
+mapped_standards:
+  - source_id: SRC-ITIL-ADAPTED
+    clause: "Change Enablement practice — release documentation (adapted)"
+    mapping_note: >
+      ITIL 4 Change Enablement includes release documentation as a component
+      of the change record. The platform separates change records (per PR)
+      from release records (per version tag) for clarity.
+  - source_id: SRC-OPENSSF-SLSA-V1
+    clause: "[PLACEHOLDER: SLSA v1.0 — release provenance requirements]"
+    mapping_note: >
+      SLSA's provenance model includes requirements for documenting the build
+      and release process. A release record is the platform's mechanism for
+      capturing this provenance.
+
+implementation_expectations: >
+  Release tag format: v{MAJOR}.{MINOR}.{PATCH} (semantic versioning)
+
+  A release record must be created (as a YAML file in the releases/ directory
+  or equivalent) before or immediately after the tag is pushed.
+
+  Required fields in the release record:
+  - id: the version tag (e.g., "v1.0.0")
+  - release_date
+  - change_record_ids: list of all CHG-YYYYMMDD-NNN records in this release
+  - gate_assessment_id: the assessment report ID for the release gate check
+  - release_summary: human-readable summary
+  - breaking_changes: boolean
+  - released_by: identity
+
+  Automation: the release workflow (workflows/release-gate.yaml) should
+  generate the release record template and require its completion before
+  allowing the release to proceed.
+
+evidence_required:
+  - type: release-record-file
+    description: >
+      Presence of a release record YAML file for the assessed release tag,
+      conforming to schemas/release-record.schema.yaml.
+    format: yaml
+
+automation_status: partially-automated
+assessment_cadence: per-release
+failure_behavior: block
+failure_applies_to:
+  - release_gate
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

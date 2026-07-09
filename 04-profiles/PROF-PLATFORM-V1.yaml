@@ -1,0 +1,421 @@
+$schema: "../schemas/profile.schema.yaml"
+
+id: PROF-PLATFORM-V1
+name: Platform Compliance Profile v1
+description: >
+  The foundational compliance profile for all platform repositories.
+  This profile defines the complete set of controls, their enforcement categories,
+  and the gate criteria for the initial platform phase.
+
+  Every platform repository declares this profile in its .compliance-manifest.yaml.
+  Scope conditions within this profile determine which controls apply to each
+  repository type. A repository that does not satisfy a mandatory, in-scope control
+  cannot pass the applicable gate.
+
+version: "1.0.0"
+applicable_to:
+  - terraform-module
+  - terraform-root
+  - service
+  - platform-repo
+  - library
+  - documentation
+
+introduced_date: "2026-07-08"
+introduced_by: platform-team
+status: active
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CATEGORIES
+#
+# Controls are assigned to exactly one primary category:
+#   mandatory       – must pass; failure blocks applicable gate
+#   manual_initially – accepted with manual evidence; automation target
+#   deferred        – planned; not yet checked
+#
+# A control in "mandatory" may also appear in "automated_required" to signal
+# that manual attestation is insufficient.
+# ─────────────────────────────────────────────────────────────────────────────
+
+categories:
+
+  mandatory:
+    description: >
+      Controls that must be satisfied for this profile version. A failing
+      mandatory control blocks the gate specified in failure_applies_to.
+      All mandatory controls with automation_status: automated are also
+      implicitly automated_required.
+    controls:
+      # Source Control — universal
+      - id: SRC-001
+        # no scope_condition — applies to all repository types
+      - id: SRC-002
+        # no scope_condition — applies to all repository types
+      - id: SRC-003
+        # warns at merge gate; blocks at release gate (per control definition)
+      # Supply Chain — applies where code dependencies exist
+      - id: SUP-001
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+      - id: SUP-002
+        scope_condition: "repository.has_container_images == true"
+      # Infrastructure as Code
+      - id: IAC-001
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: IAC-002
+        scope_condition: "repository.type == 'terraform-root'"
+      # Security — universal
+      - id: SEC-001
+        # no scope_condition — no secrets anywhere, no exceptions
+      - id: SEC-002
+        # no scope_condition — secret scanning on all repos
+      - id: SEC-003
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+      # Runtime — containerised services
+      - id: RUN-002
+        scope_condition: "repository.has_container_images == true"
+      # Observability — services only
+      - id: OBS-001
+        scope_condition: "service.type is defined"
+      # Backup — stateful services only
+      - id: BAK-001
+        scope_condition: "service.type == 'stateful'"
+      # Change and Release
+      - id: CHG-002
+        # no scope_condition — all repositories must have release records
+      # Network — externally exposed services
+      - id: NET-001
+        scope_condition: "service.externally_exposed == true"
+      # Documentation
+      - id: DOC-001
+        # no scope_condition — all repositories must have a README
+
+  automated_required:
+    description: >
+      A subset of mandatory controls for which manual attestation is not
+      sufficient. Evidence must be produced by an automated policy check,
+      not a human attestation record. These controls cannot be satisfied
+      by manual_initially evidence.
+    controls:
+      - id: SRC-001
+      - id: SRC-002
+      - id: SUP-001
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+      - id: SUP-002
+        scope_condition: "repository.has_container_images == true"
+      - id: IAC-001
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SEC-001
+      - id: SEC-002
+      - id: RUN-002
+        scope_condition: "repository.has_container_images == true"
+
+  manual_initially:
+    description: >
+      Controls where manual evidence (attestation, signed-off checklist, or
+      documented review) is accepted in this profile version. Each control
+      has an automation_deadline indicating when automated evidence becomes
+      required. Manual evidence must name the attestor and include a review date.
+    controls:
+      - id: IAC-003
+        scope_condition: "repository.type == 'terraform-module'"
+        automation_deadline: "2027-01-01"
+      - id: RUN-001
+        scope_condition: "repository.has_container_images == true"
+        automation_deadline: "2027-01-01"
+      - id: RUN-003
+        scope_condition: "service.type is defined"
+        automation_deadline: "2027-01-01"
+      - id: OBS-002
+        scope_condition: "service.type is defined"
+        automation_deadline: "2027-07-08"
+      - id: BAK-001
+        scope_condition: "service.type == 'stateful'"
+        automation_deadline: "2027-01-01"
+      - id: NET-001
+        scope_condition: "service.externally_exposed == true"
+        automation_deadline: "2027-01-01"
+      - id: CHG-001
+        scope_condition: "repository.type == 'platform-repo'"
+        automation_deadline: "2027-01-01"
+      - id: DOC-002
+        automation_deadline: null   # not-automatable; manual permanently
+      - id: INC-001
+        scope_condition: "service.type is defined"
+        automation_deadline: null   # not-automatable; manual permanently
+
+  deferred:
+    description: >
+      Controls that are declared as planned for a future profile version.
+      They are not checked and do not affect any gate in PROF-PLATFORM-V1.
+      Including them signals intent to consuming repositories and allows
+      teams to prepare.
+    controls:
+      - id: SRC-004
+      - id: SUP-003
+
+  not_applicable:
+    description: >
+      Controls that are excluded from this profile because they do not apply
+      to the platform's current scope or technology context.
+    controls:
+      - id: CAT-001
+        rationale: >
+          Service catalog controls are in a future domain (CAT) that has no
+          active controls in v1. Excluded until CAT domain controls are defined.
+      - id: REL-001
+        rationale: >
+          Reliability controls (SLO declarations, error budget policies) are
+          a future maturity target. The platform does not yet have the observability
+          infrastructure to collect the data required for SLO tracking.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GATES
+#
+# Gates define the blocking criteria for each transition point.
+# Controls listed here reference the primary category (mandatory or manual_initially)
+# for their enforcement level. Scope conditions from the categories apply.
+#
+# Gate hierarchy: merge_gate ⊆ release_gate ⊆ deployment_gate
+# (each gate includes the requirements of the previous gate)
+# continuous_audit runs independently.
+# ─────────────────────────────────────────────────────────────────────────────
+
+gates:
+
+  merge_gate:
+    description: >
+      Checks evaluated before a pull request may be merged to a protected branch.
+      All checks at this gate must be automated (no manual evidence).
+      Fast checks only: p99 runtime < 5 minutes.
+
+      A failing merge gate control blocks the PR merge.
+      Waivers may be applied to individual controls but not to the gate itself.
+
+    required_controls:
+      # Branch protection must exist before any merge can be evaluated
+      - id: SRC-001
+        enforcement: block
+
+      # All merged code must have been reviewed
+      - id: SRC-002
+        enforcement: block
+
+      # No secrets — checked on every commit, blocks merge
+      - id: SEC-001
+        enforcement: block
+
+      # Terraform format and validation — fast automated check
+      - id: IAC-001
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+
+      # Pinned dependencies — detects floating constraints
+      - id: SUP-001
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+
+      # Immutable image tags
+      - id: SUP-002
+        enforcement: block
+        scope_condition: "repository.has_container_images == true"
+
+      # CODEOWNERS — warn at merge gate, block at release gate
+      - id: SRC-003
+        enforcement: warn
+
+      # README presence — warn at merge gate
+      - id: DOC-001
+        enforcement: warn
+
+      # Change record reference for platform-repo PRs
+      - id: CHG-001
+        enforcement: block
+        scope_condition: "repository.type == 'platform-repo'"
+
+  release_gate:
+    description: >
+      Checks evaluated before a version tag is published.
+      Includes all merge gate checks plus release-specific checks.
+      Evidence collected since the last release is evaluated.
+
+      A failing release gate control blocks tag publication and artifact release.
+      The release gate assessment report must reference a passing continuous audit
+      assessment from within the preceding 7 days.
+
+    required_controls:
+      # ── All merge gate controls carry forward ─────────────────────────────
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: IAC-001
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SUP-001
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+      - id: SUP-002
+        enforcement: block
+        scope_condition: "repository.has_container_images == true"
+      - id: CHG-001
+        enforcement: block
+        scope_condition: "repository.type == 'platform-repo'"
+
+      # ── Release-gate additions ─────────────────────────────────────────────
+
+      # CODEOWNERS now blocks (was warn at merge gate)
+      - id: SRC-003
+        enforcement: block
+
+      # Secret scanning must be enabled (configuration check)
+      - id: SEC-002
+        enforcement: block
+
+      # Critical vulnerability SLA check
+      - id: SEC-003
+        enforcement: warn
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+
+      # Container must run non-root
+      - id: RUN-002
+        enforcement: block
+        scope_condition: "repository.has_container_images == true"
+
+      # OCI labels — warn at release gate
+      - id: RUN-001
+        enforcement: warn
+        scope_condition: "repository.has_container_images == true"
+
+      # Release record must exist
+      - id: CHG-002
+        enforcement: block
+
+      # README must exist (was warn at merge gate)
+      - id: DOC-001
+        enforcement: block
+
+      # ADR coverage — warn, prompts reviewer confirmation
+      - id: DOC-002
+        enforcement: warn
+
+  deployment_gate:
+    description: >
+      Checks evaluated before terraform apply or service deployment to
+      staging or production environments.
+      Includes all release gate checks plus deployment-specific checks.
+
+      A failing deployment gate control blocks the apply/deploy action.
+      All blocking controls must have passing evidence or active waivers.
+      A deployment gate assessment report must be generated and attached
+      to the deployment record before apply is executed.
+
+    required_controls:
+      # ── All release gate controls carry forward ───────────────────────────
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SRC-003
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: IAC-001
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SUP-001
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+      - id: SUP-002
+        enforcement: block
+        scope_condition: "repository.has_container_images == true"
+      - id: RUN-002
+        enforcement: block
+        scope_condition: "repository.has_container_images == true"
+      - id: CHG-002
+        enforcement: block
+      - id: DOC-001
+        enforcement: block
+
+      # ── Deployment-gate additions ──────────────────────────────────────────
+
+      # Plan must have been reviewed (terraform-root only)
+      - id: IAC-002
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+
+      # Health check must be declared and verified
+      - id: OBS-001
+        enforcement: block
+        scope_condition: "service.type is defined"
+
+      # Backup policy must be declared for stateful services
+      - id: BAK-001
+        enforcement: block
+        scope_condition: "service.type == 'stateful'"
+
+      # Ingress policy required for externally exposed services
+      - id: NET-001
+        enforcement: block
+        scope_condition: "service.externally_exposed == true"
+
+      # Critical vulnerability alerts must be resolved
+      - id: SEC-003
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+
+      # Resource limits — warn (becomes block in v2)
+      - id: RUN-003
+        enforcement: warn
+        scope_condition: "service.type is defined"
+
+      # Structured logging — warn
+      - id: OBS-002
+        enforcement: warn
+        scope_condition: "service.type is defined"
+
+  continuous_audit:
+    description: >
+      Controls evaluated on a recurring schedule (daily unless noted).
+      Failures produce alerts and evidence records. Failures do not block
+      active operations unless they are escalated to the incident process.
+
+      Continuous audit checks are the early warning system for compliance drift.
+      A continuous audit failure that is not resolved within the control's
+      remediation SLA triggers an INC-001-eligible incident.
+
+    required_controls:
+      # Secret scanning — check daily for any newly committed secrets
+      - id: SEC-001
+        enforcement: block
+        # cadence: daily
+
+      # Verify secret scanning is still enabled
+      - id: SEC-002
+        enforcement: block
+        # cadence: daily
+
+      # Vulnerability alert ageing — check daily for SLA breaches
+      - id: SEC-003
+        enforcement: notify
+        # cadence: daily
+
+      # Branch protection still enabled — check daily for accidental disablement
+      - id: SRC-001
+        enforcement: block
+        # cadence: daily
+
+      # Incident record completeness — weekly check for unreported incidents
+      - id: INC-001
+        enforcement: notify
+        scope_condition: "service.type is defined"
+        # cadence: weekly
+
+      # Backup test staleness — monthly check that last_restore_test_date is current
+      - id: BAK-001
+        enforcement: warn
+        scope_condition: "service.type == 'stateful'"
+        # cadence: monthly

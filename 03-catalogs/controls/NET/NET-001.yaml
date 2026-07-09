@@ -1,0 +1,74 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: NET-001
+title: Externally exposed services must declare an explicit ingress policy
+domain: NET
+type: directive
+priority: P1
+severity: high
+
+statement: >
+  Any service that is accessible from outside the private network must declare
+  an explicit ingress policy in its service contract. The ingress policy must
+  specify: allowed source networks or identifiers, allowed protocols, allowed
+  ports, and TLS requirements.
+
+rationale: >
+  A service exposed to external networks without a declared ingress policy has
+  an undefined security boundary. Without explicit declaration, there is no
+  way to audit whether network exposure is intentional, appropriate, and
+  correctly implemented. The declaration requirement creates a forcing function:
+  the service owner must consciously decide what network access is required,
+  reducing the risk of accidental over-exposure.
+
+mapped_standards:
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "[PLACEHOLDER: CIS Docker 5.x — container network configuration; verify section]"
+    mapping_note: >
+      CIS Docker Benchmark addresses network configuration and port binding
+      for containers.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "[PLACEHOLDER: AWS WAF SEC 5 — How do you protect your network resources?]"
+    mapping_note: >
+      WAF Security Pillar's network protection practices require explicit
+      definition of allowed network access paths.
+
+implementation_expectations: >
+  The service contract must contain an ingress_policy block:
+    ingress_policy:
+      external: true
+      allowed_sources:
+        - description: "Public internet"
+          cidr: "0.0.0.0/0"   # or specific CIDR ranges
+      allowed_protocols:
+        - protocol: HTTPS
+          port: 443
+          tls_required: true
+          tls_minimum_version: "1.2"
+      authentication_required: true   # does the endpoint require authentication?
+      notes: "Reverse proxy handles TLS termination; service listens on HTTP internally"
+
+  The implementation (Terraform network configuration, reverse proxy rules, etc.)
+  must match the declared policy. A drift check comparing declared policy to
+  actual network configuration is the future automation target.
+
+evidence_required:
+  - type: ingress-policy-declaration
+    description: >
+      Service contract ingress_policy block demonstrating all required fields.
+    format: yaml
+
+automation_status: automation-target
+assessment_cadence: per-deployment
+failure_behavior: block
+failure_applies_to:
+  - deployment_gate
+
+scope_conditions:
+  - condition: "service.externally_exposed == true"
+    rationale: >
+      Applies only to services that are declared as externally accessible.
+      Services with no external exposure do not require this declaration.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

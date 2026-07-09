@@ -1,0 +1,45 @@
+# Platform Control Types
+#
+# Control types classify a control by its mechanism of action.
+# Used in the control catalog and in reporting.
+
+types:
+  preventive:
+    code: preventive
+    description: >
+      Stops a non-compliant state from being introduced. Acts before or at
+      the moment of a change. Examples: branch protection blocks direct pushes;
+      secret scanning blocks commit of credentials; schema validation blocks
+      malformed configuration.
+
+  detective:
+    code: detective
+    description: >
+      Detects when a non-compliant state exists or has occurred. Acts after
+      a change, either continuously or at defined intervals. Examples: secret
+      scanning alerts on existing credentials in history; drift detection
+      identifies configuration that has deviated from declared state.
+
+  corrective:
+    code: corrective
+    description: >
+      Reduces the impact of a non-compliant state after detection. May
+      automatically remediate the issue or guide manual remediation.
+      Examples: automated dependency patching; rollback on failed deployment.
+
+  directive:
+    code: directive
+    description: >
+      Guides behaviour through policy, process, or documentation requirements.
+      Does not directly prevent or detect technical failures, but establishes
+      the framework within which other controls operate. Examples: CODEOWNERS
+      requirement; README requirement; ADR requirement; backup policy declaration.
+
+  compensating:
+    code: compensating
+    description: >
+      Partially compensates for the absence or weakness of another control.
+      A compensating control does not replace the primary control but reduces
+      the risk of its absence. Compensating controls are referenced in waivers.
+      Examples: manual code review compensating for partial automation coverage;
+      network segmentation compensating for an unpatched vulnerability.

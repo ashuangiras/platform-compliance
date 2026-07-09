@@ -1,0 +1,99 @@
+# Release Gate Criteria
+# Derived from: 04-profiles/PROF-PLATFORM-V1.yaml → gates.release_gate
+# Version: 1.0.0
+# Last updated: 2026-07-08
+#
+# This file is the machine-readable source consumed by the release-gate workflow.
+# It MUST be kept in sync with PROF-PLATFORM-V1.yaml → gates.release_gate.
+# A CI check validates consistency between this file and the profile.
+
+gate_id: release_gate
+profile_id: PROF-PLATFORM-V1
+profile_version: "1.0.0"
+schema_version: "1.0.0"
+description: >
+  Controls evaluated before a version tag is published and artifacts released.
+  Includes all merge gate controls plus release-specific checks.
+  A failing required_control with enforcement: block prevents tag publication.
+fail_fast: false
+
+required_controls:
+
+  # ── Carried from merge gate (always blocking at release) ──────────────────
+
+  - control_id: SRC-001
+    enforcement: block
+    scope_condition: null
+    rationale: "Branch protection must still be enabled at release time"
+
+  - control_id: SRC-002
+    enforcement: block
+    scope_condition: null
+    rationale: "Code review requirement enforced throughout"
+
+  - control_id: SEC-001
+    enforcement: block
+    scope_condition: null
+    rationale: "No secrets must exist at the released commit"
+
+  - control_id: IAC-001
+    enforcement: block
+    scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+    rationale: "Terraform code quality required before release"
+
+  - control_id: SUP-001
+    enforcement: block
+    scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+    rationale: "Unpinned dependencies make releases non-reproducible"
+
+  - control_id: SUP-002
+    enforcement: block
+    scope_condition: "repository.has_container_images == true"
+    rationale: "Mutable image tags in released code undermine reproducibility"
+
+  - control_id: CHG-001
+    enforcement: block
+    scope_condition: "repository.type == 'platform-repo'"
+    rationale: "All normative changes must have change records"
+
+  # ── Release-gate additions (upgrade from merge-gate enforcement) ──────────
+
+  - control_id: SRC-003
+    enforcement: block
+    scope_condition: null
+    rationale: "CODEOWNERS required before a version is published (was warn at merge)"
+
+  - control_id: SEC-002
+    enforcement: block
+    scope_condition: null
+    rationale: "Secret scanning must be confirmed active at release time"
+
+  - control_id: SEC-003
+    enforcement: warn
+    scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+    rationale: "Unresolved vulnerabilities warned at release; blocking at deployment"
+
+  - control_id: RUN-002
+    enforcement: block
+    scope_condition: "repository.has_container_images == true"
+    rationale: "Published images must not run as root"
+
+  - control_id: RUN-001
+    enforcement: warn
+    scope_condition: "repository.has_container_images == true"
+    rationale: "OCI labels required for traceability; warn allows incremental adoption"
+
+  - control_id: CHG-002
+    enforcement: block
+    scope_condition: null
+    rationale: "Every release must have a corresponding release record"
+
+  - control_id: DOC-001
+    enforcement: block
+    scope_condition: null
+    rationale: "README required before a version is published (was warn at merge)"
+
+  - control_id: DOC-002
+    enforcement: warn
+    scope_condition: null
+    rationale: "ADR coverage reviewed; warn prompts human confirmation"

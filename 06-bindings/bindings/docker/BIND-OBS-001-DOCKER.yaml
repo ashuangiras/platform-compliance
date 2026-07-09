@@ -1,0 +1,53 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-OBS-001-DOCKER
+control_id: OBS-001
+technology_context: docker
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  Every Docker image for a deployable service must declare a HEALTHCHECK
+  instruction in its Dockerfile. The HEALTHCHECK must:
+
+  1. Use CMD or CMD-SHELL to execute an actual check (not NONE)
+  2. Define a meaningful timeout (--timeout 30s or less)
+  3. Define a start period appropriate for the service (--start-period)
+  4. Define a failure threshold (--retries 3 or similar)
+
+  The health check mechanism (HTTP endpoint, TCP port, or exec command) must
+  match the mechanism declared in the service contract (service-contract.yaml).
+
+  At deployment time, the container orchestration layer must wait for the
+  HEALTHCHECK to report "healthy" before routing traffic to the new container.
+  This is a deployment process requirement, not a Dockerfile requirement alone.
+
+observable_artifact: >
+  a) Parsed Dockerfile instructions:
+  {
+    "healthcheck_present": true,
+    "healthcheck": {
+      "test": ["CMD-SHELL", "curl -f http://localhost:8080/healthz || exit 1"],
+      "interval": "30s",
+      "timeout": "10s",
+      "start_period": "5s",
+      "retries": 3
+    }
+  }
+
+  b) Deployment log confirming health check passed before traffic routing:
+  {
+    "deployment_id": "deploy-20260708-001",
+    "health_check_status": "healthy",
+    "health_check_waited_seconds": 12,
+    "traffic_routed_at": "2026-07-08T14:30:12Z"
+  }
+
+policy_check_ids: []
+# Planned policies: POL-OBS-001-DOCKER-001 (Dockerfile HEALTHCHECK check — automatable now)
+#                  POL-OBS-001-DEPLOY-001 (deployment health verification — requires deploy tooling)
+
+notes: >
+  This binding has two evidence components: (a) the Dockerfile check is
+  automated; (b) the deployment verification is partially automated —
+  the deployment workflow must log the health check result as evidence.

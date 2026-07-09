@@ -1,0 +1,50 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-IAC-001-TERRAFORM
+control_id: IAC-001
+technology_context: terraform
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  All Terraform and OpenTofu code in the repository must pass both checks
+  before being merged to any protected branch:
+
+  1. `terraform fmt -check -recursive` from the repository root must exit 0.
+     Any formatting difference causes a non-zero exit. The CI job must capture
+     and report the diff output for developer reference.
+
+  2. For each Terraform root or module directory (any directory containing
+     a .tf file): `terraform init -backend=false -input=false` followed by
+     `terraform validate` must both exit 0.
+
+  The Terraform/OpenTofu binary version used in CI must match the
+  `required_version` constraint declared in the Terraform configuration.
+  If the configuration does not declare required_version, the check fails
+  (missing required_version is itself a violation of IAC-001's spirit, though
+  the version pinning requirement is formally covered by SUP-001).
+
+observable_artifact: >
+  CI job stdout/stderr (structured as JSON for evidence):
+  {
+    "fmt_result": {
+      "exit_code": 0,
+      "diff": "",
+      "terraform_version": "1.x.y"
+    },
+    "validate_result": {
+      "exit_code": 0,
+      "errors": [],
+      "warnings": [],
+      "directories_checked": [".", "modules/..."]
+    }
+  }
+
+policy_check_ids:
+  - POL-IAC-001-TERRAFORM-001
+
+notes: >
+  The CI workflow collects this output as a shell script step, then passes
+  the structured JSON to the OPA policy for evaluation. The shell script is
+  responsible for running terraform and formatting the output; the Rego policy
+  is responsible for the pass/fail determination.

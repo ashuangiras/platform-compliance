@@ -1,0 +1,44 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SRC-001-GITHUB
+control_id: SRC-001
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  The default branch of the repository must have GitHub branch protection enabled
+  with all of the following settings configured:
+
+  1. "Require a pull request before merging" — enabled
+  2. "Required number of approvals" — minimum 1
+  3. "Dismiss stale pull request approvals when new commits are pushed" — enabled
+  4. "Require status checks to pass before merging" — enabled
+  5. "Allow force pushes" — disabled
+  6. "Allow deletions" — disabled
+  7. "Do not allow bypassing the above settings" — enabled (no bypass actors unless
+     a formal waiver documents and approves the exception)
+
+  These settings must be applied to the repository's default branch (typically
+  `main`). Verification is performed by querying the GitHub REST API branch
+  protection endpoint.
+
+observable_artifact: >
+  GitHub REST API response:
+  GET /repos/{owner}/{repo}/branches/{branch}/protection
+
+  Fields evaluated:
+  - required_pull_request_reviews.required_approving_review_count >= 1
+  - required_pull_request_reviews.dismiss_stale_reviews == true
+  - required_status_checks (not null)
+  - allow_force_pushes.enabled == false
+  - allow_deletions.enabled == false
+  - enforce_admins.enabled == true
+
+policy_check_ids:
+  - POL-SRC-001-GITHUB-001
+
+notes: >
+  The GitHub API returns a 404 when branch protection is not enabled, which the
+  policy interprets as a fail result. The policy must handle both the 404 case
+  (no protection) and the 200 case (protection exists but may have missing settings).

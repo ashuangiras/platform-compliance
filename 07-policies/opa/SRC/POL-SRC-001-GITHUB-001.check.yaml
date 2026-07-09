@@ -1,0 +1,19 @@
+id: POL-SRC-001-GITHUB-001
+title: "Branch protection is enabled with all required settings on the default branch"
+binding_ids:
+  - BIND-SRC-001-GITHUB
+engine: opa
+file_path: "07-policies/opa/SRC/POL-SRC-001-GITHUB-001.rego"
+pass_criteria: >
+  The default branch has branch protection enabled with:
+  required_pull_request_reviews present with required_approving_review_count >= 1,
+  dismiss_stale_reviews: true, required_status_checks present,
+  allow_force_pushes.enabled: false, allow_deletions.enabled: false.
+fail_criteria: >
+  Branch protection is not enabled (API returns 404), or one or more required
+  settings are absent or incorrectly configured (approvals < 1, force pushes
+  allowed, deletions allowed, stale review dismissal disabled).
+evidence_type: github-branch-protection-api-response
+severity: high
+introduced_date: "2026-07-08"
+status: active

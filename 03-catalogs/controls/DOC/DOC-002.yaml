@@ -1,0 +1,73 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: DOC-002
+title: Significant architecture decisions must be recorded as ADRs
+domain: DOC
+type: directive
+priority: P2
+severity: low
+
+statement: >
+  Any decision that significantly affects the architecture, design, or operating
+  model of the platform must be recorded as an Architecture Decision Record (ADR)
+  before the decision is implemented. ADRs must conform to the template in
+  templates/adr.template.md.
+
+rationale: >
+  Architecture decisions made without a written record accumulate as tribal
+  knowledge that is lost when people leave or context changes. Future contributors
+  who encounter a seemingly arbitrary design choice have no way to understand the
+  constraints and trade-offs that motivated it, leading to either uncritical
+  compliance with outdated decisions or uninformed changes that violate implicit
+  constraints. ADRs preserve the "why" alongside the "what", enabling future
+  decisions to be made with full awareness of prior context.
+
+mapped_standards:
+  - source_id: SRC-NYGARD-ADR-2011
+    clause: "Documenting Architecture Decisions (full document)"
+    mapping_note: >
+      DOC-002 directly implements the ADR practice as described by Nygard.
+      The platform adopts the Nygard format with minor additions (date, deciders).
+
+implementation_expectations: >
+  An ADR is required for decisions that affect:
+  - The compliance model (new domains, changed enforcement levels, removed controls)
+  - Technology choices (build tools, policy engines, runtime platforms)
+  - Structural changes to the platform-compliance repository layout
+  - Changes to the release or deployment gate criteria
+  - Adoption or removal of standards from the source registry
+  - Any decision that overrides or adapts an external standard
+
+  An ADR is not required for:
+  - Routine additions of new controls that follow existing patterns
+  - Documentation improvements
+  - Bug fixes to existing policy code
+  - Dependency version bumps
+
+  The ADR must be created and merged before the implementation it documents
+  is merged. The implementation PR must reference the ADR in its description.
+
+  ADRs are immutable once accepted. If a decision is reversed, a new ADR
+  is created with status "Supersedes ADR-NNNN".
+
+evidence_required:
+  - type: adr-per-significant-decision
+    description: >
+      Manual attestation that all significant decisions made in this release
+      cycle have corresponding ADRs with status "accepted".
+    format: text
+
+automation_status: not-automatable
+assessment_cadence: per-release
+failure_behavior: warn
+failure_applies_to:
+  - release_gate
+
+lifecycle_status: active
+introduced_date: "2026-07-08"
+
+notes: >
+  Automation is not possible for the "significance" judgement — this is inherently
+  a human assessment. Automation can verify that ADR files are syntactically valid
+  and follow the template format, but cannot determine whether a change warranted
+  an ADR. The warning at the release gate prompts reviewers to confirm ADR coverage.

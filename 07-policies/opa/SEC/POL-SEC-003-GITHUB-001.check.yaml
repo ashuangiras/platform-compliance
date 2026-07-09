@@ -1,0 +1,16 @@
+id: POL-SEC-003-GITHUB-001
+title: "No open dependency vulnerability alerts exceeding the remediation SLA"
+binding_ids:
+  - BIND-SEC-003-GITHUB
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-003-GITHUB-001.rego"
+pass_criteria: >
+  No open critical-severity alerts with age > 7 days AND no open high-severity
+  alerts with age > 30 days (measured from created_at to evaluation_timestamp).
+fail_criteria: >
+  One or more critical alerts older than 7 days OR one or more high alerts
+  older than 30 days without an active waiver.
+evidence_type: dependency-vulnerability-alert-status
+severity: high
+introduced_date: "2026-07-08"
+status: active

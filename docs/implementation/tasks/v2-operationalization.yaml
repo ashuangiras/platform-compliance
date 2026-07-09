@@ -1,0 +1,171 @@
+# v2 Operationalization Tasks — PC-0087 to PC-0145
+# Horizons: v1.1.0 (Phase A) and v1.2.0 (Phase B)
+# Updated: 2026-07-09
+# All tasks: not-started
+
+phases:
+
+  - id: phase-A
+    title: "Operationalization — make the system run"
+    horizon: "v1.1.0"
+    blocked_by: "v1.0.0 tag, ADR-0006, ADR-0007"
+    tasks:
+      - id: PC-0087
+        title: "Ratify ADR-0006 (evidence storage strategy)"
+        status: not-started
+        note: "See decisions-needed/ADR-0006-evidence-storage.md"
+      - id: PC-0088
+        title: "Ratify ADR-0007 (waiver approval governance)"
+        status: not-started
+        note: "See decisions-needed/ADR-0007-waiver-governance.md"
+      - id: PC-0089
+        title: "Write input collection shell script: collect-github-branch-protection.sh"
+        status: not-started
+        depends_on: [PC-0087]
+      - id: PC-0090
+        title: "Write input collection shell script: collect-github-security-settings.sh"
+        status: not-started
+      - id: PC-0091
+        title: "Write input collection shell script: collect-dockerfile-info.sh"
+        status: not-started
+      - id: PC-0092
+        title: "Write input collection shell script: collect-terraform-info.sh"
+        status: not-started
+      - id: PC-0093
+        title: "Write input collection shell script: collect-workflow-actions.sh"
+        status: not-started
+      - id: PC-0094
+        title: "Replace policy-checks TODO in reusable workflow with real OPA execution"
+        status: not-started
+        depends_on: [PC-0089, PC-0090, PC-0091, PC-0092, PC-0093]
+      - id: PC-0095
+        title: "Replace secret-scan-check TODO with real gitleaks invocation"
+        status: not-started
+      - id: PC-0096
+        title: "Replace collect-evidence TODO with real evidence record generation"
+        status: not-started
+        depends_on: [PC-0087, PC-0094]
+      - id: PC-0097
+        title: "Replace generate-assessment TODO with real assessment aggregation"
+        status: not-started
+        depends_on: [PC-0088, PC-0096]
+      - id: PC-0098
+        title: "Replace evaluate-gate TODO with real gate criteria evaluation"
+        status: not-started
+        depends_on: [PC-0097]
+      - id: PC-0099
+        title: "Write policy: POL-OBS-001-DOCKER-001 (HEALTHCHECK check) + fixtures"
+        status: not-started
+      - id: PC-0100
+        title: "Write policy: POL-BAK-001-GITHUB-001 (backup policy declaration) + fixtures"
+        status: not-started
+      - id: PC-0101
+        title: "Write policy: POL-NET-001-GITHUB-001 (ingress policy declaration) + fixtures"
+        status: not-started
+      - id: PC-0102
+        title: "Write policy: POL-CHG-001-GITHUB-001 (change record in PR body) + fixtures"
+        status: not-started
+      - id: PC-0103
+        title: "Write policy: POL-IAC-002-TERRAFORM-001 (plan-before-apply) + fixtures"
+        status: not-started
+      - id: PC-0104
+        title: "Write policy: POL-IAC-003-TERRAFORM-001 (no hardcoded values) + fixtures"
+        status: not-started
+      - id: PC-0105
+        title: "Write policy: POL-RUN-003-DOCKER-001 (resource limits) + fixtures"
+        status: not-started
+      - id: PC-0106
+        title: "Write policy: POL-OBS-002-GITHUB-001 (structured logging attestation) + fixtures"
+        status: not-started
+      - id: PC-0107
+        title: "Run all OPA policy tests with real OPA binary"
+        status: not-started
+        depends_on: [PC-0094, PC-0099, PC-0100, PC-0101, PC-0102, PC-0103, PC-0104]
+      - id: PC-0108
+        title: "First end-to-end CI run on GitHub that produces real evidence"
+        status: not-started
+        depends_on: [PC-0094, PC-0095, PC-0096, PC-0097, PC-0098]
+      - id: PC-0109
+        title: "Validate that evidence records from CI conform to evidence.schema.json"
+        status: not-started
+        depends_on: [PC-0108]
+      - id: PC-0110
+        title: "Validate that assessment report from CI conforms to assessment.schema.json"
+        status: not-started
+        depends_on: [PC-0108]
+      - id: PC-0111
+        title: "Test: open a deliberately failing PR and confirm merge gate blocks it"
+        status: not-started
+        depends_on: [PC-0108]
+      - id: PC-0112
+        title: "Write 08-evidence/ledger/retention.md (archival and deletion procedures)"
+        status: not-started
+      - id: PC-0113
+        title: "Write docs/onboarding.md (PC-0003 from Phase 01)"
+        status: not-started
+      - id: PC-0114
+        title: "Write docs/authoring-controls.md (PC-0006 from Phase 01)"
+        status: not-started
+
+  - id: phase-B
+    title: "Tooling and developer experience"
+    horizon: "v1.2.0"
+    blocked_by: "Phase A complete, ADR-0009, ADR-0010, ADR-0011"
+    tasks:
+      - id: PC-0115
+        title: "Ratify ADR-0009 (OPA policy bundle distribution)"
+        status: not-started
+      - id: PC-0116
+        title: "Ratify ADR-0010 (platform versioning and release cadence)"
+        status: not-started
+      - id: PC-0117
+        title: "Ratify ADR-0011 (plt CLI technology selection)"
+        status: not-started
+      - id: PC-0118
+        title: "Implement policy bundle packaging step in release workflow"
+        status: not-started
+        depends_on: [PC-0115]
+      - id: PC-0119
+        title: "Implement plt validate <file> command"
+        status: not-started
+        depends_on: [PC-0117]
+      - id: PC-0120
+        title: "Implement plt new control / adr / waiver scaffold commands"
+        status: not-started
+        depends_on: [PC-0119]
+      - id: PC-0121
+        title: "Implement plt gate check release / deploy commands"
+        status: not-started
+        depends_on: [PC-0119]
+      - id: PC-0122
+        title: "Implement plt report status / coverage commands"
+        status: not-started
+        depends_on: [PC-0121]
+      - id: PC-0123
+        title: "Build and publish plt binary for macOS arm64, macOS amd64, Linux amd64"
+        status: not-started
+        depends_on: [PC-0119, PC-0120, PC-0121, PC-0122]
+      - id: PC-0124
+        title: "Create PROF-BASE (minimal universal profile)"
+        status: not-started
+      - id: PC-0125
+        title: "Create PROF-TERRAFORM-MODULE-V1 (inherits PROF-BASE)"
+        status: not-started
+        depends_on: [PC-0124]
+      - id: PC-0126
+        title: "Create PROF-TERRAFORM-ROOT-V1 (inherits PROF-TERRAFORM-MODULE-V1)"
+        status: not-started
+        depends_on: [PC-0125]
+      - id: PC-0127
+        title: "Create PROF-SERVICE-V1 (inherits PROF-BASE)"
+        status: not-started
+        depends_on: [PC-0124]
+      - id: PC-0128
+        title: "Resolve angirasa-risk placeholder in all files with actual GitHub org"
+        status: not-started
+      - id: PC-0129
+        title: "Write remaining templates (service-contract, control, change-record, etc.)"
+        status: not-started
+      - id: PC-0130
+        title: "Validate actionlint against all GitHub Actions workflow files"
+        status: not-started

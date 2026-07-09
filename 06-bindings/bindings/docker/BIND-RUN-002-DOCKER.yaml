@@ -1,0 +1,49 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-RUN-002-DOCKER
+control_id: RUN-002
+technology_context: docker
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  Every Dockerfile that results in a deployable image must contain a USER
+  instruction that sets a non-root user before any CMD or ENTRYPOINT instruction.
+
+  The USER instruction must specify a user that is not:
+  - The root user (UID 0)
+  - The string "root"
+  - Omitted (default is root if no USER is present)
+
+  The non-root user must be created within the image build process using
+  RUN adduser/addgroup (or equivalent) unless the base image explicitly declares
+  a non-root user (e.g., distroless images or official images like node:alpine
+  that create app-level users).
+
+  Acceptable patterns:
+    USER 1001
+    USER appuser
+    USER nonroot
+
+  Unacceptable patterns:
+    USER root
+    USER 0
+    (no USER instruction)
+
+observable_artifact: >
+  Parsed Dockerfile instructions (AST):
+  {
+    "dockerfile_path": "Dockerfile",
+    "instructions": [
+      {"instruction": "FROM", "value": "debian:12-slim"},
+      {"instruction": "RUN", "value": "addgroup -S app && adduser -S app -G app"},
+      {"instruction": "USER", "value": "app"},
+      {"instruction": "ENTRYPOINT", "value": "[\"./server\"]"}
+    ],
+    "user_before_entrypoint": true,
+    "user_is_root": false,
+    "user_value": "app"
+  }
+
+policy_check_ids:
+  - POL-RUN-002-DOCKER-001

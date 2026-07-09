@@ -1,0 +1,50 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-OPENGITOPS-V1
+name: OpenGitOps Principles
+version: "1.0.0"
+publisher: OpenGitOps (CNCF Working Group)
+source_url: "https://opengitops.dev/"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: adopted
+
+applies_to:
+  - SRC  # Source Control (Git as single source of truth)
+  - IAC  # Infrastructure as Code (declarative desired state)
+  - CHG  # Change and Release (all changes via pull request)
+
+status: active
+
+notes: >
+  The OpenGitOps project defines four principles for GitOps:
+
+  Principle 1 — Declarative:
+    A system managed by GitOps must have its desired state expressed declaratively.
+    → Informs: IAC-001 (Terraform must declare desired state correctly)
+    → Informs: IAC-003 (no hardcoded imperative values in modules)
+
+  Principle 2 — Versioned and Immutable:
+    The desired state is stored in a way that enforces immutability and versioning,
+    retaining a complete version history.
+    → Informs: SRC-001 (branch protection prevents history rewriting)
+    → Informs: SUP-002 (immutable image tags)
+    → Informs: SUP-001 (pinned versions, not mutable "latest")
+
+  Principle 3 — Pulled Automatically:
+    Software agents automatically pull the desired state declarations from the source.
+    [PLACEHOLDER: this principle informs the future deployment automation controls
+    that are deferred in PROF-PLATFORM-V1. Will inform CHG domain controls for
+    automated deployment once a GitOps runtime is adopted.]
+
+  Principle 4 — Continuously Reconciled:
+    Software agents continuously observe the actual system state and attempt to
+    apply the desired state.
+    [PLACEHOLDER: informs future drift detection controls in IAC domain —
+    deferred until a reconciliation runtime (Terraform Cloud, Atlantis, or
+    a GitOps controller) is adopted]
+
+  Note: Principles 3 and 4 are informative for the current platform phase.
+  The platform is in a pull-request-driven, human-initiated apply model.
+  Principles 1 and 2 are normative immediately.

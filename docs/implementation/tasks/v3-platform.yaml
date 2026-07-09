@@ -1,0 +1,152 @@
+# v3 Platform Growth Tasks — PC-0131 to PC-0230+
+# Horizons: v2.0.0 (Phase C) and v3.0.0+ (Phase D)
+# Updated: 2026-07-09
+# All tasks: not-started
+
+phases:
+
+  - id: phase-C
+    title: "Multi-repo platform — governed ecosystem"
+    horizon: "v2.0.0"
+    blocked_by: "v1.0.0 tag, ADR-0008, ADR-0012, ADR-0014"
+    tasks:
+      - id: PC-0131
+        title: "Ratify ADR-0008 (secret management backend)"
+        status: not-started
+      - id: PC-0132
+        title: "Ratify ADR-0012 (multi-environment gate differentiation)"
+        status: not-started
+      - id: PC-0133
+        title: "Ratify ADR-0014 (Terraform state backend selection)"
+        status: not-started
+      - id: PC-0134
+        title: "Create platform-modules repository with PROF-TERRAFORM-MODULE-V1"
+        status: not-started
+        depends_on: [PC-0125]
+        note: "First downstream governed repository — ADR-0003 gate passed"
+      - id: PC-0135
+        title: "platform-modules passes merge gate on first PR"
+        status: not-started
+        depends_on: [PC-0134]
+      - id: PC-0136
+        title: "Add initial Terraform modules to platform-modules"
+        status: not-started
+        depends_on: [PC-0135]
+      - id: PC-0137
+        title: "Create platform-infrastructure repository with PROF-TERRAFORM-ROOT-V1"
+        status: not-started
+        depends_on: [PC-0133, PC-0135]
+      - id: PC-0138
+        title: "Configure Terraform state backend for platform-infrastructure"
+        status: not-started
+        depends_on: [PC-0133, PC-0137]
+      - id: PC-0139
+        title: "First terraform plan + apply with deployment gate passing"
+        status: not-started
+        depends_on: [PC-0138]
+      - id: PC-0140
+        title: "Create platform-services repository with PROF-SERVICE-V1"
+        status: not-started
+        depends_on: [PC-0127, PC-0131]
+      - id: PC-0141
+        title: "Deploy first service with OBS-001 health check and service contract"
+        status: not-started
+        depends_on: [PC-0140]
+      - id: PC-0142
+        title: "Define CAT-001 and CAT-002 controls (service catalog domain)"
+        status: not-started
+      - id: PC-0143
+        title: "Register all platform services in service catalog"
+        status: not-started
+        depends_on: [PC-0142, PC-0141]
+      - id: PC-0144
+        title: "Define REL-001 and REL-002 controls (reliability domain)"
+        status: not-started
+      - id: PC-0145
+        title: "Create PROF-STAGING-V1 and PROF-PRODUCTION-V1 profiles"
+        status: not-started
+        depends_on: [PC-0132]
+      - id: PC-0146
+        title: "Resolve all [PLACEHOLDER:] markers in all mapping files"
+        status: not-started
+        depends_on: [PC-0009, PC-0010, PC-0011]
+      - id: PC-0147
+        title: "Create formal mapping records for controls missing from 05-mappings/ (RUN-003, etc.)"
+        status: not-started
+
+  - id: phase-D
+    title: "Advanced maturity"
+    horizon: "v3.0.0+"
+    blocked_by: "Phase C substantially complete, ADR-0013, ADR-0015"
+    tasks:
+      - id: PC-0148
+        title: "Ratify ADR-0013 (compliance dashboard architecture)"
+        status: not-started
+      - id: PC-0149
+        title: "Ratify ADR-0015 (self-hosted Git mirror strategy)"
+        status: not-started
+      - id: PC-0150
+        title: "Implement plt report status command (Phase B prerequisite)"
+        status: not-started
+      - id: PC-0151
+        title: "Implement generated static compliance report (Option A from ADR-0013)"
+        status: not-started
+        depends_on: [PC-0148]
+      - id: PC-0152
+        title: "Implement automated waiver expiry enforcement in continuous audit"
+        status: not-started
+      - id: PC-0153
+        title: "Add waiver expiry alerting to reusable workflow"
+        status: not-started
+        depends_on: [PC-0152]
+      - id: PC-0154
+        title: "Evaluate SLSA L2 provenance pipeline tooling"
+        status: not-started
+      - id: PC-0155
+        title: "Implement SLSA L2 provenance attestation for platform-compliance releases"
+        status: not-started
+        depends_on: [PC-0154]
+      - id: PC-0156
+        title: "Deploy time-series database for SLO tracking (Prometheus or equivalent)"
+        status: not-started
+        depends_on: [PC-0141]
+      - id: PC-0157
+        title: "Define SLI/SLO for first platform service"
+        status: not-started
+        depends_on: [PC-0144, PC-0156]
+      - id: PC-0158
+        title: "Activate REL-001 (SLO declaration required) in platform profiles"
+        status: not-started
+        depends_on: [PC-0157]
+      - id: PC-0159
+        title: "Deploy self-hosted Git mirror if trigger conditions are met (ADR-0015)"
+        status: not-started
+        depends_on: [PC-0149]
+      - id: PC-0160
+        title: "Add gitea/forgejo technology context to taxonomy"
+        status: not-started
+        depends_on: [PC-0159]
+      - id: PC-0161
+        title: "Write SRC-001 and SRC-002 bindings and policies for gitea context"
+        status: not-started
+        depends_on: [PC-0160]
+      - id: PC-0162
+        title: "Ratify ADR-0016 (signed commit rollout plan) and activate SRC-004"
+        status: not-started
+      - id: PC-0163
+        title: "Deploy Grafana dashboard for compliance and reliability visualisation"
+        status: not-started
+        depends_on: [PC-0151, PC-0156]
+      - id: PC-0164
+        title: "Evaluate and plan migration from git-committed evidence (ADR-0006 Option B) to external storage (Option C)"
+        status: not-started
+        note: >
+          ADR-0006 explicitly commits to future migration to Option C (external store).
+          Trigger conditions: (1) more than 10 governed repositories OR (2) .evidence/ directories
+          causing noticeable repository bloat OR (3) reliable object storage infrastructure
+          (S3/MinIO) is available as part of platform-infrastructure.
+          Deliverables: new ADR superseding ADR-0006, updated reusable workflow to write to
+          external store, migration script to move existing git-committed evidence records,
+          retention policy for git-committed evidence post-migration.
+        depends_on: [PC-0139]
+        horizon: "Phase D or when trigger conditions are met — not before Phase C"

@@ -1,0 +1,12 @@
+
+module_calls: []
+repository:
+  name: unpinned-module
+required_providers:
+- name: aws
+  source: hashicorp/aws
+  version: '>= 5.0'
+- name: 'null'
+  source: hashicorp/null
+  version: ''
+required_version: '>= 1.0'

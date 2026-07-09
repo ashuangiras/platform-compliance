@@ -1,0 +1,83 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-003
+title: Containerised services must declare CPU and memory resource limits
+domain: RUN
+type: directive
+priority: P2
+severity: medium
+
+statement: >
+  Every containerised service deployed by the platform must declare explicit CPU
+  and memory limits in its deployment configuration. Containers without declared
+  resource limits must not be deployed to production or staging environments.
+
+rationale: >
+  Without resource limits, a single misbehaving container can exhaust the host's
+  available memory or CPU, causing all other services on that host to become
+  degraded or unavailable. Resource limits enforce isolation between services and
+  make capacity planning tractable. A service without declared limits is also a
+  service with an unknown resource profile, which prevents meaningful capacity
+  planning and cost modelling.
+
+mapped_standards:
+  - source_id: SRC-GOOGLE-SRE
+    clause: "[PLACEHOLDER: SRE book — capacity planning chapter reference]"
+    mapping_note: >
+      Google SRE's capacity planning practices require understanding resource
+      consumption to ensure service reliability. Resource limits are the
+      deployment-layer mechanism for enforcing this.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "[PLACEHOLDER: AWS WAF Reliability — resource management best practice]"
+    mapping_note: >
+      WAF reliability practices include ensuring services do not consume more
+      resources than allocated to avoid noisy-neighbour effects.
+
+implementation_expectations: >
+  In Docker Compose or equivalent deployment configuration:
+    services:
+      my-service:
+        deploy:
+          resources:
+            limits:
+              cpus: '0.50'
+              memory: 512M
+            reservations:
+              cpus: '0.25'
+              memory: 256M
+
+  Limits must be:
+  - Based on observed peak usage plus a defined headroom factor (recommended: 1.5x p99)
+  - Documented in the service contract (CAT-001 context)
+  - Reviewed on each significant release to account for growth
+
+  Do not set limits so high they are meaningless (e.g., 128GB memory limit on
+  a service that uses 100MB). Limits must be realistic constraints.
+
+evidence_required:
+  - type: container-resource-limits-declared
+    description: >
+      Confirmation that CPU and memory limits are declared in the service's
+      deployment configuration file.
+    format: yaml
+
+automation_status: automation-target
+assessment_cadence: per-deployment
+failure_behavior: warn
+failure_applies_to:
+  - deployment_gate
+
+scope_conditions:
+  - condition: "service.type is defined"
+    rationale: >
+      Applies to service-type repositories with a deployment configuration.
+      Terraform-only repositories have no container runtime configuration.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"
+
+notes: >
+  Failure is warn rather than block in v1 to allow services to be onboarded
+  before their resource profile is well understood. The expectation is that
+  limits are defined before the service is considered production-ready.
+  This control becomes blocking at the deployment gate in PROF-PLATFORM-V2.

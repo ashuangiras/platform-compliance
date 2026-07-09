@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/assessment.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Assessment Report",
+  "description": "An aggregated, structured summary of compliance state for a subject at a point in time. Produced by the assessment-generate workflow from collected evidence records. The input to gate evaluations. Lives in 09-assessments/reports/.",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "subject",
+    "profile_id",
+    "profile_version",
+    "control_catalog_version",
+    "assessment_date",
+    "evidence_window",
+    "control_results",
+    "summary",
+    "overall_result",
+    "generated_by"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "description": "Schema reference for editor tooling. Not validated against the schema itself." },
+    "id": {
+      "type": "string",
+      "pattern": "^ASSESS-[A-Z0-9-]+-[0-9]{8}-[0-9]{3}$",
+      "description": "Assessment report identifier. Format: ASSESS-{SUBJECT_SLUG}-{YYYYMMDD}-{NNN}.",
+      "examples": ["ASSESS-PLATFORM-COMPLIANCE-20260708-001"]
+    },
+    "schema_version": { "type": "string" },
+    "subject": {
+      "type": "object",
+      "required": ["type", "identifier"],
+      "additionalProperties": false,
+      "description": "The entity being assessed.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["repository", "service", "environment", "release"],
+          "description": "What kind of thing is being assessed."
+        },
+        "identifier": {
+          "type": "string",
+          "description": "Repository URL, service name, environment name, or release tag."
+        },
+        "commit_sha": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$",
+          "description": "For repository and release assessments: the commit being assessed."
+        }
+      }
+    },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^PROF-[A-Z0-9-]+$",
+      "description": "The governing profile declared by the subject."
+    },
+    "profile_version": {
+      "type": "string",
+      "description": "Version of the profile at assessment time."
+    },
+    "control_catalog_version": {
+      "type": "string",
+      "description": "Git tag or SHA of platform-compliance used for this assessment."
+    },
+    "assessment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this assessment was generated."
+    },
+    "evidence_window": {
+      "type": "object",
+      "required": ["from", "to"],
+      "additionalProperties": false,
+      "description": "The time range of evidence records included in this assessment.",
+      "properties": {
+        "from": { "type": "string", "format": "date-time" },
+        "to": { "type": "string", "format": "date-time" }
+      }
+    },
+    "control_results": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per in-scope control from the declared profile.",
+      "items": {
+        "type": "object",
+        "required": ["control_id", "result"],
+        "additionalProperties": false,
+        "properties": {
+          "control_id": {
+            "type": "string",
+            "pattern": "^[A-Z]{2,4}-[0-9]{3}$"
+          },
+          "result": {
+            "type": "string",
+            "enum": ["pass", "fail", "manual_review", "not_applicable", "waived", "error"],
+            "description": "Result for this control in this assessment. pass: evidence shows compliance. fail: evidence shows non-compliance. manual_review: requires human judgement. not_applicable: scope condition false. waived: failing but active approved waiver exists. error: evidence collection error."
+          },
+          "evidence_ids": {
+            "type": "array",
+            "items": { "type": "string", "format": "uuid" },
+            "description": "UUIDs of evidence records contributing to this result."
+          },
+          "waiver_id": {
+            "type": "string",
+            "description": "Present when result is waived."
+          },
+          "failure_reason": {
+            "type": "string",
+            "description": "Human-readable explanation when result is fail or error."
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total_controls", "pass", "fail", "manual_review", "not_applicable", "waived", "error"],
+      "additionalProperties": false,
+      "properties": {
+        "total_controls": { "type": "integer", "minimum": 0 },
+        "pass":           { "type": "integer", "minimum": 0 },
+        "fail":           { "type": "integer", "minimum": 0 },
+        "manual_review":  { "type": "integer", "minimum": 0 },
+        "not_applicable": { "type": "integer", "minimum": 0 },
+        "waived":         { "type": "integer", "minimum": 0 },
+        "error":          { "type": "integer", "minimum": 0 }
+      }
+    },
+    "overall_result": {
+      "type": "string",
+      "enum": ["pass", "fail", "pass-with-waivers", "manual-review-required", "inconclusive"],
+      "description": "pass: all mandatory in-scope controls pass or are not_applicable. fail: at least one mandatory control fails without a waiver. pass-with-waivers: all mandatory controls pass or are waived; active waivers exist. manual-review-required: one or more controls require human review before gate can pass. inconclusive: evidence missing for one or more mandatory controls."
+    },
+    "gate_evaluation": {
+      "type": "object",
+      "description": "Present when this assessment is tied to a specific gate evaluation.",
+      "additionalProperties": false,
+      "properties": {
+        "gate_id": {
+          "type": "string",
+          "enum": ["merge_gate", "release_gate", "deployment_gate", "continuous_audit"]
+        },
+        "gate_result": {
+          "type": "string",
+          "enum": ["pass", "fail", "pass-with-warnings"]
+        },
+        "blocking_controls": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3}$" },
+          "description": "Control IDs that are blocking the gate (result: fail with enforcement: block)."
+        }
+      }
+    },
+    "generated_by": {
+      "type": "object",
+      "required": ["tool", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "tool": { "type": "string" },
+        "version": { "type": "string" },
+        "workflow_run_id": { "type": "string" }
+      }
+    }
+  },
+  "if": {
+    "properties": { "overall_result": { "const": "fail" } },
+    "required": ["overall_result"]
+  },
+  "then": {
+    "properties": {
+      "gate_evaluation": {
+        "required": ["blocking_controls"],
+        "properties": {
+          "blocking_controls": { "minItems": 1 }
+        }
+      }
+    }
+  }
+}

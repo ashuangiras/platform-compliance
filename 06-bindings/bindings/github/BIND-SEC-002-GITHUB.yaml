@@ -1,0 +1,36 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SEC-002-GITHUB
+control_id: SEC-002
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  GitHub secret scanning and push protection must both be enabled on the repository.
+  Push protection must be in the "enabled" state, not merely "configured".
+
+  Verification checks the GitHub repository security settings API for:
+  1. security_and_analysis.secret_scanning.status == "enabled"
+  2. security_and_analysis.secret_scanning_push_protection.status == "enabled"
+
+  If either is not "enabled", the control fails.
+
+  For organisation-managed repositories: if secret scanning is enabled at the
+  organisation level and inherited by the repository, this counts as enabled.
+  The repository-level API response reflects the effective state including
+  organisation-level settings.
+
+observable_artifact: >
+  GitHub REST API response:
+  GET /repos/{owner}/{repo}
+
+  Fields evaluated:
+  - security_and_analysis.secret_scanning.status == "enabled"
+  - security_and_analysis.secret_scanning_push_protection.status == "enabled"
+
+  Note: This API endpoint requires a GitHub token with repo scope or
+  security_events scope. The workflow must have adequate permissions.
+
+policy_check_ids:
+  - POL-SEC-002-GITHUB-001

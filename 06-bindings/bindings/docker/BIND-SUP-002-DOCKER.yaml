@@ -1,0 +1,53 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SUP-002-DOCKER
+control_id: SUP-002
+technology_context: docker
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  All container image references in the repository must specify either a
+  content-addressable digest or an immutable semantic version tag.
+  The following are prohibited:
+
+  1. The `latest` tag (explicit or implicit)
+  2. Any tag that is known to be mutable (e.g., "stable", "current", "edge"
+     without a version number)
+  3. An image reference with no tag (e.g., "debian" with no ":tag" suffix,
+     which implies "latest")
+
+  Acceptable image references:
+    registry/image:v1.2.3
+    registry/image@sha256:abc123...
+    registry.io/org/image:1.2-alpine
+
+  Unacceptable image references:
+    debian:latest
+    node                           (no tag — implies latest)
+    myimage:stable                 (mutable named tag)
+
+  Image references are scanned in:
+  - All Dockerfile FROM instructions
+  - Docker Compose `image:` fields
+  - Terraform Docker provider `image` arguments
+  - GitHub Actions `uses: docker://image:tag` references
+
+observable_artifact: >
+  Scan output across all relevant files:
+  {
+    "files_scanned": ["Dockerfile", "docker-compose.yml"],
+    "image_references": [
+      {
+        "file": "Dockerfile",
+        "line": 1,
+        "reference": "debian:12-slim",
+        "tag": "12-slim",
+        "is_mutable": false
+      }
+    ],
+    "violations": []
+  }
+
+policy_check_ids:
+  - POL-SUP-002-DOCKER-001

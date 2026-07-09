@@ -1,0 +1,35 @@
+name: "Self-Compliance Check"
+
+# platform-compliance governs itself with PROF-PLATFORM-V1.
+# This workflow runs the compliance pipeline against platform-compliance's
+# own repository, validating that the governance root passes its own rules.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  merge-gate:
+    name: "Compliance: Merge Gate"
+    uses: ./.github/workflows/reusable-compliance.yml
+    with:
+      gate: merge_gate
+      profile-id: PROF-PLATFORM-V1
+      repository-type: platform-repo
+      technology-contexts: "github,github-actions"
+      has-container-images: false
+      platform-compliance-ref: "main"  # self-reference; pin to tag on release
+
+  release-gate:
+    name: "Compliance: Release Gate"
+    if: startsWith(github.ref, 'refs/tags/v')
+    uses: ./.github/workflows/reusable-compliance.yml
+    with:
+      gate: release_gate
+      profile-id: PROF-PLATFORM-V1
+      repository-type: platform-repo
+      technology-contexts: "github,github-actions"
+      has-container-images: false
+      platform-compliance-ref: ${{ github.ref_name }}

@@ -1,0 +1,21 @@
+# Fixture: SEC-001 — FAIL (secrets detected)
+# Scenario: Gitleaks found an AWS access token in a Terraform config file
+# and a generic API key pattern in .env.example. GitHub also shows 2 open alerts.
+# Expected policy result: { "result": "fail" }
+# Action required: rotate credentials immediately, clean git history
+findings:
+- description: AWS Access Token detected
+  file: config/settings.tf
+  line: 12
+  rule_id: aws-access-token
+- description: Generic API key pattern detected
+  file: .env.example
+  line: 3
+  rule_id: generic-api-key
+github_alerts_open: 2
+repository:
+  name: compromised-repo
+  type: service
+  url: https://github.com/org/compromised-repo
+scan_tool: gitleaks
+scan_tool_version: 8.18.0

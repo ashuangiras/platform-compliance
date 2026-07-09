@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/change-record.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Change Record",
+  "description": "A structured record of a significant change to platform-compliance. Required for any PR that modifies normative content (controls, profiles, bindings, schemas, policies, gate criteria). Referenced in PR descriptions as 'Change Record: CHG-YYYYMMDD-NNN'.",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "change_type",
+    "description",
+    "affected_object_ids",
+    "breaking",
+    "author",
+    "date"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^CHG-[0-9]{8}-[0-9]{3}$",
+      "description": "Change record identifier. Format: CHG-{YYYYMMDD}-{NNN}.",
+      "examples": ["CHG-20260708-001"]
+    },
+    "schema_version": { "type": "string" },
+    "change_type": {
+      "type": "string",
+      "enum": ["control", "profile", "policy", "binding", "schema", "workflow", "tool", "mapping", "source", "taxonomy"],
+      "description": "Type of object being changed."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "description": "What changed and why."
+    },
+    "affected_object_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "IDs of all objects modified by this change (e.g., control IDs, profile IDs, schema filenames)."
+    },
+    "related_adr_id": {
+      "type": "string",
+      "pattern": "^ADR-[0-9]{4}$",
+      "description": "ADR that drove or documents this change."
+    },
+    "breaking": {
+      "type": "boolean",
+      "description": "Whether this change breaks existing consuming repositories. If true, migration_guidance is required."
+    },
+    "migration_guidance": {
+      "type": "string",
+      "description": "Required when breaking is true. Instructions for what downstream repositories must do to adapt."
+    },
+    "author": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "review_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Pull request URL(s) or review record references."
+    }
+  },
+  "if": {
+    "properties": { "breaking": { "const": true } },
+    "required": ["breaking"]
+  },
+  "then": {
+    "required": ["migration_guidance"],
+    "properties": { "migration_guidance": { "minLength": 10 } }
+  }
+}

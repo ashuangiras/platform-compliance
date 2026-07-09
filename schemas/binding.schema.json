@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/binding.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Implementation Binding",
+  "description": "A prose specification of how a control is satisfied in a specific technology context. Bridges the abstract control and the concrete policy check. Lives in 06-bindings/. Bindings are specifications, not code.",
+  "type": "object",
+  "required": [
+    "id",
+    "control_id",
+    "technology_context",
+    "specification",
+    "observable_artifact",
+    "introduced_date",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^BIND-[A-Z]{2,4}-[0-9]{3}-[A-Z-]+$",
+      "description": "Stable binding identifier. Format: BIND-{CONTROL_ID}-{CONTEXT}.",
+      "examples": ["BIND-SRC-001-GITHUB", "BIND-IAC-001-TERRAFORM"]
+    },
+    "control_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,4}-[0-9]{3}$",
+      "description": "Platform control ID from 03-catalogs/. The control this binding implements."
+    },
+    "technology_context": {
+      "type": "string",
+      "enum": ["github", "terraform", "docker", "runtime-linux", "github-actions"],
+      "description": "Technology context from 02-taxonomy/technology-contexts.yaml."
+    },
+    "specification": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Prose description of what observable artifact or condition must exist to satisfy the control in this context. This is the authoritative specification that policy code implements."
+    },
+    "observable_artifact": {
+      "type": "string",
+      "description": "Specific, machine-locatable artifact or configuration that can be checked. Used by policy authors to know exactly where to look.",
+      "examples": [
+        "GitHub API: GET /repos/{owner}/{repo}/branches/{branch}/protection",
+        "File: .github/CODEOWNERS",
+        "Dockerfile: USER instruction before ENTRYPOINT"
+      ]
+    },
+    "policy_check_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^POL-[A-Z]{2,4}-[0-9]{3}-[A-Z-]+-[0-9]{3}$"
+      },
+      "description": "Policy check IDs from 07-policies/ that verify this binding. May reference planned IDs before policies are written."
+    },
+    "introduced_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "introduced_by": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "deprecated"],
+      "description": "active: in use; deprecated: replaced by a newer binding."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Clarifying notes or known edge cases."
+    }
+  }
+}

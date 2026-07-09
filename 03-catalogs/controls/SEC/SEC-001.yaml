@@ -1,0 +1,79 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-001
+title: No plaintext secrets may be committed to any repository
+domain: SEC
+type: preventive
+priority: P1
+severity: critical
+
+statement: >
+  Credentials, API keys, tokens, private keys, passwords, connection strings,
+  and all other secrets must not be committed to any platform repository in any
+  branch, in any form — including base64-encoded, URL-encoded, or otherwise
+  obfuscated representations.
+
+rationale: >
+  A secret committed to a repository is exposed to every person with access to
+  that repository, including historical access. Git history is permanent: even
+  if a secret is removed in a subsequent commit, it remains accessible in the
+  commit history and may have already been cloned, cached, or indexed. Secret
+  exposure in a repository is treated as a confirmed credential compromise
+  requiring immediate rotation, regardless of whether the secret was actively used.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "Secrets check"
+    mapping_note: >
+      Scorecard's Secrets check evaluates whether a secret-scanning tool is
+      configured on the repository. SEC-001 is the control; SEC-002 is the
+      detection mechanism. Both are required.
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "[PLACEHOLDER: CIS Docker 4.x — environment variable handling; verify section]"
+    mapping_note: >
+      CIS Docker Benchmark addresses secrets passed as environment variables
+      and secrets stored in images. SEC-001 covers the repository layer;
+      the Docker-context binding will address the runtime layer.
+
+implementation_expectations: >
+  Prevention layer:
+  - GitHub secret scanning with push protection must be enabled (SEC-002)
+  - A .gitignore must exclude common secret file patterns (.env, *.pem, *.key, etc.)
+  - A pre-commit hook configuration (e.g., detect-secrets or gitleaks) is recommended
+    for local development environments
+
+  Secret storage:
+  - All secrets must be stored in the designated secrets management backend
+    (to be defined in an ADR before any service is deployed)
+  - Secrets must be injected at runtime via environment variables from the
+    secrets backend, not stored in any configuration file
+
+  If a secret is discovered in repository history:
+  1. Immediately rotate the credential
+  2. Create an incident record (INC-001)
+  3. Use git-filter-repo or BFG to remove from history
+  4. Force-push to all branches (requires waiver of SRC-001 temporary bypass)
+  5. Notify all repository contributors to re-clone
+
+evidence_required:
+  - type: secret-scan-clean
+    description: >
+      Output of secret scanning tool confirming no secrets detected in the
+      repository at the assessed commit.
+    format: json
+  - type: gitignore-secret-patterns
+    description: >
+      Presence of .gitignore entries covering common secret file patterns.
+    format: text
+
+automation_status: automated
+assessment_cadence: per-commit
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+  - release_gate
+  - deployment_gate
+  - continuous_audit
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

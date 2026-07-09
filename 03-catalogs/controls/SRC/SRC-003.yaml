@@ -1,0 +1,65 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SRC-003
+title: CODEOWNERS file must be present and valid
+domain: SRC
+type: directive
+priority: P2
+severity: medium
+
+statement: >
+  Every platform repository must contain a CODEOWNERS file that maps repository
+  paths to at least one named owner or team. The CODEOWNERS file must be
+  syntactically valid and must cover the root path at minimum.
+
+rationale: >
+  CODEOWNERS establishes explicit ownership of repository content. Without it,
+  there is no machine-readable record of who is responsible for reviewing changes
+  to a given path. This creates gaps in review coverage and makes accountability
+  ambiguous when a compliance issue is discovered.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "CII-Best-Practices check — CODEOWNERS"
+    mapping_note: >
+      OpenSSF Scorecard references CODEOWNERS as a best practice indicator.
+      [PLACEHOLDER: verify whether Scorecard v2 has a dedicated CODEOWNERS
+      check or whether this is assessed as part of Branch-Protection or a
+      separate check. Update clause reference accordingly.]
+
+implementation_expectations: >
+  A CODEOWNERS file must be present at one of the following standard locations:
+  - CODEOWNERS (repository root)
+  - .github/CODEOWNERS
+  - docs/CODEOWNERS
+
+  The file must:
+  - Define at least one owner for the root path (*  or /)
+  - Not contain syntax errors (verified by GitHub's parser)
+  - Reference valid GitHub usernames or teams that exist in the organisation
+
+  Recommended: Map subdirectories to domain-appropriate owners where the
+  repository is managed by more than one team.
+
+evidence_required:
+  - type: codeowners-file-presence
+    description: >
+      Confirmation that a CODEOWNERS file exists at a standard location and
+      passes GitHub's syntax validation (no error indicators on the file).
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+failure_applies_to:
+  - release_gate
+# Profile gate enforcement overrides to warn at merge_gate — see PROF-PLATFORM-V1 merge_gate.SRC-003.enforcement: warn
+
+lifecycle_status: active
+introduced_date: "2026-07-08"
+
+notes: >
+  Failure at the merge gate produces a warning (does not block merge) to allow
+  repositories to be created before the CODEOWNERS file is added. Failure at
+  the release gate blocks the release, giving teams an upgrade path without
+  preventing initial repository bootstrapping.

@@ -1,0 +1,122 @@
+# Deployment Gate Criteria
+# Derived from: 04-profiles/PROF-PLATFORM-V1.yaml → gates.deployment_gate
+# Version: 1.0.0
+# Last updated: 2026-07-08
+#
+# This file is consumed by the deployment-gate workflow before terraform apply
+# or service deployment. Includes all release gate controls plus deployment-specific
+# checks. A block control failure prevents the deployment from proceeding.
+
+gate_id: deployment_gate
+profile_id: PROF-PLATFORM-V1
+profile_version: "1.0.0"
+schema_version: "1.0.0"
+description: >
+  Controls evaluated before terraform apply or service deployment to staging
+  or production. Includes all release gate controls plus deployment-specific
+  checks. Scope conditions limit deployment-specific controls to relevant
+  repository and service types.
+fail_fast: false
+
+required_controls:
+
+  # ── All release gate controls carry forward ───────────────────────────────
+
+  - control_id: SRC-001
+    enforcement: block
+    scope_condition: null
+
+  - control_id: SRC-002
+    enforcement: block
+    scope_condition: null
+
+  - control_id: SRC-003
+    enforcement: block
+    scope_condition: null
+
+  - control_id: SEC-001
+    enforcement: block
+    scope_condition: null
+
+  - control_id: SEC-002
+    enforcement: block
+    scope_condition: null
+
+  - control_id: IAC-001
+    enforcement: block
+    scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+
+  - control_id: SUP-001
+    enforcement: block
+    scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+
+  - control_id: SUP-002
+    enforcement: block
+    scope_condition: "repository.has_container_images == true"
+
+  - control_id: RUN-002
+    enforcement: block
+    scope_condition: "repository.has_container_images == true"
+
+  - control_id: CHG-002
+    enforcement: block
+    scope_condition: null
+
+  - control_id: DOC-001
+    enforcement: block
+    scope_condition: null
+
+  # CHG-001 is a merge-gate-only control (change records are required at merge, not deployment)
+  # Removed from deployment gate per audit finding H-001 — was not in profile deployment_gate section
+
+  # ── Deployment-gate additions ─────────────────────────────────────────────
+
+  - control_id: IAC-002
+    enforcement: block
+    scope_condition: "repository.type == 'terraform-root'"
+    rationale: >
+      Terraform apply must be preceded by a reviewed plan. For terraform-root
+      repositories only — module repos do not run apply.
+
+  - control_id: OBS-001
+    enforcement: block
+    scope_condition: "service.type is not null"
+    rationale: >
+      Service health check must be declared and verified before deployment.
+      Applies to all service-type repositories.
+
+  - control_id: BAK-001
+    enforcement: block
+    scope_condition: "service.type == 'stateful'"
+    rationale: >
+      Stateful services must have a backup policy before deployment.
+      Stateless services are exempt.
+
+  - control_id: NET-001
+    enforcement: block
+    scope_condition: "service.externally_exposed == true"
+    rationale: >
+      Externally exposed services must declare their ingress policy before
+      being deployed.
+
+  - control_id: SEC-003
+    enforcement: block
+    scope_condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+    rationale: >
+      Unresolved critical vulnerabilities block deployment (was warn at release gate).
+      An active waiver is required to deploy with unresolved critical alerts.
+
+  - control_id: RUN-003
+    enforcement: warn
+    scope_condition: "service.type is not null"
+    rationale: >
+      Resource limits should be declared before deployment. Warn allows services
+      to onboard before their resource profile is fully characterised.
+      Becomes block in PROF-PLATFORM-V2.
+
+  - control_id: OBS-002
+    enforcement: warn
+    scope_condition: "service.type is not null"
+    rationale: >
+      Structured logging expected but not yet blocking at deployment.
+      Automation target for PROF-PLATFORM-V2 once log infrastructure is operational.

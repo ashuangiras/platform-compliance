@@ -1,0 +1,29 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-DOC-001-GITHUB
+control_id: DOC-001
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  A README.md file must exist at the repository root. The file must contain at
+  least 100 bytes of meaningful content (it must not be empty or contain only
+  a placeholder title).
+
+  At the release gate, the README must additionally be verified to contain
+  recognisable headings or sections describing the repository's purpose
+  (heuristic check: at least one markdown heading `#` or `##` and at least
+  200 characters of non-whitespace content).
+
+observable_artifact: >
+  Repository file tree at commit SHA:
+  - Presence of README.md at path "README.md" (root level)
+  - size > 100 bytes
+
+  GitHub REST API (alternative collection):
+  GET /repos/{owner}/{repo}/contents/README.md?ref={sha}
+  Field: size > 100
+
+policy_check_ids:
+  - POL-DOC-001-GITHUB-001

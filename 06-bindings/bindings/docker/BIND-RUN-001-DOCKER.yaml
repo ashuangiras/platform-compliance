@@ -1,0 +1,52 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-RUN-001-DOCKER
+control_id: RUN-001
+technology_context: docker
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  All Docker images built and published by the platform must include the
+  following OCI image annotation labels. These must be set at build time via
+  ARG values from the CI pipeline:
+
+  Required labels:
+  - org.opencontainers.image.title        (short human-readable name)
+  - org.opencontainers.image.description  (human-readable description)
+  - org.opencontainers.image.version      (version of the contained software)
+  - org.opencontainers.image.source       (HTTPS URL to the source repository)
+  - org.opencontainers.image.revision     (full 40-character Git SHA of the source commit)
+
+  Labels must be non-empty. The revision must be a valid 40-character hex string.
+
+  Dockerfile pattern:
+    ARG GIT_SHA
+    ARG IMAGE_VERSION
+    LABEL org.opencontainers.image.revision=$GIT_SHA
+    LABEL org.opencontainers.image.version=$IMAGE_VERSION
+    LABEL org.opencontainers.image.source="https://github.com/org/repo"
+    LABEL org.opencontainers.image.title="My Service"
+    LABEL org.opencontainers.image.description="Brief description"
+
+observable_artifact: >
+  Docker image inspection output (from built image, not just Dockerfile):
+  {
+    "image_ref": "registry/image:v1.2.3",
+    "labels": {
+      "org.opencontainers.image.title": "My Service",
+      "org.opencontainers.image.description": "Brief description",
+      "org.opencontainers.image.version": "1.2.3",
+      "org.opencontainers.image.source": "https://github.com/org/repo",
+      "org.opencontainers.image.revision": "abc123...full-sha"
+    },
+    "missing_labels": [],
+    "invalid_labels": []
+  }
+
+  Note: Evidence is collected from the built image (docker inspect or registry API),
+  not from the Dockerfile LABEL instructions. A Dockerfile with the right
+  LABEL instructions but missing ARG values at build time would produce empty labels.
+
+policy_check_ids:
+  - POL-RUN-001-DOCKER-001

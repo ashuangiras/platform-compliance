@@ -1,0 +1,13 @@
+
+branch_protection:
+  allow_deletions:
+    enabled: false
+  allow_force_pushes:
+    enabled: false
+  required_pull_request_reviews:
+    dismiss_stale_reviews: true
+    required_approving_review_count: 2
+default_branch: main
+repository:
+  name: platform-compliance
+  type: platform-repo

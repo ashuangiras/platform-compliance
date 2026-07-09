@@ -1,0 +1,90 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: BAK-001
+title: Stateful services must declare and implement a backup policy
+domain: BAK
+type: directive
+priority: P1
+severity: high
+
+statement: >
+  Every service that manages persistent data must declare a backup policy in its
+  service contract. The backup policy must specify: backup frequency, retention
+  period, backup storage location, restoration procedure, and the date of the
+  last successful restoration test.
+
+rationale: >
+  Persistent data without a declared and tested backup policy represents an
+  unquantified data loss risk. The declaration requirement ensures the policy
+  is explicit and reviewable. The restoration test requirement ensures that the
+  backup is functional — a backup that has never been tested for restore is an
+  assumption, not a protection. The test date in the service contract creates a
+  visible staleness indicator when tests have not been run recently.
+
+mapped_standards:
+  - source_id: SRC-AWS-WAF-2024
+    clause: "[PLACEHOLDER: AWS WAF REL 9 — How do you back up data?]"
+    mapping_note: >
+      WAF Reliability Pillar's data backup practice directly informs BAK-001.
+      The WAF practice requires backup planning, automation, and periodic
+      testing of backup restoration.
+      [PLACEHOLDER: verify question numbering and specific requirements in
+      the 2024 edition of the WAF]
+  - source_id: SRC-GOOGLE-SRE
+    clause: "[PLACEHOLDER: SRE book Chapter 26 — Data Integrity]"
+    mapping_note: >
+      SRE Chapter 26 emphasises the need for tested backup and recovery
+      processes as a core reliability practice.
+  - source_id: SRC-ITIL-ADAPTED
+    clause: "Adapted from ITIL 4 Service Continuity Management practice"
+    mapping_note: >
+      ITIL 4 service continuity management includes backup and recovery
+      planning as a key practice. The platform adapts this to a lightweight
+      service contract declaration model.
+
+implementation_expectations: >
+  The service contract must contain a backup_policy block with:
+    backup_policy:
+      frequency: "daily"           # cron or human-readable interval
+      retention: "30 days"         # how long backups are kept
+      storage_location: "[description of backup storage — not credentials]"
+      restoration_procedure: "[link to runbook or inline description]"
+      last_restore_test_date: "2026-07-08"   # must be updated after each test
+      rto: "4 hours"               # Recovery Time Objective
+      rpo: "24 hours"              # Recovery Point Objective
+
+  The backup mechanism itself (Terraform configuration, scripts, etc.) lives
+  in the service or infrastructure repository. BAK-001 requires that the policy
+  be declared; the implementation is governed by the relevant IAC or RUN controls.
+
+  Restoration testing cadence:
+  - Stateful production services: test restoration quarterly at minimum
+  - Each test must update the last_restore_test_date field in the service contract
+  - A staleness check (last test > 120 days) triggers a continuous audit alert
+
+evidence_required:
+  - type: backup-policy-declaration
+    description: >
+      Service contract backup_policy block demonstrating all required fields
+      are present and non-empty.
+    format: yaml
+  - type: backup-restore-test-record
+    description: >
+      Record of the last successful backup restoration test, including date,
+      tester, and outcome.
+    format: text
+
+automation_status: automation-target
+assessment_cadence: per-deployment
+failure_behavior: block
+failure_applies_to:
+  - deployment_gate
+
+scope_conditions:
+  - condition: "service.type == 'stateful'"
+    rationale: >
+      Applies only to services declared as stateful (managing persistent data).
+      Stateless services have no persistent data to back up.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

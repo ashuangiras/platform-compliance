@@ -1,0 +1,12 @@
+
+files:
+- path: main.tf
+  size: 450
+- path: variables.tf
+  size: 210
+- path: .compliance-manifest.yaml
+  size: 380
+repository:
+  name: new-empty-repo
+  type: terraform-module
+  url: https://github.com/org/new-empty-repo

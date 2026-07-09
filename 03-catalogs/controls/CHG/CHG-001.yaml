@@ -1,0 +1,73 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: CHG-001
+title: Significant changes to platform-compliance must be accompanied by a change record
+domain: CHG
+type: directive
+priority: P2
+severity: medium
+
+statement: >
+  Any pull request to platform-compliance that modifies a control definition,
+  profile, binding, schema, or policy must include a corresponding change record
+  created before or alongside the change. The change record must be referenced
+  in the pull request description.
+
+rationale: >
+  platform-compliance is the governance root of the entire platform. Changes to
+  its controls and policies cascade to every governed repository. Without a
+  structured change record, the motivation for changes, their scope, and their
+  impact on downstream repositories are not preserved in a machine-readable form.
+  The change record creates a durable, queryable history of governance evolution
+  that is separate from (and complements) the Git history.
+
+mapped_standards:
+  - source_id: SRC-ITIL-ADAPTED
+    clause: "Change Enablement practice (adapted)"
+    mapping_note: >
+      ITIL 4 Change Enablement requires that significant changes be documented
+      and assessed before implementation. The platform adapts this to a
+      lightweight change record rather than a full CAB process.
+
+implementation_expectations: >
+  A "significant change" requiring a change record is defined as any change to:
+  - A control YAML file in 03-catalogs/controls/
+  - A profile YAML file in 04-profiles/
+  - A binding YAML file in 06-bindings/
+  - A schema YAML file in schemas/
+  - A policy file in 07-policies/
+
+  Not required for:
+  - Documentation edits in docs/ that do not change normative content
+  - README updates
+  - ADR creation (ADRs are their own record type)
+  - Formatting-only changes
+
+  The change record must be created in the location defined by the platform's
+  change management tooling (to be defined; initially a YAML file in a
+  changes/ directory or similar).
+
+  The PR description must include: "Change Record: [CHG-YYYYMMDD-NNN]"
+
+evidence_required:
+  - type: change-record-pr-reference
+    description: >
+      Presence of a change record reference in the pull request description
+      for all PRs modifying normative content.
+    format: text
+
+automation_status: automation-target
+assessment_cadence: per-merge
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+
+scope_conditions:
+  - condition: "repository.type == 'platform-repo'"
+    rationale: >
+      This control applies to platform-compliance itself and other platform
+      governance repositories. It does not apply to service or infrastructure
+      repos, which have their own lighter-weight change process.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

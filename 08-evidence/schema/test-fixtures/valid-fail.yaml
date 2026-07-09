@@ -1,0 +1,35 @@
+# Valid evidence record — result: fail
+# Validates against: ../../schemas/evidence.schema.json
+# Use to verify: schema accepts a correctly formed failing evidence record
+
+id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+schema_version: "1.0.0"
+
+repository:
+  name: "my-terraform-module"
+  url: "https://github.com/acme-org/my-terraform-module"
+  type: "terraform-module"
+
+commit_sha: "b3f4c2d1e8a7f5091234567890abcdef12345678"
+control_id: "IAC-001"
+policy_check_id: "POL-IAC-001-TERRAFORM-001"
+
+profile_version: "1.0.0"
+control_catalog_version: "v1.0.0"
+policy_bundle_version: "v1.0.0"
+workflow_run_id: "98765432101"
+
+evaluated_at: "2026-07-08T15:00:00Z"
+result: "fail"
+artifact_hash: "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+
+details:
+  checked: "terraform fmt -check and terraform validate in 'my-terraform-module'"
+  found: "fmt failed (exit 1). Diff shows formatting differences in main.tf"
+  expected: "Both commands exit 0"
+  message: "IAC-001: terraform fmt check failed. Run 'terraform fmt -recursive' to fix."
+
+collected_by:
+  tool: "platform-compliance-opa"
+  version: "1.0.0"
+  workflow_run_id: "98765432101"

@@ -1,0 +1,36 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SRC-002-GITHUB
+control_id: SRC-002
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  All changes to the default branch must occur through pull requests. The branch
+  protection settings must enforce:
+
+  1. "Require a pull request before merging" — enabled (no direct pushes)
+  2. "Required approvals" — minimum 1 approving review
+  3. The approving reviewer must not be the pull request author
+  4. "Dismiss stale reviews when new commits are pushed" — enabled (an approval
+     granted before a subsequent commit is invalidated)
+
+  Verification has two components:
+  a) Configuration check: branch protection settings confirm PR requirement is active
+  b) Audit check: recent merge commits on the default branch have an associated
+     pull request with at least one approval recorded before merge
+
+observable_artifact: >
+  GitHub REST API responses:
+  a) GET /repos/{owner}/{repo}/branches/{branch}/protection
+     Field: required_pull_request_reviews (not null)
+     Field: required_pull_request_reviews.required_approving_review_count >= 1
+     Field: required_pull_request_reviews.dismiss_stale_reviews == true
+
+  b) GET /repos/{owner}/{repo}/commits?sha={branch}&per_page=20
+     For each commit: GET /repos/{owner}/{repo}/commits/{sha}/pulls
+     Confirm each has an associated PR with approved reviews
+
+policy_check_ids:
+  - POL-SRC-002-GITHUB-001

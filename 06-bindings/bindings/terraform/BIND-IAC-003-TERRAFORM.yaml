@@ -1,0 +1,51 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-IAC-003-TERRAFORM
+control_id: IAC-003
+technology_context: terraform
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  Terraform module code (repositories of type terraform-module) must not contain
+  hardcoded environment-specific values. The following patterns are prohibited
+  in module .tf files (not in root configuration variables.tf or terraform.tfvars):
+
+  1. Literal IPv4 or IPv6 addresses in resource attribute values
+     (exception: loopback addresses 127.0.0.1, ::1)
+  2. Account or project IDs (strings matching cloud account ID patterns)
+  3. Environment names as string literals in resource names
+     (e.g., "production", "staging", "dev" as non-variable string values)
+  4. Hardcoded region strings that are not clearly universal
+  5. Hostnames or domain names as literal strings in resource arguments
+
+  All such values must be declared as input variables with descriptive names
+  and descriptions.
+
+  This check is partially automated: pattern matching catches obvious violations.
+  Code review is required to catch context-specific hardcoding.
+
+observable_artifact: >
+  Static analysis scan output (tflint or custom regex):
+  {
+    "files_scanned": ["modules/main.tf", "..."],
+    "findings": [
+      {
+        "file": "modules/main.tf",
+        "line": 42,
+        "pattern": "literal_ip_address",
+        "value": "10.0.1.5",
+        "severity": "warning"
+      }
+    ],
+    "scan_tool": "tflint",
+    "scan_tool_version": "0.x.y"
+  }
+
+policy_check_ids: []
+# Planned policy: POL-IAC-003-TERRAFORM-001 (automation-target)
+
+notes: >
+  Automation status is partially-automated: the regex scan catches obvious cases.
+  Code review is the supplementary mechanism for context-specific hardcoding.
+  Failure at the merge gate is warn (not block) to allow reviewer judgment.

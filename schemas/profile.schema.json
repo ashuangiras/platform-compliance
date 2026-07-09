@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/profile.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Compliance Profile",
+  "description": "A named, versioned set of controls that applies to a class of repository, service, or environment. The primary contract between platform-compliance and any downstream repository.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "description",
+    "version",
+    "applicable_to",
+    "categories",
+    "gates",
+    "introduced_date",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^PROF-[A-Z0-9-]+$",
+      "description": "Stable profile identifier. Format: PROF-{CONTEXT}-{VARIANT}."
+    },
+    "name": { "type": "string" },
+    "description": { "type": "string", "minLength": 10 },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version string."
+    },
+    "inherits": {
+      "type": "string",
+      "pattern": "^PROF-[A-Z0-9-]+$",
+      "description": "Parent profile ID. All controls from parent are included."
+    },
+    "applicable_to": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Repository or service types this profile applies to."
+    },
+    "categories": {
+      "type": "object",
+      "required": ["mandatory", "manual_initially", "deferred"],
+      "additionalProperties": false,
+      "properties": {
+        "mandatory": { "$ref": "#/$defs/control_category" },
+        "automated_required": { "$ref": "#/$defs/control_category" },
+        "manual_initially": { "$ref": "#/$defs/control_category" },
+        "deferred": { "$ref": "#/$defs/control_category" },
+        "not_applicable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": { "type": "string" },
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "rationale"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3}$" },
+                  "rationale": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "required": ["merge_gate", "release_gate", "deployment_gate", "continuous_audit"],
+      "additionalProperties": false,
+      "properties": {
+        "merge_gate": { "$ref": "#/$defs/gate" },
+        "release_gate": { "$ref": "#/$defs/gate" },
+        "deployment_gate": { "$ref": "#/$defs/gate" },
+        "continuous_audit": { "$ref": "#/$defs/gate" }
+      }
+    },
+    "introduced_date": { "type": "string", "format": "date" },
+    "introduced_by": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["active", "deprecated", "superseded"]
+    },
+    "superseded_by": {
+      "type": "string",
+      "pattern": "^PROF-[A-Z0-9-]+$"
+    },
+    "notes": { "type": "string" }
+  },
+  "$defs": {
+    "control_category": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": { "type": "string" },
+        "controls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3}$" },
+              "enforcement_override": {
+                "type": "string",
+                "enum": ["block", "warn", "notify", "record"]
+              },
+              "scope_condition": { "type": "string" },
+              "automation_deadline": {
+                "oneOf": [
+                  { "type": "string", "format": "date" },
+                  { "type": "null" }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "required": ["description", "required_controls"],
+      "additionalProperties": false,
+      "properties": {
+        "description": { "type": "string" },
+        "required_controls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "pattern": "^[A-Z]{2,4}-[0-9]{3}$" },
+              "enforcement": {
+                "type": "string",
+                "enum": ["block", "warn", "notify"]
+              },
+              "scope_condition": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

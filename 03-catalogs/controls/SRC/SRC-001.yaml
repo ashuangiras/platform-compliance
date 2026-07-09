@@ -1,0 +1,70 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SRC-001
+title: Default branch must be branch-protected
+domain: SRC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  The default branch of every platform repository must have branch protection rules
+  enabled. Direct pushes to the default branch are forbidden. Force pushes are
+  forbidden. Deletion of the default branch is forbidden.
+
+rationale: >
+  Direct commits and force pushes to the default branch bypass peer review and all
+  automated compliance checks defined in the merge gate. A single unreviewed commit
+  can introduce a control violation, a plaintext secret, or a breaking configuration
+  change without any audit trail. Force pushes can rewrite history, destroying the
+  evidentiary record of what changed and when.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "Branch-Protection check"
+    mapping_note: >
+      Scorecard's Branch-Protection check directly tests whether branch protection
+      is enabled with the required settings. The platform's SRC-001 aligns exactly
+      with the Scorecard check criteria for a passing result.
+      [PLACEHOLDER: verify exact Scorecard v2 check documentation for Branch-Protection
+      scoring criteria — ensure platform settings produce a full score]
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "Principle 2 — Versioned and Immutable"
+    mapping_note: >
+      GitOps Principle 2 requires that desired state be stored immutably with
+      complete version history. Branch protection is the mechanism that enforces
+      this at the Git layer by preventing history rewriting.
+
+implementation_expectations: >
+  GitHub branch protection rules must be configured on the default branch with
+  all of the following enabled:
+  - Require a pull request before merging: ON
+  - Required number of approvals before merging: minimum 1
+  - Dismiss stale pull request approvals when new commits are pushed: ON
+  - Require status checks to pass before merging: ON (specific checks TBD per profile)
+  - Require branches to be up to date before merging: ON
+  - Do not allow bypassing the above settings: ON
+  - Allow force pushes: OFF
+  - Allow deletions: OFF
+
+  Exception: repositories that have no code (empty or documentation-only) may
+  defer this control until first meaningful content is added. This requires an
+  active waiver.
+
+evidence_required:
+  - type: github-branch-protection-api-response
+    description: >
+      GitHub REST API response for GET /repos/{owner}/{repo}/branches/{branch}/protection
+      captured at assessment time, demonstrating all required settings are enabled.
+    format: json
+
+automation_status: automated
+assessment_cadence: continuous
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+  - release_gate
+  - continuous_audit
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

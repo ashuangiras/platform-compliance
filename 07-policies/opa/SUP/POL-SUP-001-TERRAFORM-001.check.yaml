@@ -1,0 +1,17 @@
+id: POL-SUP-001-TERRAFORM-001
+title: "All Terraform providers and modules use pinned version constraints"
+binding_ids:
+  - BIND-SUP-001-TERRAFORM
+engine: opa
+file_path: "07-policies/opa/SUP/POL-SUP-001-TERRAFORM-001.rego"
+pass_criteria: >
+  required_version is declared with a bounded constraint (~> or = format).
+  All required_providers use bounded version constraints.
+  All module source calls use bounded version or tag/SHA references.
+fail_criteria: >
+  required_version absent or unbounded (>= without upper bound).
+  One or more providers or modules use an unbounded or absent version constraint.
+evidence_type: dependency-pin-check
+severity: high
+introduced_date: "2026-07-08"
+status: active

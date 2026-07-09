@@ -1,0 +1,108 @@
+# Mappings: AWS Well-Architected Framework → multiple domains
+#
+# Source: SRC-AWS-WAF-2024
+# Domains: SEC, OBS, BAK, NET, RUN
+# Populated: 2026-07-08
+#
+# The WAF is adapted (not normative): cloud-native guidance is interpreted
+# for self-hosted containerised services. [PLACEHOLDER] markers indicate
+# WAF question IDs that need verification in the 2024 edition.
+
+source_id: SRC-AWS-WAF-2024
+
+mappings:
+  - id: MAP-AWS-WAF-SEC-001
+    source_id: SRC-AWS-WAF-2024
+    source_clause: "[PLACEHOLDER: Security Pillar — SEC 1: How do you securely operate your workload?]"
+    source_clause_text: >
+      Keep credentials and secrets out of code, configuration files, and
+      any repository. Use a secrets management service.
+    control_id: SEC-001
+    rationale: >
+      AWS WAF Security Pillar's secure operations practices directly include
+      keeping secrets out of source code. SEC-001 implements this as an
+      enforceable control: no plaintext secrets in any repository file.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-AWS-WAF-BAK-001
+    source_id: SRC-AWS-WAF-2024
+    source_clause: "[PLACEHOLDER: Reliability Pillar — REL 9: How do you back up data?]"
+    source_clause_text: >
+      Back up data, applications, and configuration to meet recovery objectives.
+      Test backup and restore processes at a cadence appropriate to recovery
+      objectives.
+    control_id: BAK-001
+    rationale: >
+      AWS WAF Reliability Pillar REL 9 directly requires backup planning with
+      defined RTO/RPO and periodic restoration testing. BAK-001 adopts these
+      requirements and operationalises them as a service contract declaration,
+      making backup policy machine-readable and continuously auditable.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-AWS-WAF-OBS-001
+    source_id: SRC-AWS-WAF-2024
+    source_clause: "[PLACEHOLDER: Operational Excellence Pillar — OPS 6: How do you understand the health of your workload?]"
+    source_clause_text: >
+      Design your workload so that it provides the information necessary for
+      you to understand its internal state across all components.
+    control_id: OBS-001
+    rationale: >
+      WAF Operational Excellence Pillar OPS 6 requires workloads to expose
+      health information. OBS-001 implements this as a concrete requirement:
+      every service must declare and implement a health check, verified at
+      deployment time.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-AWS-WAF-OBS-002
+    source_id: SRC-AWS-WAF-2024
+    source_clause: "[PLACEHOLDER: Operational Excellence Pillar — OPS 4: How do you implement observability in your workload?]"
+    source_clause_text: >
+      Implement observability including logging, structured log formats,
+      and correlation identifiers to enable effective operations.
+    control_id: OBS-002
+    rationale: >
+      WAF Operational Excellence OPS 4 recommends structured logging and
+      correlation identifiers. OBS-002 makes these a mandatory requirement
+      for all platform services, specifying the minimum required fields
+      (timestamp, level, service, correlation_id).
+    mapping_type: extended
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-AWS-WAF-NET-001
+    source_id: SRC-AWS-WAF-2024
+    source_clause: "[PLACEHOLDER: Security Pillar — SEC 5: How do you protect your network resources?]"
+    source_clause_text: >
+      Control traffic at all layers. Define network topology with defense in
+      depth. Restrict access to only required resources.
+    control_id: NET-001
+    rationale: >
+      WAF Security Pillar SEC 5 requires explicit network access control.
+      NET-001 implements the declaration requirement: any externally exposed
+      service must explicitly declare its ingress policy, making the intended
+      network boundary machine-readable and auditable.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-AWS-WAF-RUN-003
+    source_id: SRC-AWS-WAF-2024
+    source_clause: "[PLACEHOLDER: Reliability Pillar — REL 6/7: How do you monitor resources and adapt capacity?]"
+    source_clause_text: >
+      Allocate sufficient capacity to meet your workload demands and monitor
+      resource utilization to prevent service degradation.
+    control_id: RUN-003
+    rationale: >
+      WAF Reliability Pillar capacity management practices require that services
+      declare and monitor resource consumption. RUN-003 implements this as a
+      requirement to declare explicit CPU and memory limits in deployment
+      configuration, preventing noisy-neighbour resource exhaustion.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

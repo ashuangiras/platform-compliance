@@ -1,0 +1,57 @@
+# Mappings: OpenSSF Scorecard → SRC domain controls
+#
+# Source: SRC-OPENSSF-SCORECARD-V2
+# Domain: SRC (Source Control)
+# Populated: 2026-07-08
+#
+# Clauses marked [PLACEHOLDER] require verification against the Scorecard
+# documentation at https://securityscorecards.dev/. Mapping records exist;
+# only the clause reference needs to be confirmed.
+
+source_id: SRC-OPENSSF-SCORECARD-V2
+domain: SRC
+
+mappings:
+  - id: MAP-OPENSSF-SCORECARD-SRC-001
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "Branch-Protection check"
+    source_clause_text: >
+      Determines if a project's default and release branches are protected with
+      GitHub's branch protection settings.
+    control_id: SRC-001
+    rationale: >
+      Scorecard's Branch-Protection check directly evaluates whether branch
+      protection is enabled with the required settings on the default branch.
+      SRC-001 aligns with the full-score criteria for this check: require PR
+      before merge, required approvals ≥1, require status checks, disable force
+      pushes and deletions.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENSSF-SCORECARD-SRC-002
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "Code-Review check"
+    source_clause_text: >
+      Determines if the project requires code review before code is merged.
+    control_id: SRC-002
+    rationale: >
+      Scorecard's Code-Review check evaluates whether recent commits on the
+      default branch went through a code review process. SRC-002 directly
+      implements this requirement by mandating pull requests with at least one
+      approving review before merge.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENSSF-SCORECARD-SRC-003
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "[PLACEHOLDER: verify the exact Scorecard check name for CODEOWNERS — may be CII-Best-Practices or a separate check]"
+    control_id: SRC-003
+    rationale: >
+      OpenSSF Scorecard evaluates CODEOWNERS as a project health indicator.
+      SRC-003 directly implements this by requiring a CODEOWNERS file that maps
+      paths to responsible owners, ensuring automated review assignment.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

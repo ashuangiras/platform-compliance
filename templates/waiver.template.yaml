@@ -1,0 +1,74 @@
+# Waiver Template
+#
+# Copy this file to 09-assessments/waivers/ in platform-compliance and fill in
+# all fields. Submit as a pull request to platform-compliance. The PR itself
+# is subject to SRC-001, SRC-002, and SEC-001 (same as any other PR).
+#
+# Schema: schemas/waiver.schema.json
+# Process: 09-assessments/waiver-model.md
+#
+# Naming convention: WAV-{CONTROL_ID}-{YYYYMM}-{NNN}.yaml
+# Example:           WAV-BAK-001-202607-001.yaml
+
+$schema: "../../schemas/waiver.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Waiver ID — format: WAV-{CONTROL_ID}-{YYYYMM}-{NNN}
+id: "WAV-XXX-000-202607-001"
+
+schema_version: "1.0.0"
+
+# The control being waived (from 03-catalogs/controls/)
+control_id: "XXX-000"
+
+# The specific resource this waiver covers (not a blanket waiver)
+resource_ref:
+  # One of: repository | service | environment
+  type: "repository"
+  # Repository URL, service name, or environment identifier
+  identifier: "https://github.com/angirasa-risk/my-repo"
+
+# WHY the control cannot currently be satisfied.
+# Be specific. "Not ready yet" is not a valid rationale.
+# Minimum 20 characters.
+rationale: >
+  [Explain specifically why this control cannot be satisfied right now.
+  What technical, process, or organisational constraint makes it infeasible?
+  When will that constraint be resolved?]
+
+# The risk that is accepted by granting this waiver.
+# This must be distinct from the rationale — it answers "what could go wrong?"
+# Minimum 20 characters.
+risk_acceptance_statement: >
+  [State the specific risk that exists while this control is not satisfied.
+  What is the worst-case scenario? What is the probability? Why is it acceptable
+  to accept this risk for the waiver duration?]
+
+# Who approved this waiver.
+# P1 controls require platform-owner level approval.
+# P2 controls require platform-team review.
+approved_by: "{name or role of approver}"
+
+# When this waiver was approved
+approved_date: "2026-07-08"
+
+# REQUIRED — every waiver must have an expiry date.
+# No open-ended waivers. Set to the date by which the control will be satisfied.
+# Maximum durations: P1 = 90 days, P2 = 180 days, P3 = 1 year
+expiry_date: "2026-10-08"
+
+# Current status: active | expired | revoked
+status: "active"
+
+# ─── OPTIONAL FIELDS ──────────────────────────────────────────────────────────
+
+# Other controls that partially mitigate the gap while this waiver is active
+# compensating_controls:
+#   - "ALT-001"
+
+# An intermediate review date before the expiry date
+# review_date: "2026-09-01"
+
+# Required only when status is revoked:
+# revocation_reason: "Control was satisfied early; waiver no longer needed."

@@ -1,0 +1,23 @@
+
+action_references:
+- pin_type: tag
+  pinned: true
+  step: Checkout
+  uses: actions/checkout@v4
+  workflow: .github/workflows/compliance.yml
+- pin_type: tag
+  pinned: true
+  step: Setup Python
+  uses: actions/setup-python@v5
+  workflow: .github/workflows/compliance.yml
+- pin_type: sha
+  pinned: true
+  step: Upload Artifact
+  uses: actions/upload-artifact@abc1234def5678901234567890123456789012ab
+  workflow: .github/workflows/ci.yml
+repository:
+  name: well-pinned-repo
+  type: platform-repo
+workflow_files:
+- .github/workflows/compliance.yml
+- .github/workflows/ci.yml

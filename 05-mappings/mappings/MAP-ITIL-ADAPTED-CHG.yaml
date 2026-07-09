@@ -1,0 +1,66 @@
+# Mappings: ITIL 4 (adapted) → CHG and INC domain controls
+#
+# Source: SRC-ITIL-ADAPTED
+# Domains: CHG (Change and Release), INC (Incident)
+# Populated: 2026-07-08
+#
+# The platform uses an adapted subset of ITIL 4 (see SRC-ITIL-ADAPTED
+# registration for adaptation rationale). Mappings cite the ITIL 4
+# practice names rather than specific section numbers since the full
+# ITIL 4 practice guides require purchase.
+
+source_id: SRC-ITIL-ADAPTED
+
+mappings:
+  - id: MAP-ITIL-ADAPTED-CHG-001
+    source_id: SRC-ITIL-ADAPTED
+    source_clause: "Change Enablement practice — change documentation requirement (adapted)"
+    source_clause_text: >
+      All changes should be documented, assessed for risk, and approved before
+      implementation. Records should be retained for audit purposes.
+    control_id: CHG-001
+    rationale: >
+      ITIL 4 Change Enablement requires that significant changes be documented
+      and assessed. CHG-001 adopts this principle in a lightweight form scaled
+      for a small platform team: changes to normative platform-compliance
+      content (controls, profiles, policies) must be accompanied by a
+      structured change record. Full CAB-level approval is not required;
+      the PR review process serves as the change assessment.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-ITIL-ADAPTED-CHG-002
+    source_id: SRC-ITIL-ADAPTED
+    source_clause: "Change Enablement practice — release documentation (adapted)"
+    source_clause_text: >
+      Releases should be documented with the scope of changes included,
+      evidence of testing, and approval before deployment to production.
+    control_id: CHG-002
+    rationale: >
+      ITIL 4 Change Enablement includes release documentation as a component
+      of the change record for a release. CHG-002 separates the release record
+      from individual change records (which are per-PR), creating a point-in-time
+      snapshot that links the version tag to its compliance evidence — enabling
+      downstream repositories to trace the compliance state of any version they
+      consume.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-ITIL-ADAPTED-INC-001
+    source_id: SRC-ITIL-ADAPTED
+    source_clause: "Incident Management practice — incident recording and review (adapted)"
+    source_clause_text: >
+      All incidents should be logged, categorized by severity, and resolved
+      with documented root cause and corrective actions.
+    control_id: INC-001
+    rationale: >
+      ITIL 4 Incident Management requires structured incident documentation.
+      INC-001 adopts this for threshold-meeting incidents (high and critical
+      severity), requiring a structured incident record within 48 hours of
+      resolution. The 48-hour window and the severity threshold are platform
+      adaptations calibrated for a small operator team.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

@@ -1,0 +1,59 @@
+# Mappings: OpenSSF Scorecard → SEC domain controls
+#
+# Source: SRC-OPENSSF-SCORECARD-V2
+# Domain: SEC (Security and Secrets)
+# Populated: 2026-07-08
+
+source_id: SRC-OPENSSF-SCORECARD-V2
+domain: SEC
+
+mappings:
+  - id: MAP-OPENSSF-SCORECARD-SEC-001
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "Secrets check"
+    source_clause_text: >
+      Determines if the project is free of leaked secrets and has a mechanism
+      to detect secrets committed to the repository.
+    control_id: SEC-001
+    rationale: >
+      Scorecard's Secrets check evaluates whether a secret-scanning tool is
+      configured and whether any secrets are detected in the repository.
+      SEC-001 directly corresponds to the "no plaintext secrets" requirement
+      that this check verifies.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENSSF-SCORECARD-SEC-002
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "Secrets check"
+    source_clause_text: >
+      Determines if the project uses automated secret detection tooling.
+    control_id: SEC-002
+    rationale: >
+      Scorecard's Secrets check also evaluates whether secret scanning is
+      configured as a tool. SEC-002 specifically requires GitHub secret scanning
+      with push protection to be enabled — the technical enforcement mechanism
+      that the Secrets check evaluates. While both SEC-001 (no secrets) and
+      SEC-002 (scanning enabled) map to the same Scorecard check, they address
+      different aspects: SEC-001 is the state requirement, SEC-002 is the
+      tooling requirement.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENSSF-SCORECARD-SEC-003
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "Vulnerabilities check"
+    source_clause_text: >
+      Determines if the project has open, unfixed vulnerabilities from the
+      OSV (Open Source Vulnerability) database.
+    control_id: SEC-003
+    rationale: >
+      Scorecard's Vulnerabilities check evaluates whether the repository has
+      open vulnerability alerts. SEC-003 extends this with a time-bound SLA
+      (critical: 7 days, high: 30 days) that defines when an open vulnerability
+      becomes a compliance failure rather than just a known issue.
+    mapping_type: extended
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

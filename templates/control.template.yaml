@@ -1,0 +1,73 @@
+$schema: "../../schemas/control.schema.json"
+
+# ─── REQUIRED FIELDS ──────────────────────────────────────────────────────────
+
+# Control ID — format: {DOMAIN}-{NNN}
+# Domain codes from 02-taxonomy/control-domains.yaml
+id: "XXX-001"
+
+title: "[Subject] must [condition]"   # imperative, max 80 chars
+
+# Domain code — must match the subdirectory this file is placed in
+domain: "XXX"
+
+# Control type — from 02-taxonomy/control-types.yaml
+type: "preventive"   # preventive | detective | corrective | directive | compensating
+
+# Priority — from 02-taxonomy/enforcement-levels.yaml
+priority: "P2"   # P1 (critical) | P2 (high) | P3 (medium) | P4 (low)
+
+# Severity of a control failure
+severity: "medium"   # critical | high | medium | low | informational
+
+# What must be true. Use "must", not "should". Be testable.
+statement: >
+  [Normative statement of the requirement.]
+
+# Why this control exists. What risk does it prevent?
+rationale: >
+  [Explanation of the failure mode this control prevents or detects.]
+
+# Which registered standards motivate this control
+# Run: grep "^id:" 01-sources/registry/*.yaml to find valid source IDs
+mapped_standards:
+  - source_id: "SRC-CHANGE-ME"
+    clause: "[PLACEHOLDER: specific clause or check name]"
+    mapping_note: >
+      [Why this clause was interpreted as this control.]
+
+# Human-readable description of what a compliant implementation looks like
+implementation_expectations: >
+  [What must exist or be true to satisfy this control.
+  Describes the observable artifact. Does not include policy code.]
+
+# What evidence must be collected to assess this control
+evidence_required:
+  - type: "change-me-evidence-type"   # must match a key in 08-evidence/evidence-types.yaml
+    description: "What the evidence must demonstrate."
+    format: yaml   # json | yaml | text | screenshot
+
+# Automation status — from 02-taxonomy/automation-status.yaml
+automation_status: "automation-target"   # automated | partially-automated | manual | automation-target | not-automatable
+
+# Assessment cadence
+assessment_cadence: "per-merge"   # per-commit | per-merge | per-release | per-deployment | continuous | on-change
+
+# Default gate behavior on failure
+failure_behavior: "block"   # block | warn | notify | record
+
+# ─── OPTIONAL FIELDS ──────────────────────────────────────────────────────────
+
+# If the control only applies under specific conditions, define them here
+# scope_conditions:
+#   - condition: "repository.type in ['terraform-module', 'terraform-root']"
+#     rationale: "Why this condition limits applicability."
+
+failure_applies_to:
+  - release_gate   # merge_gate | release_gate | deployment_gate | continuous_audit
+
+lifecycle_status: "active"   # active | deferred | deprecated | superseded
+introduced_date: "2026-07-09"
+introduced_by: "platform-team"
+
+# notes: "Additional clarifications."

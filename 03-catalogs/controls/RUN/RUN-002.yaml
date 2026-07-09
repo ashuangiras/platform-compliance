@@ -1,0 +1,73 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-002
+title: Containers must run as a non-root user
+domain: RUN
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Every Docker container deployed by the platform must run as a non-root user.
+  Dockerfiles must specify a USER instruction that sets a non-root user (UID != 0)
+  before any ENTRYPOINT or CMD instruction.
+
+rationale: >
+  Running a container as root means that any process inside the container that
+  gains the ability to escape the container namespace does so with root privileges
+  on the host. Even with namespace isolation, running as root inside a container
+  provides elevated capabilities that increase the blast radius of a container
+  escape vulnerability. Running as a non-root user is one of the most effective
+  and low-cost risk mitigations for container security.
+
+mapped_standards:
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "4.1 Ensure that a user for the container has been created"
+    mapping_note: >
+      CIS Docker Benchmark 4.1 directly requires that a non-root user be
+      created and used in the container. The platform adopts this requirement
+      without modification.
+      [PLACEHOLDER: verify exact wording of CIS Docker 1.6.0 section 4.1
+      to ensure our statement accurately reflects the benchmark requirement]
+
+implementation_expectations: >
+  The Dockerfile must contain a USER instruction that references a non-root user:
+    # Create a dedicated user
+    RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+    USER appuser
+
+  Or with a numeric UID:
+    USER 1001
+
+  The user must be created within the image (not assumed to exist in the base
+  image unless the base image is the platform's own hardened base image which
+  explicitly declares its user).
+
+  Files and directories needed by the application must be owned by or readable
+  by the specified user.
+
+  Exception: images that intentionally require root for a legitimate reason
+  (e.g., a container that manages host networking for platform infrastructure)
+  require a formal waiver with detailed rationale.
+
+evidence_required:
+  - type: dockerfile-user-instruction
+    description: >
+      Static analysis confirming that the Dockerfile contains a USER instruction
+      before ENTRYPOINT/CMD, and that the specified user is not root (UID 0)
+      and not the "root" username.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-release
+failure_behavior: block
+failure_applies_to:
+  - release_gate
+  - deployment_gate
+
+scope_conditions:
+  - condition: "repository.has_container_images == true"
+    rationale: Applies only to repositories that build Docker images.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

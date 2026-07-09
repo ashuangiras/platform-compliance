@@ -1,0 +1,78 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: IAC-003
+title: Terraform modules must not contain hardcoded environment-specific values
+domain: IAC
+type: directive
+priority: P2
+severity: medium
+
+statement: >
+  Terraform modules must not contain hardcoded account identifiers, IP addresses,
+  hostnames, environment names, region names, or other values that are specific to
+  a particular environment or deployment context. All such values must be
+  parameterised as input variables.
+
+rationale: >
+  Hardcoded environment-specific values couple a module to one specific deployment
+  context, making it non-reusable and creating hidden dependencies between the
+  module and the environments it was designed for. When a second environment is
+  needed, the module must be forked rather than parameterised, leading to
+  configuration drift and duplicated code. Parameterisation is also a prerequisite
+  for safe testing: a module parameterised for environment can be tested against a
+  test environment without modifying code.
+
+mapped_standards:
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "Principle 1 — Declarative"
+    mapping_note: >
+      A module with hardcoded environment values is not fully declarative —
+      the actual desired state is partially embedded in code rather than
+      in the configuration passed to it.
+
+implementation_expectations: >
+  Reviewers and automated checks must flag any of the following patterns in
+  Terraform module code (not root configurations):
+  - Literal IP addresses in resource arguments
+  - Hardcoded account or project IDs
+  - Hardcoded environment names (e.g., "production", "staging") in resource names
+  - Hardcoded region strings that are not clearly universal
+  - Any value that differs between environments embedded directly in the module
+
+  Input variables must have descriptive names and must include a description
+  and (where applicable) a validation block.
+
+  Note: Root configuration repositories (type: terraform-root) that compose
+  modules by passing environment-specific values as variables are explicitly
+  allowed. This control targets the module layer only.
+
+evidence_required:
+  - type: iac-hardcoded-value-scan
+    description: >
+      Output of a static analysis scan (e.g., tflint, checkov, or custom
+      regex checks) confirming no hardcoded environment-specific values
+      were detected in module code.
+    format: json
+
+automation_status: partially-automated
+assessment_cadence: per-merge
+failure_behavior: warn
+failure_applies_to:
+  - merge_gate
+  - release_gate
+
+scope_conditions:
+  - condition: "repository.type == 'terraform-module'"
+    rationale: >
+      This control targets reusable modules. Root configurations intentionally
+      contain environment-specific values. The distinction is enforced by
+      repository type.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"
+
+notes: >
+  Automation is partial because static analysis can detect obvious patterns
+  (literal IPs, account IDs) but may miss domain-specific values. Code review
+  provides the supplementary coverage. Failure is a warning rather than a block
+  at the merge gate to allow reviewers to make context-dependent judgements.

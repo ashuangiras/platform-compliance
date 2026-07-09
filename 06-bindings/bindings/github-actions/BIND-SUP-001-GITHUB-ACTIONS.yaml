@@ -1,0 +1,44 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SUP-001-GITHUB-ACTIONS
+control_id: SUP-001
+technology_context: github-actions
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  All GitHub Actions `uses:` references in workflow files (.github/workflows/*.yml)
+  must be pinned to either:
+  1. A specific version tag: uses: actions/checkout@v4
+  2. A full commit SHA: uses: actions/checkout@abc123...40chars
+
+  The following are prohibited:
+  - Branch references: uses: actions/checkout@main
+  - Floating tags: uses: actions/checkout@latest
+  - No version: uses: actions/checkout (implies latest)
+
+  Pinning by tag (e.g., @v4) is acceptable as a minimum. Pinning by SHA
+  is recommended for stronger security guarantees (a tag can be force-pushed;
+  a SHA cannot be changed).
+
+  Note: Docker container actions (`docker://image:tag`) are governed by
+  SUP-002 (BIND-SUP-002-DOCKER), not this binding.
+
+observable_artifact: >
+  Parsed GitHub Actions workflow file(s):
+  {
+    "workflow_files": [".github/workflows/compliance.yml"],
+    "action_references": [
+      {
+        "workflow": ".github/workflows/compliance.yml",
+        "step": "Checkout",
+        "uses": "actions/checkout@v4",
+        "pinned": true,
+        "pin_type": "tag"
+      }
+    ],
+    "violations": []
+  }
+
+policy_check_ids:
+  - POL-SUP-001-GITHUB-ACTIONS-001

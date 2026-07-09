@@ -1,0 +1,71 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-001
+title: Docker images built by the platform must use standard OCI labels
+domain: RUN
+type: directive
+priority: P2
+severity: low
+
+statement: >
+  All Docker images built and published by the platform must include the standard
+  set of OCI image annotation labels. At minimum: org.opencontainers.image.title,
+  org.opencontainers.image.description, org.opencontainers.image.version,
+  org.opencontainers.image.source, and org.opencontainers.image.revision.
+
+rationale: >
+  Standard OCI labels make images self-describing: any tooling or operator can
+  identify what an image contains, where its source code lives, and which exact
+  commit produced it. Without labels, image provenance must be reconstructed from
+  external systems. Standard labels are also a prerequisite for automated tooling
+  that produces image inventories, compliance reports, or security scans keyed
+  to image identity.
+
+mapped_standards:
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "[PLACEHOLDER: CIS Docker 4.x — image labelling best practice; verify section]"
+    mapping_note: >
+      CIS Docker Benchmark addresses image metadata for identification and tracking.
+      [PLACEHOLDER: verify specific section in CIS Docker 1.6.0 that references
+      image labels or equivalent metadata requirement]
+  - source_id: SRC-OPENSSF-SLSA-V1
+    clause: "[PLACEHOLDER: SLSA v1.0 provenance — source reference in artifact]"
+    mapping_note: >
+      SLSA provenance requirements include linking artifacts to their source
+      repository and build commit. OCI labels are the container-layer mechanism
+      for this linkage.
+
+implementation_expectations: >
+  Required labels (OCI Image Spec annotations):
+  - org.opencontainers.image.title      — Short human-readable name
+  - org.opencontainers.image.description — Human-readable description of the image
+  - org.opencontainers.image.version    — Version of the contained software (not the image)
+  - org.opencontainers.image.source     — URL to the repository source code
+  - org.opencontainers.image.revision   — Git SHA of the source commit
+
+  Labels must be set at build time using ARG values passed from CI:
+    ARG GIT_SHA
+    LABEL org.opencontainers.image.revision=$GIT_SHA
+
+  The CI pipeline is responsible for providing the correct values at build time.
+
+evidence_required:
+  - type: docker-image-label-check
+    description: >
+      Output of `docker inspect` or registry API confirming that all required
+      OCI labels are present and non-empty on the built image.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-release
+
+scope_conditions:
+  - condition: "repository.has_container_images == true"
+    rationale: Applies only to repositories that build and publish Docker images.
+
+failure_behavior: warn
+failure_applies_to:
+  - release_gate
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

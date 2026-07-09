@@ -1,0 +1,82 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: IAC-002
+title: Terraform plan output must be reviewed before apply
+domain: IAC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  A `terraform plan` output must be generated automatically and attached to
+  the pull request for every change to a Terraform root configuration. The plan
+  output must be reviewed as part of the pull request review. No `terraform apply`
+  may be executed without a corresponding reviewed plan output.
+
+rationale: >
+  A `terraform plan` makes the concrete effect of proposed infrastructure changes
+  explicit and human-readable before they are applied. Without a reviewed plan,
+  infrastructure changes are approved based on code review alone, which may not
+  reveal the runtime effect of the change (e.g., resource replacement vs. in-place
+  update, data destruction, unexpected resource additions). Reviewing the plan
+  closes the gap between intent and effect.
+
+mapped_standards:
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "Principle 3 — Pulled Automatically"
+    mapping_note: >
+      GitOps Principle 3 describes automated reconciliation. In the current
+      platform phase (human-initiated apply model), plan-before-apply is the
+      equivalent manual gate that ensures changes are reviewed before
+      reconciliation occurs.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "[PLACEHOLDER: AWS WAF OPS — How do you deploy your workloads safely?]"
+    mapping_note: >
+      WAF operational excellence practices around safe deployments directly
+      support the plan-review gate concept.
+      [PLACEHOLDER: verify WAF OPS question reference for deployment safety]
+
+implementation_expectations: >
+  The CI pipeline must:
+  1. Run `terraform plan` and capture the output for every PR targeting the
+     default branch in a Terraform root repository
+  2. Post the plan output as a pull request comment (full plan or summary with
+     a link to the full output in CI artifacts)
+  3. Label the plan result (no changes / changes present / error)
+  4. Block merge if the plan produced an error
+
+  The apply step (whether manual or automated) must:
+  - Reference the specific plan from the approved PR
+  - Not execute if the plan has not been reviewed (approval required)
+  - Not execute if the codebase has changed since the plan was generated
+
+  Tools such as Atlantis, Terraform Cloud, or custom GitHub Actions implement
+  this pattern. The binding (06-bindings/) will specify the accepted tool.
+
+evidence_required:
+  - type: terraform-plan-pr-comment
+    description: >
+      Pull request comment or CI artifact confirming that a terraform plan was
+      generated and posted for review for the assessed change.
+    format: text
+  - type: terraform-apply-plan-reference
+    description: >
+      Record linking the apply execution to the specific reviewed plan output,
+      confirming the apply used an approved plan.
+    format: json
+
+automation_status: partially-automated
+assessment_cadence: per-deployment
+failure_behavior: block
+failure_applies_to:
+  - deployment_gate
+
+scope_conditions:
+  - condition: "repository.type == 'terraform-root'"
+    rationale: >
+      Applies only to root configurations that perform apply operations.
+      Terraform module repositories do not run apply; they are tested with
+      plan only in CI.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

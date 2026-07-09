@@ -1,0 +1,81 @@
+# Mappings: Google SRE → OBS, BAK, INC domain controls
+#
+# Source: SRC-GOOGLE-SRE
+# Domains: OBS (Observability), BAK (Backup), INC (Incident)
+# Populated: 2026-07-08
+#
+# Chapter numbers reference the online edition at https://sre.google/sre-book/
+# [PLACEHOLDER] markers indicate chapter references that need exact section
+# verification against the printed or online edition.
+
+source_id: SRC-GOOGLE-SRE
+
+mappings:
+  - id: MAP-GOOGLE-SRE-OBS-001
+    source_id: SRC-GOOGLE-SRE
+    source_clause: "[PLACEHOLDER: Chapter 6 — Monitoring Distributed Systems; health endpoint reference]"
+    source_clause_text: >
+      The four golden signals (latency, traffic, errors, saturation) require
+      observable service endpoints to measure. Health endpoints provide the
+      fundamental availability signal.
+    control_id: OBS-001
+    rationale: >
+      Google SRE Chapter 6 establishes that monitoring distributed systems
+      requires observable service health signals. OBS-001 operationalises this
+      by requiring a declared and verified health check mechanism on every
+      service — the minimum observable signal that enables automated deployment
+      safety and continuous health monitoring.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-GOOGLE-SRE-OBS-002
+    source_id: SRC-GOOGLE-SRE
+    source_clause: "[PLACEHOLDER: Chapter 12 — Effective Troubleshooting; correlation and tracing reference]"
+    source_clause_text: >
+      Effective troubleshooting requires the ability to trace a request through
+      the system. Structured logs with correlation identifiers enable this.
+    control_id: OBS-002
+    rationale: >
+      Google SRE Chapter 12 emphasises that effective troubleshooting depends
+      on the ability to reconstruct request flows across service boundaries.
+      OBS-002 directly implements this by requiring structured JSON logs with
+      a correlation ID field, enabling automated log aggregation and
+      cross-service request tracing.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-GOOGLE-SRE-INC-001
+    source_id: SRC-GOOGLE-SRE
+    source_clause: "[PLACEHOLDER: Chapter 14 — Managing Incidents; blameless post-mortem reference]"
+    source_clause_text: >
+      After an incident, conduct a blameless post-mortem to understand the
+      root cause and prevent recurrence.
+    control_id: INC-001
+    rationale: >
+      Google SRE Chapter 14 establishes the blameless post-mortem as the
+      standard mechanism for learning from incidents. INC-001 adopts this
+      practice in a lightweight form — a structured incident record that
+      captures root cause, remediation, and recurrence prevention — scaled
+      appropriately for a small platform team.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-GOOGLE-SRE-BAK-001
+    source_id: SRC-GOOGLE-SRE
+    source_clause: "[PLACEHOLDER: Chapter 26 — Data Integrity: What You Read Is What You Wrote]"
+    source_clause_text: >
+      Data integrity requires knowing how to recover from data loss or
+      corruption. Backup and recovery testing are essential components.
+    control_id: BAK-001
+    rationale: >
+      Google SRE Chapter 26 addresses data integrity requirements including
+      backup strategy and recovery testing. BAK-001 operationalises the SRE
+      principle that recovery procedures must be tested — not just documented —
+      by requiring the `last_restore_test_date` field in the backup policy
+      declaration.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

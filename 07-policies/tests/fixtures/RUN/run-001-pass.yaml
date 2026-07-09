@@ -1,0 +1,11 @@
+
+image_ref: registry.example.com/my-service:v1.2.3
+labels:
+  org.opencontainers.image.description: A platform-managed service
+  org.opencontainers.image.revision: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+  org.opencontainers.image.source: https://github.com/org/my-service
+  org.opencontainers.image.title: My Service
+  org.opencontainers.image.version: 1.2.3
+repository:
+  name: my-service
+  type: service

@@ -1,0 +1,260 @@
+evidence_types:
+
+  # ── Source Control ──────────────────────────────────────────────────────────
+
+  github-branch-protection-api-response:
+    description: >
+      GitHub REST API response for GET /repos/{owner}/{repo}/branches/{branch}/protection.
+      Demonstrates branch protection settings including: required PR reviews, required
+      status checks, push restriction, force-push and deletion disablement.
+    format: json
+    controls: [SRC-001, SRC-002]
+    collection: automated
+
+  github-pr-merge-audit:
+    description: >
+      Sample of recent merge events on the default branch confirming each was merged
+      via pull request with at least one approving review before merge.
+    format: json
+    controls: [SRC-002]
+    collection: automated
+
+  codeowners-file-presence:
+    description: >
+      Confirmation that a CODEOWNERS file exists at a standard location (root,
+      .github/, or docs/) and GitHub shows no syntax errors for the file.
+    format: json
+    controls: [SRC-003]
+    collection: automated
+
+  signed-commits-enabled:
+    description: >
+      GitHub API response confirming the "required_signatures" setting is enabled
+      on the default branch protection configuration.
+    format: json
+    controls: [SRC-004]
+    collection: automated
+
+  # ── Supply Chain ────────────────────────────────────────────────────────────
+
+  dependency-pin-check:
+    description: >
+      Automated scan results from a linting tool (e.g., tflint, custom script)
+      demonstrating that all detected dependencies use pinned or tightly bounded
+      version references. Includes the list of scanned files and any findings.
+    format: json
+    controls: [SUP-001]
+    collection: automated
+
+  image-tag-scan:
+    description: >
+      Automated scan of all Dockerfiles, docker-compose files, and Terraform Docker
+      provider resources confirming no mutable image references (latest tag, implicit
+      latest, mutable named tags) are present.
+    format: json
+    controls: [SUP-002]
+    collection: automated
+
+  dependabot-config-presence:
+    description: >
+      Presence and contents of .github/dependabot.yml (or Renovate Bot equivalent)
+      confirming at least one ecosystem is configured with a defined update schedule.
+    format: yaml
+    controls: [SUP-003]
+    collection: automated
+
+  # ── Infrastructure as Code ──────────────────────────────────────────────────
+
+  ci-fmt-validate-result:
+    description: >
+      CI job log output or structured result confirming that `terraform fmt -check`
+      and `terraform validate` both returned exit code 0 for the assessed commit.
+      Includes Terraform version used.
+    format: json
+    controls: [IAC-001]
+    collection: automated
+
+  terraform-plan-pr-comment:
+    description: >
+      Pull request comment or CI artifact confirming a terraform plan was generated
+      and posted for review for the assessed change. Includes plan summary (add/change/destroy counts).
+    format: text
+    controls: [IAC-002]
+    collection: automated
+
+  terraform-apply-plan-reference:
+    description: >
+      Record linking the apply execution to the specific reviewed plan, confirming
+      the apply used an approved plan from the associated PR.
+    format: json
+    controls: [IAC-002]
+    collection: partially-automated
+
+  iac-hardcoded-value-scan:
+    description: >
+      Static analysis scan output confirming no hardcoded environment-specific values
+      (IP addresses, account IDs, environment names) were detected in module code.
+    format: json
+    controls: [IAC-003]
+    collection: automated
+
+  # ── Security ────────────────────────────────────────────────────────────────
+
+  secret-scan-clean:
+    description: >
+      Output of secret scanning confirming no secrets detected at the assessed commit.
+      May be from GitHub secret scanning results API, gitleaks, or detect-secrets.
+    format: json
+    controls: [SEC-001]
+    collection: automated
+
+  gitignore-secret-patterns:
+    description: >
+      Contents of .gitignore confirming it contains patterns for common secret file
+      types (*.pem, *.key, .env, etc.).
+    format: text
+    controls: [SEC-001]
+    collection: automated
+
+  github-secret-scanning-config:
+    description: >
+      GitHub API response confirming secret scanning AND push protection are both
+      enabled for the repository.
+    format: json
+    controls: [SEC-002]
+    collection: automated
+
+  dependency-vulnerability-alert-status:
+    description: >
+      List of open dependency vulnerability alerts at assessment time, including
+      severity, age (days since created), and remediation status.
+    format: json
+    controls: [SEC-003]
+    collection: automated
+
+  # ── Runtime / Docker ────────────────────────────────────────────────────────
+
+  docker-image-label-check:
+    description: >
+      Output of image inspection (docker inspect or registry API) confirming all
+      required OCI labels are present and non-empty on the assessed image.
+    format: json
+    controls: [RUN-001]
+    collection: automated
+
+  dockerfile-user-instruction:
+    description: >
+      Static analysis of Dockerfile confirming a USER instruction exists before
+      ENTRYPOINT/CMD and specifies a non-root user (UID != 0, not "root").
+    format: json
+    controls: [RUN-002]
+    collection: automated
+
+  container-resource-limits-declared:
+    description: >
+      Confirmation that CPU and memory limits are explicitly declared in the service's
+      deployment configuration (docker-compose deploy.resources or equivalent).
+    format: yaml
+    controls: [RUN-003]
+    collection: automation-target
+
+  # ── Observability ───────────────────────────────────────────────────────────
+
+  health-check-declaration:
+    description: >
+      Service contract backup_policy or health_check block confirming health check
+      mechanism, endpoint path, timeout, and retry configuration are declared.
+    format: yaml
+    controls: [OBS-001]
+    collection: partially-automated
+
+  deployment-health-check-result:
+    description: >
+      Deployment log or structured output confirming the health check passed during
+      the assessed deployment before traffic was routed.
+    format: json
+    controls: [OBS-001]
+    collection: automated
+
+  structured-log-format-attestation:
+    description: >
+      Manual attestation from the service owner that the service emits structured JSON
+      logs with required fields. Includes a representative sample log entry.
+    format: text
+    controls: [OBS-002]
+    collection: manual
+
+  # ── Backup ──────────────────────────────────────────────────────────────────
+
+  backup-policy-declaration:
+    description: >
+      Service contract backup_policy block with all required fields: frequency,
+      retention, storage_location, restoration_procedure, last_restore_test_date,
+      RTO, and RPO.
+    format: yaml
+    controls: [BAK-001]
+    collection: automation-target
+
+  backup-restore-test-record:
+    description: >
+      Record of the last successful backup restoration test, including date of test,
+      tester identity, and outcome (restored successfully / failed).
+    format: text
+    controls: [BAK-001]
+    collection: manual
+
+  # ── Change and Release ──────────────────────────────────────────────────────
+
+  change-record-pr-reference:
+    description: >
+      Presence of a change record reference (CHG-YYYYMMDD-NNN) in the pull request
+      description for a PR that modifies normative platform-compliance content.
+    format: text
+    controls: [CHG-001]
+    collection: automated
+
+  release-record-file:
+    description: >
+      A release record YAML file for the assessed release tag, validating against
+      schemas/release-record.schema.yaml. Confirms CHG-002 is satisfied.
+    format: yaml
+    controls: [CHG-002]
+    collection: partially-automated
+
+  # ── Documentation ───────────────────────────────────────────────────────────
+
+  readme-file-presence:
+    description: >
+      Confirmation that README.md exists at the repository root and contains at
+      least 100 characters of meaningful content (not empty or placeholder only).
+    format: text
+    controls: [DOC-001]
+    collection: automated
+
+  adr-per-significant-decision:
+    description: >
+      Manual attestation that all significant decisions made in this release cycle
+      have corresponding ADRs with status "accepted" in decisions/.
+    format: text
+    controls: [DOC-002]
+    collection: manual
+
+  # ── Incident ────────────────────────────────────────────────────────────────
+
+  incident-record-file:
+    description: >
+      Incident record YAML file created within 48 hours of incident resolution,
+      conforming to schemas/incident-record.schema.yaml.
+    format: yaml
+    controls: [INC-001]
+    collection: manual
+
+  # ── Network ─────────────────────────────────────────────────────────────────
+
+  ingress-policy-declaration:
+    description: >
+      Service contract ingress_policy block with all required fields: allowed sources,
+      allowed protocols, ports, TLS requirements, and authentication status.
+    format: yaml
+    controls: [NET-001]
+    collection: automation-target

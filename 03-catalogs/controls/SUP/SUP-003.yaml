@@ -1,0 +1,64 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SUP-003
+title: Automated dependency update checks must be enabled
+domain: SUP
+type: detective
+priority: P2
+severity: medium
+
+statement: >
+  Every platform repository must have an automated dependency update mechanism
+  enabled that checks for new versions of pinned dependencies and creates pull
+  requests for updates.
+
+rationale: >
+  Pinned dependencies (required by SUP-001) are safe but create a maintenance
+  burden: without automation, outdated dependencies accumulate silently. An
+  automated update tool ensures that pinned versions are reviewed and updated
+  regularly, keeping the platform current and reducing the security exposure
+  window for known vulnerabilities.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "[PLACEHOLDER: Scorecard Maintained / Dependency-Update-Tool check]"
+    mapping_note: >
+      Scorecard evaluates whether repositories have automated dependency update
+      tooling configured.
+      [PLACEHOLDER: verify the exact Scorecard check name for dependency update
+      automation — this may be covered by the Maintained or Vulnerabilities check]
+
+implementation_expectations: >
+  GitHub Dependabot must be enabled with:
+  - Ecosystem: terraform (for Terraform repos)
+  - Ecosystem: docker (for repos with Dockerfiles)
+  - Ecosystem: github-actions (for all repos using GitHub Actions)
+  - Update schedule: weekly (or more frequently for security updates)
+  - Target branch: default branch
+  - Open PR limit: configured to avoid PR flooding (recommended: 5–10 per ecosystem)
+
+  Alternative tools (Renovate Bot) are acceptable if they produce equivalent
+  coverage. The binding for this control will specify accepted tools.
+
+evidence_required:
+  - type: dependabot-config-presence
+    description: >
+      Presence of a .github/dependabot.yml file with at least one ecosystem
+      configured, or equivalent Renovate Bot configuration.
+    format: yaml
+
+automation_status: automation-target
+assessment_cadence: per-merge
+failure_behavior: warn
+failure_applies_to:
+  - release_gate
+
+lifecycle_status: deferred
+
+introduced_date: "2026-07-08"
+
+notes: >
+  Deferred in PROF-PLATFORM-V1. Dependabot configuration is a prerequisite for
+  activation. This control becomes active in PROF-PLATFORM-V2 once the initial
+  set of repositories is bootstrapped and the Dependabot configuration pattern
+  is established. Deferred status means the control is declared but not checked.

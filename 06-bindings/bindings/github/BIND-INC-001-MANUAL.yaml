@@ -1,0 +1,48 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-INC-001-MANUAL
+control_id: INC-001
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  For any service incident that meets the severity threshold (high or critical),
+  a formal incident record must be created in 09-assessments/incidents/ within
+  48 hours of the incident being resolved.
+
+  Threshold definition:
+  - HIGH: Any incident causing service unavailability for > 15 consecutive minutes
+  - CRITICAL: Any incident causing data loss, security breach, or widespread
+    service unavailability
+
+  The incident record must be created as a YAML file conforming to
+  schemas/incident-record.schema.json. It must include at minimum:
+  id, title, severity, description, affected_control_ids, affected_resources,
+  discovered_at, resolved_at, root_cause, remediation, recurrence_prevention,
+  and status.
+
+  Evidence for this control is the incident record file itself. For the
+  continuous audit check, evidence is produced by confirming that all incidents
+  tagged in the GitHub Issues tracker as "incident" with severity high or critical
+  have a corresponding formal record within the 48-hour window.
+
+  This control is not automatable because the determination of whether an event
+  meets the severity threshold requires human judgment.
+
+observable_artifact: >
+  a) Incident record YAML file at:
+     09-assessments/incidents/INC-{YYYYMMDD}-{NNN}.yaml
+     File must be present and valid against schemas/incident-record.schema.json
+
+  b) For the continuous audit check: GitHub Issues API response filtered by
+     label "incident" showing that all threshold-meeting incidents have a
+     corresponding record within 48 hours of their resolved_at timestamp.
+
+policy_check_ids: []
+
+notes: >
+  automation_status: not-automatable (severity threshold determination is human).
+  The continuous audit evidence is a notification rather than a block:
+  failure to create an incident record within 48 hours generates an alert
+  to the compliance_contact.

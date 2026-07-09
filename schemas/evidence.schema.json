@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/evidence.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Evidence Record",
+  "description": "A timestamped, structured record of a single policy check evaluation against a specific resource. The atomic unit of compliance evidence. Evidence records are immutable once written. Lives in 08-evidence/collected/.",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "repository",
+    "commit_sha",
+    "control_id",
+    "profile_version",
+    "control_catalog_version",
+    "policy_bundle_version",
+    "workflow_run_id",
+    "evaluated_at",
+    "result",
+    "artifact_hash"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "description": "Schema reference for editor tooling. Not validated against the schema itself." },
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID v4 generated at collection time. Globally unique."
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema used to produce the record. Enables forward-compatible parsing."
+    },
+    "repository": {
+      "type": "object",
+      "required": ["name", "url"],
+      "additionalProperties": false,
+      "description": "The repository this evidence was collected from.",
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "type": {
+          "type": "string",
+          "enum": ["terraform-module", "terraform-root", "service", "platform-repo", "library", "documentation"]
+        }
+      }
+    },
+    "commit_sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$",
+      "description": "Full 40-character SHA of the Git commit evaluated. Evidence is commit-bound."
+    },
+    "control_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,4}-[0-9]{3}$",
+      "description": "The platform control this evidence addresses."
+    },
+    "policy_check_id": {
+      "type": "string",
+      "description": "Required for automated evidence. The policy check that produced this record."
+    },
+    "profile_version": {
+      "type": "string",
+      "description": "Version of the declared compliance profile at collection time (e.g., '1.0.0'). Creates a stable reference for what controls were in scope."
+    },
+    "control_catalog_version": {
+      "type": "string",
+      "description": "Git tag or SHA of platform-compliance at collection time. Identifies the exact version of the control definition used."
+    },
+    "policy_bundle_version": {
+      "type": "string",
+      "description": "Version of the policy bundle (07-policies/) used for this evaluation. May be a git tag or a content hash."
+    },
+    "workflow_run_id": {
+      "type": "string",
+      "description": "GitHub Actions workflow run ID or equivalent CI run identifier. Links evidence to the exact CI execution."
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp with timezone when the policy check was evaluated."
+    },
+    "result": {
+      "type": "string",
+      "enum": ["pass", "fail", "manual_review", "not_applicable", "waived", "error"],
+      "description": "pass: control satisfied. fail: control not satisfied. manual_review: requires human review; automated check cannot determine result. not_applicable: scope condition evaluated false. waived: failing but covered by an active approved waiver. error: policy check encountered an error; result is indeterminate."
+    },
+    "artifact_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "SHA-256 hash of the collected evidence payload (the 'details' field and any attached artifacts). Provides tamper-evidence for the evidence record itself. Format: sha256:{hex}."
+    },
+    "details": {
+      "type": "object",
+      "description": "Structured payload from the policy check. Contents are policy-specific. Included in the artifact_hash computation.",
+      "properties": {
+        "checked": {},
+        "found": {},
+        "expected": {},
+        "message": { "type": "string" }
+      }
+    },
+    "waiver_id": {
+      "type": "string",
+      "description": "Required when result is waived. References the active waiver record in 09-assessments/waivers/."
+    },
+    "attestor": {
+      "type": "string",
+      "description": "Required for manual or manual_review evidence. The identity of the person who attested."
+    },
+    "collection_method": {
+      "type": "string",
+      "description": "Required for manual evidence. How the evidence was collected."
+    },
+    "collected_by": {
+      "type": "object",
+      "description": "Identifies what produced this evidence record.",
+      "additionalProperties": false,
+      "properties": {
+        "tool": { "type": "string" },
+        "version": { "type": "string" },
+        "workflow_run_id": { "type": "string" }
+      }
+    },
+    "environment_type": {
+      "type": "string",
+      "enum": ["local", "ci", "staging", "production"],
+      "description": "Optional. For runtime evaluation evidence."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "result": { "const": "waived" } },
+        "required": ["result"]
+      },
+      "then": {
+        "required": ["waiver_id"],
+        "properties": { "waiver_id": { "minLength": 1 } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "result": { "const": "manual_review" } },
+        "required": ["result"]
+      },
+      "then": {
+        "required": ["attestor"]
+      }
+    }
+  ]
+}

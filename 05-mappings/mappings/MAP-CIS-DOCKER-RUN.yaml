@@ -1,0 +1,87 @@
+# Mappings: CIS Docker Benchmark → RUN domain controls
+#
+# Source: SRC-CIS-DOCKER-V1-6
+# Domain: RUN (Runtime / Docker)
+# Populated: 2026-07-08
+#
+# NOTE: CIS Docker Benchmark 1.6.0 requires registration to download.
+# Section numbers marked [PLACEHOLDER] are approximate based on CIS Docker
+# Benchmark public summaries. Verify against the registered document.
+
+source_id: SRC-CIS-DOCKER-V1-6
+domain: RUN
+
+mappings:
+  - id: MAP-CIS-DOCKER-RUN-001
+    source_id: SRC-CIS-DOCKER-V1-6
+    source_clause: "[PLACEHOLDER: CIS Docker 1.6.0 section 4.x — image labelling; verify exact section number]"
+    source_clause_text: >
+      Images should be labeled with metadata to identify origin, purpose,
+      and ownership.
+    control_id: RUN-001
+    rationale: >
+      CIS Docker Benchmark addresses image metadata for identification and
+      tracking. RUN-001 standardises on OCI image annotation labels
+      (org.opencontainers.image.*) as the specific labelling format,
+      extending the general CIS requirement with the industry-standard
+      label schema.
+    mapping_type: extended
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-CIS-DOCKER-RUN-002
+    source_id: SRC-CIS-DOCKER-V1-6
+    source_clause: "4.1 Ensure that a user for the container has been created"
+    source_clause_text: >
+      It is good practice to run the container as a non-root user, where
+      possible. Running containers with a non-root user is a defense in
+      depth measure.
+    control_id: RUN-002
+    rationale: >
+      CIS Docker Benchmark section 4.1 directly requires that containers run
+      as a non-root user. RUN-002 adopts this requirement without modification.
+      The platform implements this via the USER instruction in Dockerfiles,
+      enforced by static analysis in CI.
+      [PLACEHOLDER: verify exact section 4.1 wording in CIS Docker 1.6.0;
+      section number may differ from earlier versions]
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-CIS-DOCKER-OBS-001
+    source_id: SRC-CIS-DOCKER-V1-6
+    source_clause: "4.6 Ensure that HEALTHCHECK instructions have been added to container images"
+    source_clause_text: >
+      Add HEALTHCHECK instruction to the container image to perform a health
+      check on the running container.
+    control_id: OBS-001
+    rationale: >
+      CIS Docker Benchmark section 4.6 requires HEALTHCHECK instructions in
+      container images. OBS-001 extends this requirement: beyond the Dockerfile
+      HEALTHCHECK, the platform requires that health check behavior be declared
+      in the service contract and verified during deployment, ensuring the check
+      is integrated into the deployment lifecycle rather than just present in
+      the image definition.
+      [PLACEHOLDER: verify exact section 4.6 wording in CIS Docker 1.6.0]
+    mapping_type: extended
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-CIS-DOCKER-SUP-002
+    source_id: SRC-CIS-DOCKER-V1-6
+    source_clause: "4.8 Ensure the latest tag is not used"
+    source_clause_text: >
+      Using the latest tag can lead to using different versions of the base
+      image and may result in inconsistent behavior. Always use a specific
+      version tag.
+    control_id: SUP-002
+    rationale: >
+      CIS Docker Benchmark section 4.8 directly prohibits use of the `latest`
+      tag. SUP-002 adopts this requirement verbatim and extends it to also
+      prohibit other forms of mutable image tags (implicit latest, mutable
+      named tags), requiring either a content-addressable digest or an
+      immutable semantic version tag.
+      [PLACEHOLDER: verify exact section 4.8 wording in CIS Docker 1.6.0]
+    mapping_type: extended
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

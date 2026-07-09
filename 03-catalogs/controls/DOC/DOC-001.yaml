@@ -1,0 +1,71 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: DOC-001
+title: Every repository must have a README at the root level
+domain: DOC
+type: directive
+priority: P1
+severity: low
+
+statement: >
+  Every platform repository must contain a README.md file at the repository
+  root level. The README must describe the repository's purpose, who owns it,
+  and how to use or consume it.
+
+rationale: >
+  A repository without a README is undiscoverable by anyone who is not already
+  familiar with it. As the platform grows, repositories will be encountered
+  by people who did not create them. A README is the minimum viable documentation
+  that makes a repository self-explanatory. It also serves as the first signal
+  of a repository's quality: if the README is absent or empty, other
+  documentation and operational quality indicators are likely to be similarly
+  incomplete.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "[PLACEHOLDER: Scorecard v2 — CII-Best-Practices or Maintained check for README]"
+    mapping_note: >
+      OpenSSF Scorecard evaluates whether repositories have documentation as
+      part of the project health indicators.
+      [PLACEHOLDER: verify the exact Scorecard check that evaluates README
+      presence — may be part of CII-Best-Practices or a separate Documentation check]
+
+implementation_expectations: >
+  The README.md must be present at the repository root and must contain at minimum:
+
+  1. Repository title and one-sentence description
+  2. Purpose: what this repository manages or provides
+  3. Ownership: team or individual responsible
+  4. Usage: how to use, consume, or contribute to this repository
+  5. Compliance profile: which profile governs this repository (link to profile)
+  6. Status: current lifecycle status (active, beta, deprecated, etc.)
+
+  Recommended (not required in v1):
+  - Architecture diagram or link
+  - Prerequisites for local development
+  - Link to relevant ADRs or decisions
+
+  The README must be kept current. A README that describes a previous version
+  of the repository is treated as absent for assessment purposes.
+
+evidence_required:
+  - type: readme-file-presence
+    description: >
+      Confirmation that README.md exists at the repository root and is not
+      empty (has at least 100 characters of meaningful content).
+    format: text
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+failure_applies_to:
+  - release_gate
+# Profile gate enforcement sets warn at merge_gate — see PROF-PLATFORM-V1 merge_gate.DOC-001.enforcement: warn
+
+lifecycle_status: active
+introduced_date: "2026-07-08"
+
+notes: >
+  Warning at merge gate to allow initial repository setup without blocking
+  the first commit. Blocking at release gate ensures documentation is in place
+  before a version is published for consumption.

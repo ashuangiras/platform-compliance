@@ -1,0 +1,82 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SUP-002
+title: Container images must not reference the latest tag
+domain: SUP
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  All container image references in Dockerfiles (FROM instructions), Docker
+  Compose files, Terraform Docker provider resources, and any other configuration
+  must specify either a content-addressable digest (sha256:...) or an immutable,
+  semantically versioned tag. The `latest` tag and any other mutable tag must
+  not be used.
+
+rationale: >
+  The `latest` tag is a mutable pointer. Its target image can be changed by the
+  upstream registry at any time, with no change to the infrastructure code. This
+  means that two `terraform apply` runs on the same commit may deploy different
+  container versions. Mutable tags undermine reproducibility, make rollback
+  ambiguous, and can silently introduce vulnerabilities or breaking changes.
+
+mapped_standards:
+  - source_id: SRC-CIS-DOCKER-V1-6
+    clause: "4.8 Ensure the latest tag is not used"
+    mapping_note: >
+      CIS Docker Benchmark 4.8 directly prohibits use of the `latest` tag.
+      The platform adopts this requirement without modification.
+      [PLACEHOLDER: verify exact section 4.8 wording in CIS Docker 1.6.0 document]
+  - source_id: SRC-OPENSSF-SLSA-V1
+    clause: "[PLACEHOLDER: SLSA v1.0 — immutable artifact reference requirement]"
+    mapping_note: >
+      SLSA's provenance model requires that build inputs be immutably referenced
+      so that the same inputs always produce the same outputs.
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "Principle 2 — Versioned and Immutable"
+    mapping_note: >
+      Mutable image tags violate the GitOps immutability principle for the same
+      reason as mutable dependency versions.
+
+implementation_expectations: >
+  Acceptable image references:
+  - registry.example.com/image:v1.2.3  (immutable semantic version tag)
+  - registry.example.com/image@sha256:abc123...  (content-addressable digest)
+
+  Not acceptable:
+  - registry.example.com/image:latest
+  - registry.example.com/image:stable  (ambiguous mutability)
+  - registry.example.com/image  (implicit latest)
+
+  For base images built internally: the build process must produce a tagged
+  version or digest at build time. The consuming configuration must reference
+  that specific version.
+
+  Exception: during active development in a feature branch, `latest` or mutable
+  tags may be used in non-production tooling. The control is enforced at merge
+  to the default branch.
+
+evidence_required:
+  - type: image-tag-scan
+    description: >
+      Automated scan of all Dockerfiles, compose files, and Terraform Docker
+      provider resources in the repository, confirming no mutable image references
+      are present.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+  - release_gate
+
+scope_conditions:
+  - condition: "repository.has_container_images == true"
+    rationale: >
+      Only applies to repositories that contain or manage container image references.
+      Pure Terraform module repos without Docker resources are unaffected.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

@@ -1,0 +1,49 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-NET-001-SERVICE-CONTRACT
+control_id: NET-001
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  For any service that is accessible from outside the private network
+  (externally_exposed: true in .compliance-manifest.yaml), an explicit
+  ingress_policy block must be declared in the service-contract.yaml at the
+  repository root.
+
+  The ingress_policy block must specify:
+  - allowed_sources: list of source networks/identifiers with descriptions
+  - allowed_protocols: list of {protocol, port, tls_required}
+    For any HTTPS endpoint: tls_required must be true and tls_minimum_version
+    must be "1.2" or higher
+  - authentication_required: boolean indicating whether endpoints require
+    authentication
+
+  Verification checks that:
+  1. The service-contract.yaml file exists and is valid YAML
+  2. The ingress_policy block is present and has all required fields
+  3. No protocol entry exposes HTTP without TLS (if tls_required: false,
+     a note must explain the justification)
+
+observable_artifact: >
+  Service contract file at repository root:
+  service-contract.yaml → ingress_policy block
+
+  Fields evaluated:
+  - ingress_policy.allowed_sources (non-empty array)
+  - ingress_policy.allowed_protocols (non-empty array)
+  - ingress_policy.authentication_required (boolean, present)
+  - For each HTTPS protocol: tls_required: true
+
+  Schema validation: schemas/service-contract.schema.json → ingress_policy
+
+policy_check_ids: []
+# Planned policy: POL-NET-001-GITHUB-001 (service-contract.yaml ingress_policy block validation — automation-target)
+
+notes: >
+  automation_status: automation-target. The service-contract.yaml check (presence
+  + schema validity + all fields populated) is automatable now. The drift check
+  (comparing declared ingress policy to actual network configuration) requires
+  network monitoring infrastructure and is deferred to PROF-PLATFORM-V2.
+  automation_deadline: 2027-01-01

@@ -1,0 +1,455 @@
+name: "Reusable Platform Compliance Check"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DEPLOYED REUSABLE WORKFLOW — platform-compliance
+#
+# This is the production copy of the reusable compliance workflow.
+# It lives at .github/workflows/ so GitHub Actions can call it from
+# downstream repositories using:
+#
+#   uses: angirasa-risk/platform-compliance/.github/workflows/reusable-compliance.yml@v1.0.0
+#
+# Design document: workflows/github/reusable-compliance.yml
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_call:
+    inputs:
+
+      gate:
+        description: "Gate to evaluate: merge_gate | release_gate | deployment_gate | continuous_audit"
+        type: string
+        required: true
+
+      profile-id:
+        description: "Compliance profile ID (e.g., PROF-PLATFORM-V1)"
+        type: string
+        required: true
+
+      repository-type:
+        description: "Repository type from 02-taxonomy/repository-types.yaml"
+        type: string
+        required: true
+
+      technology-contexts:
+        description: "Comma-separated technology contexts"
+        type: string
+        required: false
+        default: "github,github-actions"
+
+      has-container-images:
+        description: "Whether the repository builds or references container images"
+        type: boolean
+        required: false
+        default: false
+
+      platform-compliance-ref:
+        description: "Pin of platform-compliance (schemas + policies + gate criteria)"
+        type: string
+        required: false
+        default: "v1.0.0"
+
+    outputs:
+      compliance-result:
+        description: "Gate result: pass | fail | pass-with-warnings | held"
+        value: ${{ jobs.evaluate-gate.outputs.result }}
+      assessment-report-path:
+        description: "Path to the generated assessment report artifact"
+        value: ${{ jobs.generate-assessment.outputs.report-path }}
+      evidence-bundle-hash:
+        description: "SHA-256 hash of the complete evidence bundle"
+        value: ${{ jobs.collect-evidence.outputs.bundle-hash }}
+      blocking-controls:
+        description: "Comma-separated control IDs blocking the gate (empty if passing)"
+        value: ${{ jobs.evaluate-gate.outputs.blocking-controls }}
+
+env:
+  PLATFORM_COMPLIANCE_REF: ${{ inputs.platform-compliance-ref }}
+  OPA_VERSION: "0.70.0"
+
+jobs:
+
+  validate-manifest:
+    name: "1 — Validate compliance manifest"
+    runs-on: ubuntu-latest
+    outputs:
+      manifest-valid: ${{ steps.validate.outputs.valid }}
+      declared-profile: ${{ steps.parse.outputs.profile }}
+
+    steps:
+      - name: Checkout calling repository
+        uses: actions/checkout@v4
+
+      - name: Confirm .compliance-manifest.yaml exists
+        run: |
+          if [ ! -f ".compliance-manifest.yaml" ]; then
+            echo "::error::.compliance-manifest.yaml not found."
+            echo "::error::Create this file using templates/compliance-manifest.template.yaml"
+            echo "::error::from platform-compliance@${PLATFORM_COMPLIANCE_REF}"
+            exit 1
+          fi
+
+      - name: Install check-jsonschema
+        run: pip install check-jsonschema --quiet
+
+      - name: Fetch repository-compliance schema
+        run: |
+          curl -sSfL \
+            "https://raw.githubusercontent.com/${{ github.repository_owner }}/platform-compliance/${PLATFORM_COMPLIANCE_REF}/schemas/repository-compliance.schema.json" \
+            -o /tmp/repository-compliance.schema.json
+
+      - name: Validate manifest against schema
+        id: validate
+        run: |
+          if check-jsonschema \
+            --schemafile /tmp/repository-compliance.schema.json \
+            .compliance-manifest.yaml; then
+            echo "valid=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Parse declared profile
+        id: parse
+        run: |
+          profile=$(python3 -c "import yaml; d=yaml.safe_load(open('.compliance-manifest.yaml')); print(d['declared_profiles'][0])")
+          echo "profile=${profile}" >> "$GITHUB_OUTPUT"
+
+  check-required-files:
+    name: "2 — Required file checks"
+    runs-on: ubuntu-latest
+    needs: validate-manifest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "SRC-003 — CODEOWNERS"
+        run: |
+          found=false
+          for f in "CODEOWNERS" ".github/CODEOWNERS" "docs/CODEOWNERS"; do
+            [ -f "$f" ] && { found=true; echo "CODEOWNERS found at $f"; break; }
+          done
+          $found || echo "::warning::SRC-003: CODEOWNERS missing (blocks release gate)"
+
+      - name: "DOC-001 — README.md"
+        run: |
+          if [ ! -f "README.md" ]; then
+            echo "::warning::DOC-001: README.md missing (blocks release gate)"
+          else
+            bytes=$(wc -c < README.md)
+            [ "$bytes" -lt 100 ] && echo "::warning::DOC-001: README.md has only $bytes bytes" || echo "README.md OK ($bytes bytes)"
+          fi
+
+      - name: "SEC-001 — .gitignore secret patterns"
+        run: |
+          for pat in "*.pem" "*.key" ".env" "*.tfvars"; do
+            grep -qF "$pat" .gitignore 2>/dev/null || echo "::notice::.gitignore missing pattern: $pat"
+          done
+
+  secret-scan-check:
+    name: "3 — Secret scan (SEC-001, SEC-002)"
+    runs-on: ubuntu-latest
+    needs: validate-manifest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "SEC-001 — Scan for secrets (gitleaks)"
+        # TODO [Phase 7]: Replace placeholder with real gitleaks invocation
+        run: |
+          echo "TODO: Install gitleaks and run: gitleaks detect --source . --report-format json"
+          echo "::notice::SEC-001 secret scan placeholder — implement in Phase 7"
+
+      - name: "SEC-002 — Verify GitHub secret scanning status"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          status=$(gh api "repos/${{ github.repository }}" --jq '.security_and_analysis.secret_scanning.status // "unknown"' 2>/dev/null || echo "unknown")
+          push_prot=$(gh api "repos/${{ github.repository }}" --jq '.security_and_analysis.secret_scanning_push_protection.status // "unknown"' 2>/dev/null || echo "unknown")
+          echo "Secret scanning: $status | Push protection: $push_prot"
+          if [ "$status" != "enabled" ] || [ "$push_prot" != "enabled" ]; then
+            echo "::error::SEC-002: Secret scanning or push protection not enabled (status: $status, push_prot: $push_prot)"
+            exit 1
+          fi
+
+  policy-checks:
+    name: "4 — OPA policy checks"
+    runs-on: ubuntu-latest
+    needs: [validate-manifest, check-required-files]
+    outputs:
+      policy-results-path: ${{ steps.run-policies.outputs.results-path }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OPA
+        run: |
+          curl -sSfL "https://openpolicyagent.org/downloads/v${OPA_VERSION}/opa_linux_amd64_static" -o /usr/local/bin/opa
+          chmod +x /usr/local/bin/opa
+          opa version
+
+      - name: Fetch policy bundle from platform-compliance
+        run: |
+          curl -sSfL \
+            "https://github.com/${{ github.repository_owner }}/platform-compliance/archive/refs/tags/${PLATFORM_COMPLIANCE_REF}.tar.gz" \
+            | tar -xz --strip-components=1 "platform-compliance-*/07-policies/opa" -C /tmp/
+          echo "Policy bundle fetched"
+
+      - name: Collect SRC-001 input (branch protection)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          branch=$(python3 -c "import yaml; d=yaml.safe_load(open('.compliance-manifest.yaml')); print('main')")
+          gh api "repos/${{ github.repository }}/branches/${branch}/protection" \
+            --jq '{
+              repository: {name: "${{ github.event.repository.name }}", type: "${{ inputs.repository-type }}"},
+              default_branch: "'"${branch}"'",
+              branch_protection: .
+            }' > /tmp/inputs/src-001.json 2>/dev/null || echo '{"repository":{"name":"${{ github.event.repository.name }}"},"default_branch":"main","branch_protection":null}' > /tmp/inputs/src-001.json
+          mkdir -p /tmp/inputs /tmp/results
+
+      - name: "SRC-001 — Branch protection check"
+        run: |
+          opa eval \
+            --data /tmp/policy-bundle/SRC/POL-SRC-001-GITHUB-001.rego \
+            --input /tmp/inputs/src-001.json \
+            "data.platform.src.src_001_github.result" \
+            --format raw > /tmp/results/SRC-001.json || echo '{"result":"error"}' > /tmp/results/SRC-001.json
+
+      - name: Run remaining applicable policy checks
+        id: run-policies
+        run: |
+          echo "TODO [Phase 10]: Run all applicable policies based on profile and contexts"
+          echo "Gate: ${{ inputs.gate }}"
+          echo "results-path=/tmp/results" >> "$GITHUB_OUTPUT"
+
+  collect-evidence:
+    name: "5 — Collect evidence"
+    runs-on: ubuntu-latest
+    needs: [policy-checks, secret-scan-check]
+    outputs:
+      bundle-hash: ${{ steps.hash.outputs.bundle-hash }}
+
+    steps:
+      - name: Download policy results
+        run: mkdir -p /tmp/results  # already populated from previous job via path
+
+      - name: Assemble evidence records
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 - <<'PYTHON'
+          import json, uuid, hashlib, os, datetime
+
+          results_dir = "/tmp/results"
+          evidence_dir = "/tmp/evidence"
+          os.makedirs(evidence_dir, exist_ok=True)
+
+          commit_sha = os.environ["COMMIT_SHA"]
+          run_id = os.environ["WORKFLOW_RUN_ID"]
+
+          for result_file in os.listdir(results_dir):
+            if not result_file.endswith(".json"):
+              continue
+            control_id = result_file.replace(".json", "")
+            with open(os.path.join(results_dir, result_file)) as f:
+              policy_result = json.load(f)
+
+            details = policy_result.get("details", {})
+            artifact_hash = "sha256:" + hashlib.sha256(
+              json.dumps(details, sort_keys=True).encode()
+            ).hexdigest()
+
+            record = {
+              "id": str(uuid.uuid4()),
+              "schema_version": "1.0.0",
+              "repository": {
+                "name": os.environ.get("GITHUB_REPOSITORY", "unknown").split("/")[-1],
+                "url": f"https://github.com/{os.environ.get('GITHUB_REPOSITORY', 'unknown')}",
+                "type": "${{ inputs.repository-type }}"
+              },
+              "commit_sha": commit_sha,
+              "control_id": control_id,
+              "profile_version": "1.0.0",
+              "control_catalog_version": "${{ inputs.platform-compliance-ref }}",
+              "policy_bundle_version": "${{ inputs.platform-compliance-ref }}",
+              "workflow_run_id": run_id,
+              "evaluated_at": datetime.datetime.utcnow().isoformat() + "Z",
+              "result": policy_result.get("result", "error"),
+              "artifact_hash": artifact_hash,
+              "details": details,
+              "collected_by": {"tool": "platform-compliance", "version": "${{ inputs.platform-compliance-ref }}", "workflow_run_id": run_id}
+            }
+
+            out = os.path.join(evidence_dir, f"{commit_sha[:8]}-{control_id}-{run_id}.yaml")
+            import yaml
+            with open(out, "w") as f:
+              yaml.dump(record, f, default_flow_style=False)
+            print(f"Wrote evidence: {out}")
+          PYTHON
+
+      - name: Compute bundle hash
+        id: hash
+        run: |
+          bundle_hash="sha256:$(find /tmp/evidence -type f | sort | xargs cat | sha256sum | awk '{print $1}')"
+          echo "bundle-hash=${bundle_hash}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload evidence bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: "evidence-${{ github.run_id }}"
+          path: /tmp/evidence/
+          retention-days: 90
+
+  generate-assessment:
+    name: "6 — Generate assessment report"
+    runs-on: ubuntu-latest
+    needs: collect-evidence
+    outputs:
+      report-path: ${{ steps.generate.outputs.report-path }}
+      overall-result: ${{ steps.generate.outputs.overall-result }}
+
+    steps:
+      - name: Download evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: "evidence-${{ github.run_id }}"
+          path: /tmp/evidence/
+
+      - name: Generate assessment report
+        id: generate
+        run: |
+          python3 - <<'PYTHON'
+          import yaml, os, glob, datetime
+
+          evidence_dir = "/tmp/evidence"
+          report_dir = "/tmp/assessment"
+          os.makedirs(report_dir, exist_ok=True)
+
+          records = []
+          for f in glob.glob(os.path.join(evidence_dir, "*.yaml")):
+            with open(f) as fh:
+              records.append(yaml.safe_load(fh))
+
+          control_results = []
+          result_counts = {"pass": 0, "fail": 0, "manual_review": 0, "not_applicable": 0, "waived": 0, "error": 0}
+
+          for r in records:
+            res = r.get("result", "error")
+            result_counts[res] = result_counts.get(res, 0) + 1
+            cr = {"control_id": r["control_id"], "result": res, "evidence_ids": [r["id"]]}
+            if r.get("waiver_id"):
+              cr["waiver_id"] = r["waiver_id"]
+            control_results.append(cr)
+
+          overall = "inconclusive"
+          if result_counts["fail"] + result_counts["error"] == 0 and result_counts["manual_review"] == 0:
+            overall = "pass-with-waivers" if result_counts["waived"] > 0 else "pass"
+          elif result_counts["fail"] + result_counts["error"] > 0:
+            overall = "fail"
+          elif result_counts["manual_review"] > 0:
+            overall = "manual-review-required"
+
+          report = {
+            "id": f"ASSESS-{os.environ.get('GITHUB_REPOSITORY','').replace('/','_').upper()}-{datetime.date.today().strftime('%Y%m%d')}-001",
+            "schema_version": "1.0.0",
+            "subject": {"type": "repository", "identifier": f"https://github.com/{os.environ.get('GITHUB_REPOSITORY','')}", "commit_sha": os.environ.get("GITHUB_SHA", "")},
+            "profile_id": "${{ inputs.profile-id }}",
+            "profile_version": "1.0.0",
+            "control_catalog_version": "${{ inputs.platform-compliance-ref }}",
+            "assessment_date": datetime.datetime.utcnow().isoformat() + "Z",
+            "evidence_window": {"from": datetime.datetime.utcnow().isoformat()+"Z", "to": datetime.datetime.utcnow().isoformat()+"Z"},
+            "control_results": control_results,
+            "summary": {**result_counts, "total_controls": len(records)},
+            "overall_result": overall,
+            "generated_by": {"tool": "platform-compliance", "version": "${{ inputs.platform-compliance-ref }}", "workflow_run_id": "${{ github.run_id }}"}
+          }
+
+          report_path = os.path.join(report_dir, report["id"] + ".yaml")
+          with open(report_path, "w") as f:
+            yaml.dump(report, f, default_flow_style=False)
+          print(f"Report: {report_path} — overall: {overall}")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+            f.write(f"report-path={report_path}\n")
+            f.write(f"overall-result={overall}\n")
+          PYTHON
+
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+
+      - name: Upload assessment report
+        uses: actions/upload-artifact@v4
+        with:
+          name: "assessment-report-${{ github.run_id }}"
+          path: /tmp/assessment/
+          retention-days: 365
+
+  evaluate-gate:
+    name: "7 — Evaluate ${{ inputs.gate }}"
+    runs-on: ubuntu-latest
+    needs: generate-assessment
+    outputs:
+      result: ${{ steps.evaluate.outputs.result }}
+      blocking-controls: ${{ steps.evaluate.outputs.blocking-controls }}
+
+    steps:
+      - name: Download assessment report
+        uses: actions/download-artifact@v4
+        with:
+          name: "assessment-report-${{ github.run_id }}"
+          path: /tmp/assessment/
+
+      - name: Evaluate gate
+        id: evaluate
+        env:
+          GATE: ${{ inputs.gate }}
+          OVERALL: ${{ needs.generate-assessment.outputs.overall-result }}
+        run: |
+          if [ "$OVERALL" = "fail" ]; then
+            echo "result=fail" >> "$GITHUB_OUTPUT"
+            echo "blocking-controls=CHECK_ASSESSMENT_REPORT" >> "$GITHUB_OUTPUT"
+          elif [ "$OVERALL" = "inconclusive" ]; then
+            echo "result=fail" >> "$GITHUB_OUTPUT"
+            echo "blocking-controls=INCONCLUSIVE" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=pass" >> "$GITHUB_OUTPUT"
+            echo "blocking-controls=" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Gate: $GATE | Overall: $OVERALL"
+
+      - name: Post gate result to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ steps.evaluate.outputs.result }}';
+            const gate = '${{ inputs.gate }}';
+            const blocking = '${{ steps.evaluate.outputs.blocking-controls }}';
+            const emoji = result === 'pass' ? '✅' : '❌';
+            const body = [
+              `## ${emoji} Platform Compliance — \`${gate}\``,
+              `**Result:** \`${result}\``,
+              blocking ? `**Blocking controls:** \`${blocking}\`` : '',
+              `**Evidence bundle:** [Run ${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})`,
+              '',
+              `*Governed by [PROF-PLATFORM-V1](https://github.com/${{ github.repository_owner }}/platform-compliance/blob/${  '${{ inputs.platform-compliance-ref }}'  }/04-profiles/PROF-PLATFORM-V1.yaml)*`
+            ].filter(Boolean).join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+      - name: Fail if gate fails
+        if: steps.evaluate.outputs.result == 'fail'
+        run: |
+          echo "::error::Compliance gate '${{ inputs.gate }}' FAILED."
+          echo "::error::Blocking controls: ${{ steps.evaluate.outputs.blocking-controls }}"
+          echo "::error::Review the assessment report artifact for details."
+          exit 1

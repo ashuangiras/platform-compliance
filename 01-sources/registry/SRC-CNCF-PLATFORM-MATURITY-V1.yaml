@@ -1,0 +1,38 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-CNCF-PLATFORM-MATURITY-V1
+name: CNCF Platform Engineering Maturity Model
+version: "1.0"
+publisher: CNCF TAG App Delivery
+source_url: "https://tag-app-delivery.cncf.io/whitepapers/platform-eng-maturity-model/"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: informative
+
+applies_to:
+  - CAT  # Service Catalog (platform product thinking)
+  - DOC  # Documentation
+  - OBS  # Observability
+
+status: active
+
+notes: >
+  The CNCF Platform Engineering Maturity Model describes five maturity levels
+  (Provisional, Operational, Scalable, Optimizing, and an implicit Aspirational
+  level) across dimensions of investment, adoption, interfaces, operations,
+  and measurement.
+
+  Role is "informative" because the model is a design reference for platform
+  architecture decisions, not a source of specific technical controls. It
+  informs the platform's approach to internal developer experience, service
+  catalog design, and observability, but controls are derived from more specific
+  sources (Google SRE, AWS WAF, OpenSSF).
+
+  Relevant maturity model dimensions for the platform:
+  - "Interfaces" dimension → informs service contract model (CAT domain)
+  - "Measurement" dimension → informs OBS controls
+  - "Operations" dimension → informs BAK and REL controls
+
+  [PLACEHOLDER: map specific maturity model sections to any informative
+  justifications cited in ADRs about platform design decisions]

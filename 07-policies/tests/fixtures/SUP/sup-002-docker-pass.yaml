@@ -1,0 +1,19 @@
+
+image_references:
+- file: Dockerfile
+  is_digest: false
+  line: 1
+  reference: debian:12-slim
+  tag: 12-slim
+- file: docker-compose.yml
+  is_digest: false
+  line: 15
+  reference: redis:7.2.4-alpine
+  tag: 7.2.4-alpine
+- file: Dockerfile.worker
+  is_digest: true
+  line: 1
+  reference: python@sha256:abc123
+  tag: ''
+repository:
+  name: pinned-images-repo

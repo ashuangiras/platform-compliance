@@ -1,0 +1,82 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SUP-001
+title: All dependency versions must be explicitly pinned
+domain: SUP
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  All external dependencies must be pinned to specific, immutable version
+  references. For Terraform, this means pinned provider versions using
+  required_providers and pinned module source versions. For Docker, this
+  means pinned base image digests or immutable version tags. Floating
+  constraints (e.g., ">= 1.0" without an upper bound, "~> 1.0" spanning
+  majors) are prohibited where they allow unreviewed breaking changes.
+
+rationale: >
+  Unpinned dependencies allow upstream changes to alter the platform's behaviour
+  without any change being made to the platform's own code. A dependency update
+  that introduces a breaking change, a vulnerability, or a behaviour change will
+  silently affect all deployments on their next apply or build. Pinning ensures
+  that dependency changes are explicit, reviewed, and intentional.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SLSA-V1
+    clause: "[PLACEHOLDER: SLSA v1.0 Build track — hermetic build requirement]"
+    mapping_note: >
+      SLSA's hermetic build requirement states that builds must not access
+      external resources at build time in a way that could produce different
+      outputs for the same inputs. Pinned dependencies are a prerequisite for
+      hermetic builds.
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "Pinned-Dependencies check"
+    mapping_note: >
+      Scorecard's Pinned-Dependencies check directly evaluates whether GitHub
+      Actions workflows, Dockerfiles, and other dependency declarations use
+      pinned versions. SUP-001 extends this to Terraform providers and modules.
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "Principle 2 — Versioned and Immutable"
+    mapping_note: >
+      Unpinned dependencies violate the immutability principle: the same Git
+      commit can produce different infrastructure if a dependency has been
+      updated upstream.
+
+implementation_expectations: >
+  Terraform repositories:
+  - All providers must be declared in required_providers with an exact version
+    constraint or a tightly bounded range (e.g., "~> 5.0" is acceptable;
+    ">= 5.0" without upper bound is not)
+  - All module sources must reference a specific version tag or commit SHA,
+    not a branch name
+  - Terraform version itself must be pinned in required_version
+
+  Docker / GitHub Actions:
+  - GitHub Actions must reference actions by SHA or a version tag (not @main or @master)
+  - See SUP-002 for container image pinning
+
+  Verification: automated linting checks for unpinned constraints.
+
+evidence_required:
+  - type: dependency-pin-check
+    description: >
+      Automated scan results demonstrating that all detected dependencies use
+      pinned or tightly bounded version references.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+  - release_gate
+
+scope_conditions:
+  - condition: "repository.type in ['terraform-module', 'terraform-root', 'service', 'library']"
+    rationale: >
+      Documentation-only repositories have no dependencies to pin. Platform-repo
+      type repositories (excluding docs) always have this control applied.
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/waiver.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Waiver / Exception",
+  "description": "A documented, time-bounded exception to a platform control. A waiver is an explicit risk acceptance, not a silence. All waivers have an expiry date, a named approver, and appear in every assessment report covering the waived control. Lives in 09-assessments/waivers/.",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "control_id",
+    "resource_ref",
+    "rationale",
+    "risk_acceptance_statement",
+    "approved_by",
+    "approved_date",
+    "expiry_date",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "description": "Schema reference for editor tooling. Not validated against the schema itself." },
+    "id": {
+      "type": "string",
+      "pattern": "^WAV-[A-Z0-9-]+-[0-9]{6}-[0-9]{3}$",
+      "description": "Stable waiver identifier. Format: WAV-{CONTROL_ID}-{YYYYMM}-{NNN}.",
+      "examples": ["WAV-BAK-001-202607-001", "WAV-SRC-004-202607-001"]
+    },
+    "schema_version": { "type": "string" },
+    "control_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,4}-[0-9]{3}$",
+      "description": "The platform control being waived."
+    },
+    "resource_ref": {
+      "type": "object",
+      "required": ["type", "identifier"],
+      "additionalProperties": false,
+      "description": "The specific resource this waiver covers.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["repository", "service", "environment"],
+          "description": "Type of resource the waiver applies to."
+        },
+        "identifier": {
+          "type": "string",
+          "description": "Repository URL, service name, or environment identifier."
+        }
+      }
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Why the control cannot currently be satisfied. Must be specific and honest."
+    },
+    "risk_acceptance_statement": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Explicit statement of the risk accepted by granting this waiver. Not a restatement of the rationale."
+    },
+    "compensating_controls": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z]{2,4}-[0-9]{3}$"
+      },
+      "description": "Control IDs of controls that partially mitigate the gap. Does not replace the waived control."
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "Identity of the approver. P1 controls require platform-owner level."
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Required. No open-ended waivers. An expired waiver is treated as non-existent."
+    },
+    "review_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional intermediate review date before expiry."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "expired", "revoked"],
+      "description": "active: in effect. expired: expiry_date passed. revoked: manually cancelled before expiry."
+    },
+    "revocation_reason": {
+      "type": "string",
+      "description": "Required when status is revoked."
+    }
+  },
+  "if": {
+    "properties": { "status": { "const": "revoked" } },
+    "required": ["status"]
+  },
+  "then": {
+    "required": ["revocation_reason"]
+  }
+}

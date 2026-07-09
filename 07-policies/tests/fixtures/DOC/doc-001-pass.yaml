@@ -1,0 +1,12 @@
+
+files:
+- path: README.md
+  size: 3420
+- path: platform-principles.md
+  size: 8750
+- path: .compliance-manifest.yaml
+  size: 512
+repository:
+  name: well-documented-repo
+  type: platform-repo
+  url: https://github.com/org/well-documented-repo

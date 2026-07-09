@@ -1,0 +1,60 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-AWS-WAF-2024
+name: AWS Well-Architected Framework
+version: "2024 (current)"
+publisher: Amazon Web Services
+source_url: "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: adapted
+
+applies_to:
+  - SEC  # Security (Security Pillar)
+  - REL  # Reliability (Reliability Pillar)
+  - OBS  # Observability (Operational Excellence Pillar)
+  - BAK  # Backup and Recovery (Reliability Pillar)
+  - NET  # Network (Security Pillar)
+  - RUN  # Runtime (Operational Excellence)
+
+status: active
+
+notes: >
+  The AWS Well-Architected Framework is used as an adapted source. The platform
+  is not hosted on AWS, but the WAF's pillars provide widely-cited, well-reasoned
+  guidance on architecture quality that translates to self-hosted infrastructure
+  with straightforward adaptation.
+
+  Adaptation principle: WAF guidance for "cloud-native" services is interpreted
+  as guidance for "platform-managed containerised services". IAM and cloud-specific
+  services (S3, RDS, etc.) are out of scope; the underlying architectural principles
+  (least privilege, defence in depth, failure isolation) apply directly.
+
+  Relevant pillars and their platform mappings:
+
+  Security Pillar:
+  - SEC 1: How do you securely operate your workload?
+    → Informs: SEC-001 (no plaintext secrets), SEC-002 (secret scanning)
+    [PLACEHOLDER: map to specific WAF SEC question IDs]
+  - SEC 7: How do you protect your data at rest?
+    → Informs: BAK-001 (backup policy)
+  - SEC 5: How do you protect your network resources?
+    → Informs: NET-001 (ingress policy declaration)
+
+  Reliability Pillar:
+  - REL 9: How do you back up data?
+    → Informs: BAK-001 (backup policy declaration, recovery testing)
+    [PLACEHOLDER: verify WAF REL question numbering in 2024 edition]
+  - REL 12: How do you test reliability?
+    → Informs: OBS-001 (health check verification at deploy time)
+
+  Operational Excellence Pillar:
+  - OPS 6: How do you understand the health of your workload?
+    → Informs: OBS-001 (health check), OBS-002 (structured logging)
+    [PLACEHOLDER: verify OPS question numbering in 2024 edition]
+  - OPS 4: How do you implement observability in your workload?
+    → Informs: OBS-002 (structured logging with correlation IDs)
+
+  Note: The WAF is updated regularly. This entry is pinned to the 2024 edition
+  state. A new registry entry should be created if a material update occurs.

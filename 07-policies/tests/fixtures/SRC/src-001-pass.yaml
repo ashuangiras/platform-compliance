@@ -1,0 +1,36 @@
+# Fixture: SRC-001 — PASS
+# Scenario: Fully compliant branch protection on a platform-repo repository.
+# All required settings enabled: required PR reviews (>=1), stale review
+# dismissal, status checks, force pushes disabled, deletions disabled.
+# Expected policy result: { "result": "pass" }
+branch_protection:
+  allow_deletions:
+    enabled: false
+  allow_force_pushes:
+    enabled: false
+  allow_fork_syncing:
+    enabled: false
+  block_creations:
+    enabled: false
+  enforce_admins:
+    enabled: true
+    url: https://api.github.com/repos/org/platform-compliance/branches/main/protection/enforce_admins
+  lock_branch:
+    enabled: false
+  required_conversation_resolution:
+    enabled: false
+  required_pull_request_reviews:
+    dismiss_stale_reviews: true
+    dismissal_restrictions: {}
+    require_code_owner_reviews: false
+    required_approving_review_count: 1
+  required_status_checks:
+    contexts:
+    - compliance / merge-gate
+    strict: true
+  restrictions: null
+default_branch: main
+repository:
+  name: platform-compliance
+  type: platform-repo
+  url: https://github.com/org/platform-compliance

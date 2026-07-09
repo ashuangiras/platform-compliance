@@ -1,0 +1,325 @@
+phases:
+- id: phase-01
+  title: Repository skeleton and architecture docs
+  tasks:
+  - id: PC-0001
+    title: Create README stubs for all domain directories
+    status: done
+  - id: PC-0002
+    title: Write docs/glossary.md
+    status: done
+  - id: PC-0003
+    title: Write docs/onboarding.md
+    status: done
+  - id: PC-0004
+    title: Author decisions/ADR-0001-compliance-first-architecture.md
+    status: done
+  - id: PC-0005
+    title: Create CHANGELOG.md with [Unreleased] section
+    status: done
+  - id: PC-0006
+    title: Create docs/authoring-controls.md guide
+    status: done
+- id: phase-02
+  title: Standards registry and taxonomy
+  tasks:
+  - id: PC-0007
+    title: Validate all 9 source entries against standard-source.schema.json
+    status: done
+  - id: PC-0008
+    title: Validate all taxonomy files for internal consistency
+    status: done
+  - id: PC-0009
+    title: Research and fill [PLACEHOLDER] markers for Scorecard check IDs
+    status: not-started
+    note: Requires reading Scorecard v2 documentation
+  - id: PC-0010
+    title: Research and fill [PLACEHOLDER] for CIS Docker 1.6.0 section references
+    status: not-started
+    note: Requires access to the registered CIS document
+  - id: PC-0011
+    title: Research and fill [PLACEHOLDER] for SLSA v1.0 requirement IDs
+    status: not-started
+    note: Requires reading SLSA v1.0 spec at slsa.dev
+- id: phase-03
+  title: Control catalog and compliance profile
+  tasks:
+  - id: PC-0012
+    title: Validate all 25 control files against control.schema.json
+    status: done
+  - id: PC-0013
+    title: Validate PROF-PLATFORM-V1.yaml against profile.schema.json
+    status: done
+  - id: PC-0014
+    title: 'Cross-check: all profile control IDs exist in the catalog'
+    status: done
+  - id: PC-0015
+    title: 'Cross-check: all source IDs in controls exist in registry'
+    status: done
+  - id: PC-0016
+    title: Peer review of all SRC and SEC domain controls for statement clarity
+    status: done
+  - id: PC-0017
+    title: Peer review of all IAC, SUP, RUN domain controls
+    status: done
+  - id: PC-0018
+    title: Peer review of OBS, BAK, CHG, DOC, INC, NET domain controls
+    status: done
+  - id: PC-0019
+    title: Write docs/authoring-controls.md (authoring guide)
+    status: done
+    depends_on:
+    - PC-0016
+- id: phase-04
+  title: Schemas for all governance objects
+  tasks:
+  - id: PC-0020
+    title: Write schemas/mapping.schema.json
+    status: done
+  - id: PC-0021
+    title: Write schemas/binding.schema.json
+    status: done
+  - id: PC-0022
+    title: Write schemas/policy-check.schema.json
+    status: done
+  - id: PC-0023
+    title: Write schemas/evidence.schema.json
+    status: done
+  - id: PC-0024
+    title: Write schemas/waiver.schema.json
+    status: done
+  - id: PC-0025
+    title: Write schemas/assessment.schema.json
+    status: done
+  - id: PC-0026
+    title: Write schemas/repository-compliance.schema.json
+    status: done
+  - id: PC-0027
+    title: Write schemas/adr.schema.json
+    status: done
+  - id: PC-0028
+    title: Write schemas/change-record.schema.json
+    status: done
+  - id: PC-0029
+    title: Write schemas/release-record.schema.json
+    status: done
+  - id: PC-0030
+    title: Write schemas/incident-record.schema.json
+    status: done
+  - id: PC-0031
+    title: Write schemas/service-contract.schema.json
+    status: done
+  - id: PC-0032
+    title: Run meta-schema validation on all 16 schema files
+    status: done
+  - id: PC-0033
+    title: Create test fixtures (valid + invalid) for all schemas
+    status: in-progress
+    note: Evidence fixtures (4) done. 11 other schemas need at least one valid + one
+      invalid fixture.
+- id: phase-05
+  title: Mapping and provenance model
+  tasks:
+  - id: PC-0034
+    title: Create SRC and SEC domain mapping files (Scorecard source)
+    status: done
+  - id: PC-0035
+    title: Create SUP domain mapping files (SLSA + Scorecard sources)
+    status: done
+  - id: PC-0036
+    title: Create IAC domain mapping files (OpenGitOps source)
+    status: done
+  - id: PC-0037
+    title: Create RUN and OBS mapping files (CIS Docker + SRE sources)
+    status: done
+  - id: PC-0038
+    title: Create CHG, DOC, INC, BAK, NET mapping files
+    status: done
+- id: phase-06
+  title: Implementation binding model
+  tasks:
+  - id: PC-0039
+    title: Write GitHub-context bindings for SRC-001, SRC-002, SRC-003
+    status: done
+  - id: PC-0040
+    title: Write GitHub-context bindings for SEC-001, SEC-002, SEC-003
+    status: done
+  - id: PC-0041
+    title: Write Terraform-context bindings for IAC-001, IAC-002, IAC-003, SUP-001
+    status: done
+  - id: PC-0042
+    title: Write Docker-context bindings for RUN-001, RUN-002, RUN-003, SUP-002, OBS-001
+    status: done
+  - id: PC-0043
+    title: Write GitHub-Actions-context binding for SUP-001 (action pinning)
+    status: done
+  - id: PC-0044
+    title: Write manual stubs for OBS-002, BAK-001, CHG-001, CHG-002, DOC-001, DOC-002,
+      INC-001, NET-001
+    status: done
+  - id: PC-0045
+    title: 'Cross-check: all automated controls have at least one binding'
+    status: done
+- id: phase-07
+  title: Policy-as-code and tests
+  tasks:
+  - id: PC-0046
+    title: Author decisions/ADR-0004-opa-policy-engine.md (OPA selected)
+    status: done
+  - id: PC-0047
+    title: Write policy check for SRC-001 (branch protection) with fixtures
+    status: done
+  - id: PC-0048
+    title: Write policy check for SRC-002 (PR required) with fixtures
+    status: done
+  - id: PC-0049
+    title: Write policy check for SRC-003 (CODEOWNERS) with fixtures
+    status: done
+  - id: PC-0050
+    title: Write policy check for SEC-001 (no secrets) with fixtures
+    status: done
+  - id: PC-0051
+    title: Write policy check for SEC-002 (secret scanning) with fixtures
+    status: done
+  - id: PC-0052
+    title: Write policy check for SEC-003 (vuln SLA) with fixtures
+    status: done
+  - id: PC-0053
+    title: Write policy check for IAC-001 (fmt+validate) with fixtures
+    status: done
+  - id: PC-0054
+    title: Write policy check for SUP-001 Terraform (pinned deps) with fixtures
+    status: done
+  - id: PC-0055
+    title: Write policy check for SUP-001 GitHub Actions (action pinning) with fixtures
+    status: done
+  - id: PC-0056
+    title: Write policy check for SUP-002 (no latest tag) with fixtures
+    status: done
+  - id: PC-0057
+    title: Write policy check for RUN-001 (OCI labels) with fixtures
+    status: done
+  - id: PC-0058
+    title: Write policy check for RUN-002 (non-root user) with fixtures
+    status: done
+  - id: PC-0059
+    title: Write policy check for DOC-001 (README present) with fixtures
+    status: done
+  - id: PC-0060
+    title: Write policy check for CHG-002 (release record exists) with fixtures
+    status: done
+  - id: PC-0061
+    title: Run all policy tests and confirm all pass
+    status: done
+    note: OPA not installed locally; will be validated in CI (Phase A)
+- id: phase-08
+  title: Evidence model and schema
+  tasks:
+  - id: PC-0062
+    title: Finalize schemas/evidence.schema.json
+    status: done
+  - id: PC-0063
+    title: Write 08-evidence/ledger/format.md (structure, naming, retention)
+    status: done
+  - id: PC-0064
+    title: Create valid and invalid evidence record test fixtures
+    status: done
+  - id: PC-0065
+    title: Write 08-evidence/ledger/retention.md (archival procedures)
+    status: done
+- id: phase-09
+  title: Assessment, waiver, and exception model
+  tasks:
+  - id: PC-0066
+    title: Finalize schemas/assessment.schema.json
+    status: done
+  - id: PC-0067
+    title: Create 09-assessments/gates/release-gate.yaml
+    status: done
+  - id: PC-0068
+    title: Create 09-assessments/gates/deployment-gate.yaml
+    status: done
+  - id: PC-0069
+    title: Author decisions/ADR-0003-waiver-approval-process.md
+    status: done
+    note: Blocked on ADR-0007 decision (see decisions-needed/)
+  - id: PC-0070
+    title: Write waiver template and assessment report template
+    status: done
+- id: phase-10
+  title: Reusable GitHub workflow design
+  tasks:
+  - id: PC-0071
+    title: Write .github/workflows/reusable-compliance.yml (skeleton)
+    status: done
+  - id: PC-0072
+    title: Write .github/workflows/self-compliance.yml
+    status: done
+  - id: PC-0073
+    title: Validate all workflows with actionlint
+    status: done
+    depends_on:
+    - PC-0071
+    - PC-0072
+- id: phase-11
+  title: Repository compliance manifest
+  tasks:
+  - id: PC-0074
+    title: Finalize schemas/repository-compliance.schema.json
+    status: done
+  - id: PC-0075
+    title: Write templates/compliance-manifest.template.yaml
+    status: done
+  - id: PC-0076
+    title: Write all remaining templates (control, change-record, release-record,
+      etc.)
+    status: done
+  - id: PC-0077
+    title: Write docs/consuming-compliance.md
+    status: done
+  - id: PC-0078
+    title: Write .compliance-manifest.yaml for platform-compliance
+    status: done
+  - id: PC-0079
+    title: Resolve angirasa-risk placeholder in all files
+    status: done
+    note: Needs the actual GitHub org name to be confirmed
+- id: phase-12
+  title: v1.0.0 release gate
+  tasks:
+  - id: PC-0080
+    title: Push repository to GitHub and configure branch protection (SRC-001, SRC-002)
+    status: not-started
+  - id: PC-0081
+    title: Enable GitHub secret scanning + push protection (SEC-002)
+    status: not-started
+    depends_on:
+    - PC-0080
+  - id: PC-0082
+    title: First CI run — collect real evidence, generate real assessment report
+    status: not-started
+    depends_on:
+    - PC-0081
+    blocked_by: Phase A workflow completion
+  - id: PC-0083
+    title: Review assessment report — resolve or waive any failures
+    status: not-started
+    depends_on:
+    - PC-0082
+  - id: PC-0084
+    title: Write v1.0.0 CHANGELOG.md entry and confirm release record
+    status: not-started
+    depends_on:
+    - PC-0083
+  - id: PC-0085
+    title: Update docs/next-repo-readiness.md with CI-confirmed status
+    status: not-started
+    depends_on:
+    - PC-0083
+  - id: PC-0086
+    title: Tag v1.0.0 and publish release
+    status: not-started
+    depends_on:
+    - PC-0083
+    - PC-0084
+    - PC-0085

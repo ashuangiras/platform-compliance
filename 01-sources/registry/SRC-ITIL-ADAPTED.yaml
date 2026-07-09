@@ -1,0 +1,55 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-ITIL-ADAPTED
+name: ITIL 4 — Platform-Adapted Subset
+version: "4 (adapted)"
+publisher: Axelos (original); platform-adapted interpretation
+source_url: "https://www.axelos.com/certifications/itil-service-management/what-is-itil"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: adapted
+
+applies_to:
+  - CHG  # Change and Release
+  - INC  # Incident and Problem
+  - CAT  # Service Catalog
+  - REL  # Reliability
+
+status: active
+
+notes: >
+  The platform does not adopt ITIL 4 in full. Full ITIL adoption would be
+  disproportionate for a self-hosted infrastructure platform managed by a
+  small team. Instead, the platform adopts a lightweight subset of ITIL 4
+  practices that is proportionate to the operational scale.
+
+  Adaptation rationale (documented here; an ADR will be created before
+  CHG and INC controls are activated):
+
+  ADOPTED PRACTICES (scaled down):
+  - Change Enablement → CHG domain controls
+    ITIL 4 Practice: Change Enablement (formerly Change Management)
+    Adaptation: Only "significant changes" require formal change records.
+    A "significant change" is defined as any change to a control, profile,
+    binding, policy, or schema in platform-compliance, or any change that
+    modifies a protected configuration in a service or infrastructure repo.
+    Routine changes (documentation edits, minor version bumps) are exempt.
+
+  - Incident Management → INC domain controls
+    Adaptation: Only incidents meeting a defined severity threshold (high or
+    critical) require a formal incident record. All others are tracked via
+    GitHub Issues only.
+
+  - Service Catalog Management → CAT domain
+    Adaptation: Service contracts replace full ITIL service catalog entries.
+    The scope is limited to platform-managed services.
+
+  NOT ADOPTED:
+  - Problem Management (formal)   → tracked as GitHub Issues; no separate process
+  - Service Level Management      → replaced by SLO declarations (SRE-sourced)
+  - IT Asset Management           → out of scope for current platform phase
+  - Supplier Management           → out of scope
+
+  [PLACEHOLDER: once CHG-001 and CHG-002 are mapped, cross-reference the
+  specific ITIL 4 practice guide sections for Change Enablement]

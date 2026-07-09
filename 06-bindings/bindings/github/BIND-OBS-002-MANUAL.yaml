@@ -1,0 +1,46 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-OBS-002-MANUAL
+control_id: OBS-002
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  The service owner attests that the service emits structured JSON logs with
+  the following fields on every log entry:
+
+  Required fields:
+  - timestamp: ISO 8601 with timezone (e.g., "2026-07-08T14:30:00Z")
+  - level: One of ERROR, WARN, INFO, DEBUG (case-insensitive)
+  - service: Service name matching the service contract id field
+  - correlation_id: A string identifying the request context, propagated
+    from inbound HTTP X-Request-ID (or X-Correlation-ID) headers, or
+    generated if absent
+  - message: Human-readable description of the event
+
+  The log entries must be written to stdout or stderr as newline-delimited JSON.
+  One JSON object per line. No mixing of structured and unstructured log lines.
+
+  Evidence: The attestor must provide a representative sample log entry
+  (3–5 lines from a real service startup or request) demonstrating the format.
+
+observable_artifact: >
+  Manual attestation evidence record containing:
+  {
+    "attestor": "service-owner-identity",
+    "attestation_method": "Manual review of service log output during test run",
+    "sample_log_entries": [
+      "{\"timestamp\":\"2026-07-08T14:30:00Z\",\"level\":\"INFO\",\"service\":\"my-service\",\"correlation_id\":\"req-abc123\",\"message\":\"Server started on port 8080\"}"
+    ],
+    "fields_verified": ["timestamp", "level", "service", "correlation_id", "message"]
+  }
+
+policy_check_ids: []
+
+notes: >
+  automation_status: manual — automation target for PROF-PLATFORM-V2.
+  Automation approach: log format can be verified by deploying to a staging
+  environment and checking log output against the schema. Requires log
+  aggregation infrastructure that does not yet exist.
+  automation_deadline: 2027-07-08

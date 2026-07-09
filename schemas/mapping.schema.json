@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/mapping.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Standard-to-Control Mapping",
+  "description": "Explicit, documented linkage between a specific clause in a registered external standard and a platform control. Provides the provenance chain. Lives in 05-mappings/.",
+  "type": "object",
+  "required": [
+    "id",
+    "source_id",
+    "source_clause",
+    "control_id",
+    "rationale",
+    "mapping_type",
+    "mapped_date",
+    "mapped_by"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^MAP-[A-Z0-9-]+-[A-Z]{2,4}-[0-9]{3}$",
+      "description": "Stable mapping identifier. Format: MAP-{SOURCE_ID_STEM}-{DOMAIN}-{NNN}.",
+      "examples": ["MAP-OPENSSF-SCORECARD-SRC-001", "MAP-CIS-DOCKER-RUN-001"]
+    },
+    "source_id": {
+      "type": "string",
+      "pattern": "^SRC-[A-Z0-9]+-[A-Z0-9-]+$",
+      "description": "Standard source ID from 01-sources/registry/."
+    },
+    "source_clause": {
+      "type": "string",
+      "description": "Specific clause, section, or check within the standard. Use [PLACEHOLDER: ...] if unresearched."
+    },
+    "source_clause_text": {
+      "type": "string",
+      "description": "Brief quoted text from the standard clause for human reference."
+    },
+    "control_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,4}-[0-9]{3}$",
+      "description": "Platform control ID from 03-catalogs/."
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Why this clause was interpreted as this control in this platform's context."
+    },
+    "mapping_type": {
+      "type": "string",
+      "enum": ["derived", "partial", "extended"],
+      "description": "derived: control is a direct derivation of the clause. partial: clause partially covered. extended: control goes beyond the clause."
+    },
+    "mapped_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "mapped_by": {
+      "type": "string"
+    }
+  }
+}

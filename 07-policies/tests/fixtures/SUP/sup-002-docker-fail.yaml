@@ -1,0 +1,19 @@
+
+image_references:
+- file: Dockerfile
+  is_digest: false
+  line: 1
+  reference: node:latest
+  tag: latest
+- file: docker-compose.yml
+  is_digest: false
+  line: 8
+  reference: nginx
+  tag: ''
+- file: docker-compose.yml
+  is_digest: false
+  line: 22
+  reference: redis:stable
+  tag: stable
+repository:
+  name: mutable-tags-repo

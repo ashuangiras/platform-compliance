@@ -1,0 +1,27 @@
+# Mappings: Nygard ADR (2011) → DOC domain controls
+#
+# Source: SRC-NYGARD-ADR-2011
+# Domain: DOC (Documentation and Decisions)
+# Populated: 2026-07-08
+
+source_id: SRC-NYGARD-ADR-2011
+
+mappings:
+  - id: MAP-NYGARD-ADR-DOC-001
+    source_id: SRC-NYGARD-ADR-2011
+    source_clause: "Full document — core ADR practice"
+    source_clause_text: >
+      We will keep a collection of records for "architecturally significant"
+      decisions: those that affect the structure, non-functional characteristics,
+      dependencies, interfaces, or construction techniques.
+    control_id: DOC-002
+    rationale: >
+      Nygard's ADR practice directly specifies that architecturally significant
+      decisions should be recorded in a structured format (Context, Decision,
+      Status, Consequences) stored close to the code they affect. DOC-002
+      adopts this practice verbatim, using the Nygard format as the platform's
+      ADR template and requiring ADRs before significant decisions are
+      implemented.
+    mapping_type: adopted
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

@@ -1,0 +1,68 @@
+# Mappings: OpenSSF Scorecard + SLSA → SUP domain controls
+#
+# Sources: SRC-OPENSSF-SCORECARD-V2, SRC-OPENSSF-SLSA-V1
+# Domain: SUP (Supply Chain)
+# Populated: 2026-07-08
+
+mappings:
+  - id: MAP-OPENSSF-SCORECARD-SUP-001
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "Pinned-Dependencies check"
+    source_clause_text: >
+      Determines if a project pins its dependencies (e.g., GitHub Actions,
+      Docker containers, Go module dependencies) to specific versions.
+    control_id: SUP-001
+    rationale: >
+      Scorecard's Pinned-Dependencies check directly evaluates whether
+      dependency references use pinned versions. SUP-001 extends this to
+      include Terraform providers and modules in addition to the GitHub
+      Actions, Dockerfiles, and package managers that Scorecard natively checks.
+    mapping_type: extended
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENSSF-SLSA-SUP-001
+    source_id: SRC-OPENSSF-SLSA-V1
+    source_clause: "[PLACEHOLDER: SLSA v1.0 Build track — hermetic build requirements section]"
+    control_id: SUP-001
+    rationale: >
+      SLSA's hermetic build requirement states that builds must not access
+      external resources in a way that could produce different outputs for the
+      same inputs. Pinned dependencies are a prerequisite for hermetic builds:
+      if dependency versions float, the same source commit can produce different
+      build outputs. SUP-001 enforces the pinning that makes hermetic builds
+      achievable.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENSSF-SCORECARD-SUP-002
+    source_id: SRC-OPENSSF-SCORECARD-V2
+    source_clause: "Pinned-Dependencies check"
+    source_clause_text: >
+      Includes evaluation of whether Docker base image references use
+      pinned digests rather than mutable tags.
+    control_id: SUP-002
+    rationale: >
+      Scorecard's Pinned-Dependencies check evaluates Docker image references.
+      SUP-002 specifically targets the `latest` tag pattern as the most
+      common form of mutable image reference, extending the Scorecard
+      requirement with explicit guidance on what constitutes an acceptable
+      immutable reference (digest or semantically versioned tag).
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team
+
+  - id: MAP-OPENSSF-SLSA-SUP-002
+    source_id: SRC-OPENSSF-SLSA-V1
+    source_clause: "[PLACEHOLDER: SLSA v1.0 — immutable artifact reference requirement in Build track]"
+    control_id: SUP-002
+    rationale: >
+      SLSA's provenance model requires that build inputs be immutably
+      referenced so that the same source commit always uses the same upstream
+      content. A mutable image tag violates this: the same Dockerfile can
+      build against different base images over time. SUP-002 enforces
+      immutable image references as a direct SLSA Build track requirement.
+    mapping_type: derived
+    mapped_date: "2026-07-08"
+    mapped_by: platform-team

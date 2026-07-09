@@ -1,0 +1,40 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-OPENSSF-SCORECARD-V2
+name: OpenSSF Scorecard
+version: "2.x"
+publisher: OpenSSF (Open Source Security Foundation)
+source_url: "https://securityscorecards.dev/"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - SRC  # Source Control
+  - SEC  # Security and Secrets
+  - SUP  # Supply Chain (dependency scanning checks)
+  - DOC  # Documentation (README presence check)
+
+status: active
+
+notes: >
+  OpenSSF Scorecard is an automated tool that assesses a repository's security
+  posture across a set of named checks. The platform uses Scorecard checks as
+  direct sources for several SRC and SEC controls.
+
+  Scorecard checks referenced by platform controls include:
+
+  - Branch-Protection          → SRC-001, SRC-002
+  - Code-Review                → SRC-002
+  - CODEOWNERS                 [PLACEHOLDER: verify if Scorecard has a dedicated check]
+  - Secrets                    → SEC-001
+  - Vulnerabilities            → SEC-003
+  - Pinned-Dependencies        → SUP-001, SUP-002
+  - Token-Permissions          [PLACEHOLDER: map to github-actions context control]
+  - Dangerous-Workflow         [PLACEHOLDER: future CHG or SEC control]
+
+  Note: Scorecard version 2.x is a floating reference. The platform pins to
+  a specific Scorecard version in workflow tooling. This registry entry refers
+  to the v2 check specification as the basis for control derivation.
+  [PLACEHOLDER: update to a pinned version once toolchain is established]

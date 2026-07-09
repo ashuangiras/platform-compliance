@@ -1,0 +1,17 @@
+id: POL-RUN-001-DOCKER-001
+title: "All required OCI image labels are present and non-empty on built images"
+binding_ids:
+  - BIND-RUN-001-DOCKER
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-001-DOCKER-001.rego"
+pass_criteria: >
+  The built Docker image has all 5 required OCI labels present and non-empty:
+  org.opencontainers.image.title, description, version, source, revision.
+fail_criteria: >
+  One or more required OCI labels are absent from the built image, or present
+  with an empty string value. Note: the check runs against the built image (docker
+  inspect output), not just the Dockerfile LABEL instructions.
+evidence_type: docker-image-label-check
+severity: low
+introduced_date: "2026-07-08"
+status: active

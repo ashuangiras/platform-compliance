@@ -1,0 +1,49 @@
+# Platform Automation Status Values
+#
+# Describes the current state of automated verification for a control.
+# Used in the control catalog and in compliance reporting to track
+# the platform's progress toward fully machine-verifiable compliance.
+
+values:
+  automated:
+    code: automated
+    description: >
+      A policy check runs automatically in CI/CD or on a defined schedule
+      and produces a structured evidence record. Human review of the
+      evidence may still be required for assessment, but evidence collection
+      is machine-driven.
+    evidence_model: machine-generated
+
+  partially-automated:
+    code: partially-automated
+    description: >
+      An automated check covers part of the control requirement. A manual
+      supplement is required to satisfy the full control statement.
+      The automation coverage percentage should be noted in the control's
+      implementation_expectations or notes field.
+    evidence_model: hybrid
+
+  manual:
+    code: manual
+    description: >
+      Evidence is collected entirely through manual attestation or inspection.
+      A named attestor must be recorded in the evidence record, along with
+      the method and date of collection.
+    evidence_model: manual-attestation
+
+  automation-target:
+    code: automation-target
+    description: >
+      The control is currently verified manually but automation is explicitly
+      planned. The control should include an automation_deadline in the
+      profile's manual_initially category when used in this state.
+    evidence_model: manual-attestation
+    note: Treated the same as manual for evidence purposes.
+
+  not-automatable:
+    code: not-automatable
+    description: >
+      The nature of the control makes automated verification infeasible or
+      meaningless (e.g., a process or cultural requirement). Manual evidence
+      is permanently required and this is by design, not a gap.
+    evidence_model: manual-attestation

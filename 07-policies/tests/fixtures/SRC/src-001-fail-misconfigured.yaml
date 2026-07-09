@@ -1,0 +1,17 @@
+
+branch_protection:
+  allow_deletions:
+    enabled: false
+  allow_force_pushes:
+    enabled: true
+  enforce_admins:
+    enabled: false
+  required_pull_request_reviews:
+    dismiss_stale_reviews: false
+    required_approving_review_count: 0
+  required_status_checks: null
+default_branch: main
+repository:
+  name: partially-configured-repo
+  type: service
+  url: https://github.com/org/partially-configured-repo

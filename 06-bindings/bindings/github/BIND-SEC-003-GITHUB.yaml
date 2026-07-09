@@ -1,0 +1,43 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SEC-003-GITHUB
+control_id: SEC-003
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  All critical-severity Dependabot security alerts must be addressed (resolved
+  or have an approved waiver) within 7 calendar days of detection.
+  All high-severity alerts must be addressed within 30 calendar days.
+
+  "Addressed" means one of:
+  - The alert is dismissed with a valid reason
+  - The dependency has been updated to a non-vulnerable version
+  - A platform waiver exists covering this specific vulnerability
+
+  At the deployment gate, any unresolved critical-severity alert without an
+  active waiver blocks deployment.
+
+  Verification queries the GitHub Dependabot alerts API for open alerts,
+  calculates their age (current date - alert.created_at), and checks whether
+  any critical alerts exceed 7 days or any high alerts exceed 30 days.
+
+observable_artifact: >
+  GitHub REST API response:
+  GET /repos/{owner}/{repo}/dependabot/alerts?state=open&severity=critical,high
+
+  Fields evaluated per alert:
+  - severity (critical or high)
+  - created_at (age calculation)
+  - state == "open" (dismissed alerts are excluded)
+
+  Pass condition: no open critical alerts > 7 days old AND no open high alerts > 30 days old.
+
+policy_check_ids:
+  - POL-SEC-003-GITHUB-001
+
+notes: >
+  This binding evaluates time-based SLA compliance, not just the presence of
+  vulnerabilities. The policy must compute the age of each alert from created_at
+  to the evaluation timestamp and compare against the SLA thresholds.

@@ -1,0 +1,37 @@
+# Valid evidence record — result: waived
+# Validates against: ../../schemas/evidence.schema.json
+# Use to verify: schema requires waiver_id when result is waived
+# Note: waiver_id must be present for result: waived — this is enforced by the schema
+
+id: "6ba7b811-9dad-11d1-80b4-00c04fd430c8"
+schema_version: "1.0.0"
+
+repository:
+  name: "new-stateful-service"
+  url: "https://github.com/acme-org/new-stateful-service"
+  type: "service"
+
+commit_sha: "cc2b7abc1234567890abcdef1234567890abcdef"
+control_id: "BAK-001"
+policy_check_id: ""
+
+profile_version: "1.0.0"
+control_catalog_version: "v1.0.0"
+policy_bundle_version: "v1.0.0"
+workflow_run_id: "11223344556"
+
+evaluated_at: "2026-07-08T16:00:00Z"
+result: "waived"
+artifact_hash: "sha256:4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb5e9a5b1e4adffbe3b"
+waiver_id: "WAV-BAK-001-202607-001"
+
+details:
+  checked: "Backup policy declaration in service-contract.yaml"
+  found: "backup_policy block absent — service was deployed 2 days ago"
+  expected: "backup_policy block with all required fields"
+  message: "BAK-001: Backup policy not yet declared. Covered by WAV-BAK-001-202607-001 (expires 2026-09-30)"
+
+collected_by:
+  tool: "platform-compliance-opa"
+  version: "1.0.0"
+  workflow_run_id: "11223344556"

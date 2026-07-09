@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/repository-compliance.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Repository Compliance Manifest",
+  "description": "The compliance declaration every platform repository places at its root as .compliance-manifest.yaml. Declares the repository's type, governing profile, technology contexts, and any active waivers. This file is the entry point for all compliance enforcement.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "repository",
+    "declared_profiles",
+    "technology_contexts",
+    "compliance_contact",
+    "last_updated"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "description": "Schema reference for editor tooling. Not validated against the schema itself." },
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema used to produce the manifest."
+    },
+    "repository": {
+      "type": "object",
+      "required": ["name", "url", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Short repository name (e.g., 'platform-compliance')."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Full HTTPS URL to the repository (e.g., 'https://github.com/org/repo')."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "terraform-module",
+            "terraform-root",
+            "service",
+            "platform-repo",
+            "library",
+            "documentation"
+          ],
+          "description": "Repository type from 02-taxonomy/repository-types.yaml. Determines which scope conditions apply."
+        },
+        "has_container_images": {
+          "type": "boolean",
+          "default": false,
+          "description": "Declares whether this repository builds or references Docker container images. Activates RUN and SUP-002 controls."
+        },
+        "service": {
+          "type": "object",
+          "description": "Present when type is 'service'. Provides service-specific metadata.",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["stateless", "stateful", "gateway", "worker", "batch"],
+              "description": "Service classification. 'stateful' activates BAK-001."
+            },
+            "externally_exposed": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether the service is accessible from outside the private network. Activates NET-001."
+            }
+          }
+        }
+      }
+    },
+    "declared_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^PROF-[A-Z0-9-]+$"
+      },
+      "description": "Compliance profile IDs from 04-profiles/. At least one required. The listed profiles drive all gate checks."
+    },
+    "technology_contexts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["github", "terraform", "docker", "runtime-linux", "github-actions"]
+      },
+      "description": "Technology contexts from 02-taxonomy/technology-contexts.yaml. Determines which bindings and policies apply."
+    },
+    "waiver_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Active waiver IDs from 09-assessments/waivers/. Referenced here to make active waivers visible at the manifest level."
+    },
+    "compliance_contact": {
+      "type": "string",
+      "description": "Team or individual responsible for this repository's compliance state. Receives compliance failure notifications."
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the manifest was last reviewed or updated (ISO 8601)."
+    }
+  }
+}

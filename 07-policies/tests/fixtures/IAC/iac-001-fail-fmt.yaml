@@ -1,0 +1,16 @@
+
+fmt_result:
+  diff: "--- main.tf\n+++ main.tf\n@@ -1,3 +1,3 @@\n resource \"aws_instance\" \"\
+    web\" {\n-ami = \"ami-12345\"\n+  ami           = \"ami-12345\"\n }"
+  exit_code: 1
+  terraform_version: 1.5.7
+repository:
+  name: badly-formatted-module
+  type: terraform-module
+  url: https://github.com/org/badly-formatted-module
+validate_result:
+  directories_checked:
+  - .
+  errors: []
+  exit_code: 0
+  warnings: []

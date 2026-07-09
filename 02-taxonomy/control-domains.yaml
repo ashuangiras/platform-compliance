@@ -1,0 +1,144 @@
+# Platform Control Domains
+#
+# Stable domain codes used as the prefix for all platform control IDs.
+# A control's domain code must match the subdirectory it is placed in
+# under 03-catalogs/controls/.
+#
+# Adding a new domain requires an ADR. Renaming a domain is forbidden
+# once any control has been published with that domain code.
+
+domains:
+  SRC:
+    name: Source Control
+    description: >
+      Controls governing version control repositories: branch protection, peer
+      review process, commit authorship, code ownership, and repository hygiene.
+    examples:
+      - Branch protection rules
+      - Pull request requirements
+      - CODEOWNERS enforcement
+      - Signed commits
+
+  SUP:
+    name: Supply Chain
+    description: >
+      Controls governing the provenance and integrity of software dependencies,
+      container images, Terraform providers, and external modules. Covers version
+      pinning, artifact signing, and dependency update hygiene.
+    examples:
+      - Pinned dependency versions
+      - Immutable image tags
+      - Dependency update automation
+
+  IAC:
+    name: Infrastructure as Code
+    description: >
+      Controls specific to infrastructure-as-code quality, correctness, and safety.
+      Applies to Terraform and OpenTofu repositories. Covers code formatting,
+      validation, plan review, and module design principles.
+    examples:
+      - Terraform fmt and validate
+      - Plan-before-apply enforcement
+      - No hardcoded environment values
+
+  RUN:
+    name: Runtime / Docker
+    description: >
+      Controls governing the runtime behaviour and configuration of containerised
+      services. Covers Docker image configuration, container security, resource
+      declarations, and service identity labelling.
+    examples:
+      - Non-root container user
+      - OCI image labels
+      - Resource limits
+      - Healthcheck declarations
+
+  NET:
+    name: Network and Exposure
+    description: >
+      Controls governing network configuration, ingress policies, port exposure,
+      and service-to-service communication boundaries.
+    examples:
+      - Ingress policy declarations
+      - No unnecessary port exposure
+      - TLS requirements
+
+  SEC:
+    name: Security and Secrets
+    description: >
+      Controls governing credential management, secret handling, vulnerability
+      scanning, and security configuration of repositories and services.
+    examples:
+      - No plaintext secrets in repos
+      - Secret scanning enabled
+      - Dependency vulnerability SLAs
+
+  OBS:
+    name: Observability
+    description: >
+      Controls governing the observability posture of services: health checks,
+      structured logging, metrics exposure, and tracing instrumentation.
+    examples:
+      - Health check declarations
+      - Structured log format
+      - Metrics endpoint exposure
+
+  BAK:
+    name: Backup and Recovery
+    description: >
+      Controls governing backup policies for stateful services, data retention,
+      restoration procedures, and recovery testing.
+    examples:
+      - Backup policy declaration
+      - Recovery time objective definition
+      - Backup test evidence
+
+  CHG:
+    name: Change and Release
+    description: >
+      Controls governing the change management process: change records, release
+      records, release gating, and change communication.
+    examples:
+      - Change records for significant platform changes
+      - Release records for all tagged versions
+      - Release gate assessment
+
+  INC:
+    name: Incident and Problem
+    description: >
+      Controls governing the incident management process: incident records,
+      post-incident reviews, and problem tracking.
+    examples:
+      - Incident records for threshold-meeting events
+      - Post-incident reviews
+      - Recurring problem tracking
+
+  CAT:
+    name: Service Catalog
+    description: >
+      Controls governing service registration, service contract declarations,
+      and service discoverability within the platform.
+    examples:
+      - Service contract declaration
+      - Service ownership registration
+      - Dependency declaration
+
+  REL:
+    name: Reliability
+    description: >
+      Controls governing service reliability targets, SLI/SLO definitions,
+      error budget policies, and capacity management.
+    examples:
+      - SLO declarations
+      - Error budget policy
+      - Capacity headroom requirements
+
+  DOC:
+    name: Documentation and Decisions
+    description: >
+      Controls governing repository documentation quality, architecture decision
+      records, and operational runbooks.
+    examples:
+      - README presence and quality
+      - ADR for significant decisions
+      - Runbook for operational procedures

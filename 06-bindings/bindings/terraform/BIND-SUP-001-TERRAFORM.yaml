@@ -1,0 +1,46 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SUP-001-TERRAFORM
+control_id: SUP-001
+technology_context: terraform
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  All Terraform provider and module version references must use pinned versions
+  that prevent unreviewed major version changes:
+
+  1. Provider versions in required_providers must use either:
+     - An exact version: version = "= 5.1.0"
+     - A tightly bounded constraint that excludes major versions: version = "~> 5.1"
+     (the ~> operator in Terraform allows patch/minor bumps but not major version changes)
+     Prohibited: version = ">= 5.0" or version = "5.*" (allows major version changes)
+
+  2. Module source versions:
+     - For registry modules: version = "= 1.2.3" or version = "~> 1.2"
+     - For Git sources: ref = "v1.2.3" (a tag) or ref = "abc123..." (a SHA)
+     - Prohibited: ref = "main", ref = "master", or no ref specified
+
+  3. The terraform binary version must be declared in required_version:
+     required_version = "~> 1.5"  (acceptable — pins major version)
+     required_version = ">= 1.0"  (prohibited — allows any version)
+
+observable_artifact: >
+  Parsed Terraform configuration (HCL parsed to JSON):
+  {
+    "required_version": "~> 1.5",
+    "required_providers": {
+      "aws": { "source": "hashicorp/aws", "version": "~> 5.1" }
+    },
+    "module_calls": [
+      {
+        "name": "vpc",
+        "source": "terraform-aws-modules/vpc/aws",
+        "version": "= 5.1.0"
+      }
+    ],
+    "violations": []
+  }
+
+policy_check_ids:
+  - POL-SUP-001-TERRAFORM-001

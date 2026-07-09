@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/service-contract.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Service Contract",
+  "description": "The declared interface and compliance obligations of a service. Extends the repository compliance manifest for service-type repositories by documenting the service's health check, dependencies, ingress policy, backup policy, and SLA commitments. Lives in the service repository root as service-contract.yaml.",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "service_name",
+    "service_type",
+    "repository_ref",
+    "declared_profiles",
+    "last_updated"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^SVC-[A-Z0-9-]+$",
+      "description": "Stable service identifier. Format: SVC-{SERVICE_SLUG}.",
+      "examples": ["SVC-PLATFORM-COMPLIANCE", "SVC-MY-API"]
+    },
+    "schema_version": { "type": "string" },
+    "service_name": {
+      "type": "string",
+      "description": "Human-readable service name."
+    },
+    "service_type": {
+      "type": "string",
+      "enum": ["stateless", "stateful", "gateway", "worker", "batch"],
+      "description": "Service classification. stateful activates BAK-001; gateway/stateless may activate NET-001."
+    },
+    "repository_ref": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the repository where this service lives."
+    },
+    "declared_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^PROF-[A-Z0-9-]+$"
+      }
+    },
+    "externally_exposed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this service is accessible from outside the private network. Activates NET-001."
+    },
+    "health_check": {
+      "type": "object",
+      "description": "Required for OBS-001. Health check declaration.",
+      "required": ["mechanism", "endpoint_or_command", "timeout_seconds", "failure_threshold"],
+      "additionalProperties": false,
+      "properties": {
+        "mechanism": {
+          "type": "string",
+          "enum": ["http", "tcp", "exec"],
+          "description": "http: HTTP endpoint check. tcp: TCP port check. exec: command-based check."
+        },
+        "endpoint_or_command": {
+          "type": "string",
+          "description": "For http: the path (e.g., '/healthz'). For tcp: the port number. For exec: the command."
+        },
+        "timeout_seconds": { "type": "integer", "minimum": 1 },
+        "failure_threshold": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of consecutive failures before the container is considered unhealthy."
+        },
+        "expected_status": {
+          "type": "integer",
+          "description": "For http checks: expected HTTP status code (default: 200)."
+        }
+      }
+    },
+    "backup_policy": {
+      "type": "object",
+      "description": "Required for BAK-001 when service_type is stateful.",
+      "required": ["frequency", "retention", "storage_location", "restoration_procedure", "last_restore_test_date", "rto", "rpo"],
+      "additionalProperties": false,
+      "properties": {
+        "frequency": { "type": "string", "description": "Backup frequency (e.g., 'daily', '0 2 * * *')." },
+        "retention": { "type": "string", "description": "How long backups are retained (e.g., '30 days')." },
+        "storage_location": { "type": "string", "description": "Description of backup storage (no credentials)." },
+        "restoration_procedure": { "type": "string", "description": "Link or inline description of the restoration procedure." },
+        "last_restore_test_date": {
+          "oneOf": [
+            { "type": "string", "format": "date" },
+            { "type": "null" }
+          ],
+          "description": "Date of last successful restoration test. Null if never tested."
+        },
+        "rto": { "type": "string", "description": "Recovery Time Objective (e.g., '4 hours')." },
+        "rpo": { "type": "string", "description": "Recovery Point Objective (e.g., '24 hours')." }
+      }
+    },
+    "ingress_policy": {
+      "type": "object",
+      "description": "Required for NET-001 when externally_exposed is true.",
+      "required": ["allowed_sources", "allowed_protocols", "authentication_required"],
+      "additionalProperties": false,
+      "properties": {
+        "allowed_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["description"],
+            "properties": {
+              "description": { "type": "string" },
+              "cidr": { "type": "string" }
+            }
+          }
+        },
+        "allowed_protocols": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["protocol", "port"],
+            "additionalProperties": false,
+            "properties": {
+              "protocol": { "type": "string", "enum": ["HTTP", "HTTPS", "TCP", "UDP"] },
+              "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+              "tls_required": { "type": "boolean" },
+              "tls_minimum_version": { "type": "string", "enum": ["1.2", "1.3"] }
+            }
+          }
+        },
+        "authentication_required": {
+          "type": "boolean",
+          "description": "Whether endpoints require authentication."
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "api_contract_ref": {
+      "type": "string",
+      "description": "Reference to an OpenAPI spec, AsyncAPI spec, or equivalent."
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["service_id"],
+        "additionalProperties": false,
+        "properties": {
+          "service_id": { "type": "string", "pattern": "^SVC-[A-Z0-9-]+$" },
+          "required_version_range": { "type": "string" },
+          "dependency_type": {
+            "type": "string",
+            "enum": ["runtime", "build", "test", "optional"]
+          }
+        }
+      }
+    },
+    "data_classification": {
+      "type": "string",
+      "description": "Classification of data handled by this service."
+    },
+    "resource_limits": {
+      "type": "object",
+      "description": "Required for RUN-003. Declared CPU and memory limits.",
+      "additionalProperties": false,
+      "properties": {
+        "cpu_limit": { "type": "string", "examples": ["0.50", "2"] },
+        "memory_limit": { "type": "string", "examples": ["512M", "2G"] },
+        "cpu_reservation": { "type": "string" },
+        "memory_reservation": { "type": "string" }
+      }
+    },
+    "last_updated": { "type": "string", "format": "date" }
+  },
+  "if": {
+    "properties": { "service_type": { "const": "stateful" } },
+    "required": ["service_type"]
+  },
+  "then": {
+    "required": ["backup_policy"]
+  }
+}

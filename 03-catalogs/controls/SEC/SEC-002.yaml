@@ -1,0 +1,64 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-002
+title: GitHub secret scanning with push protection must be enabled
+domain: SEC
+type: detective
+priority: P1
+severity: high
+
+statement: >
+  GitHub secret scanning must be enabled on every platform repository with
+  push protection active. Push protection must block pushes containing detected
+  secrets before they reach the remote repository.
+
+rationale: >
+  Secret scanning provides an automated detective layer that catches credential
+  patterns before they enter the repository history. Push protection is the
+  preventive complement: it intercepts the commit at push time, before the secret
+  is stored in the remote. Enabling push protection transforms secret scanning
+  from a reactive (detect after commit) to a preventive (block before storage)
+  control. The combination of SEC-001 (policy) + SEC-002 (technical enforcement)
+  creates defence in depth.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "Secrets check"
+    mapping_note: >
+      Scorecard's Secrets check specifically evaluates whether secret scanning
+      is configured. SEC-002 directly implements what the Secrets check
+      verifies.
+
+implementation_expectations: >
+  GitHub repository settings must have:
+  - Security → Code security and analysis → Secret scanning: Enabled
+  - Security → Code security and analysis → Push protection: Enabled
+
+  For organisation-level management:
+  - Secret scanning and push protection should be enabled at organisation level
+    so new repositories inherit the setting automatically
+  - Repository-level settings are the fallback verification mechanism
+
+  Custom patterns:
+  - The platform should define custom secret scanning patterns for any
+    internal token formats (e.g., platform-issued API keys) once those
+    formats are established.
+    [PLACEHOLDER: define custom pattern registration process once internal
+    services begin issuing tokens]
+
+evidence_required:
+  - type: github-secret-scanning-config
+    description: >
+      GitHub API response confirming secret scanning and push protection are
+      both enabled for the repository.
+    format: json
+
+automation_status: automated
+assessment_cadence: continuous
+failure_behavior: block
+failure_applies_to:
+  - release_gate
+  - continuous_audit
+
+lifecycle_status: active
+introduced_date: "2026-07-08"

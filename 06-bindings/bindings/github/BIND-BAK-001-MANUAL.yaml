@@ -1,0 +1,56 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-BAK-001-MANUAL
+control_id: BAK-001
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  The service owner declares a backup policy in the service contract
+  (service-contract.yaml) with all required fields populated. The backup
+  policy declaration serves as the primary evidence for BAK-001.
+
+  Required declaration fields:
+  - frequency: Backup schedule (e.g., "daily", "0 2 * * *")
+  - retention: How long backups are kept (e.g., "30 days")
+  - storage_location: Description of backup storage location (no credentials)
+  - restoration_procedure: Link to runbook or inline procedure
+  - last_restore_test_date: Date of last successful restoration test (or null
+    if not yet tested, but a first test must be completed within 30 days of
+    first deployment)
+  - rto: Recovery Time Objective
+  - rpo: Recovery Point Objective
+
+  Additionally, the service owner must attest that:
+  1. Backups are actually running on the declared schedule
+  2. The restoration procedure has been tested and produces a working restoration
+  3. The last_restore_test_date field is kept current after each test
+
+  This is a manual control because the backup mechanism itself (cron jobs,
+  Terraform-managed snapshots, etc.) is service-specific and cannot be
+  generically verified.
+
+observable_artifact: >
+  Service contract backup_policy block (machine-readable):
+  {
+    "frequency": "daily",
+    "retention": "30 days",
+    "storage_location": "Description of backup location",
+    "restoration_procedure": "https://wiki/runbook",
+    "last_restore_test_date": "2026-07-01",
+    "rto": "4 hours",
+    "rpo": "24 hours"
+  }
+
+  Plus a manual attestation that backups are running and restoration has been tested.
+
+policy_check_ids: []
+# Planned policy: POL-BAK-001-GITHUB-001 (service-contract.yaml backup_policy block validation — automation-target)
+
+notes: >
+  automation_status: automation-target.
+  The service-contract.yaml file check (presence + schema validity + all fields
+  populated) is automatable now. The "backups are actually running" verification
+  requires monitoring integration and is deferred.
+  automation_deadline: 2027-01-01

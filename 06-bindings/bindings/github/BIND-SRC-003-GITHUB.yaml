@@ -1,0 +1,43 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SRC-003-GITHUB
+control_id: SRC-003
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  A CODEOWNERS file must be present at one of the following standard locations
+  in the repository:
+
+  1. CODEOWNERS (repository root)
+  2. .github/CODEOWNERS
+  3. docs/CODEOWNERS
+
+  The file must:
+  - Not be empty (at least one ownership rule)
+  - Define at least one owner for the root path (* or /) or define owners for
+    all significant subdirectories
+  - Reference valid GitHub usernames (@username) or GitHub teams (@org/team-name)
+  - Not contain syntax errors (confirmed by GitHub not showing a "syntax error"
+    indicator on the file)
+
+  GitHub automatically uses CODEOWNERS to request reviews from the defined owners
+  when a pull request modifies files they own. This is the mechanism by which
+  SRC-003 ensures domain-appropriate review.
+
+observable_artifact: >
+  Repository file tree (commit SHA level):
+  - Presence of one of: CODEOWNERS, .github/CODEOWNERS, docs/CODEOWNERS
+
+  GitHub REST API (optional, for syntax validation):
+  GET /repos/{owner}/{repo}/contents/CODEOWNERS (or .github/CODEOWNERS, docs/CODEOWNERS)
+  Confirm file is non-empty (size > 0).
+
+  GitHub shows a "CODEOWNERS syntax error" banner in the repository settings
+  when the file has parse errors; the API does not surface this directly.
+  The policy verifies presence and non-emptiness; syntax error detection
+  requires a separate check or manual review.
+
+policy_check_ids:
+  - POL-SRC-003-GITHUB-001

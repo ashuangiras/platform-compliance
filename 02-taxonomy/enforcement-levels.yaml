@@ -1,0 +1,70 @@
+# Platform Enforcement Levels
+#
+# Enforcement levels declare how strictly a control is required and what
+# process is needed to obtain an exception. These values are used in control
+# definitions and compliance profiles.
+#
+# In a profile, a control's enforcement level can be overridden per-gate
+# using the enforcement_override field.
+
+levels:
+  mandatory:
+    code: mandatory
+    description: >
+      The control must be satisfied. Failure blocks the applicable gate.
+      Exceptions require a formal waiver with documented rationale, risk
+      acceptance, expiry date, and platform-owner approval.
+    gate_behavior: block
+
+  recommended:
+    code: recommended
+    description: >
+      The control should be satisfied. Failure generates a visible warning
+      in the assessment report but does not block gates. Non-compliance
+      should be documented in the repository's compliance manifest.
+    gate_behavior: warn
+
+  informational:
+    code: informational
+    description: >
+      The control provides guidance. Failure is recorded in the evidence
+      ledger and assessment report for visibility only. No gate impact.
+    gate_behavior: record
+
+# Priority levels define the urgency of achieving compliance and the
+# process required to obtain an exception.
+#
+# Priority is a property of a control (defined in the control catalog).
+# Enforcement level is a property of a profile entry (how strongly a
+# profile requires a given control).
+# These are distinct dimensions.
+
+priority_levels:
+  P1:
+    code: P1
+    label: Critical
+    description: >
+      Platform-critical requirement. No exceptions without a formal waiver
+      approved at platform-owner level. A P1 control failure without an
+      approved waiver must be treated as a blocking incident.
+
+  P2:
+    code: P2
+    label: High
+    description: >
+      High-priority requirement. Exceptions require a documented justification
+      in the form of an ADR or change record, reviewed by the platform team.
+
+  P3:
+    code: P3
+    label: Medium
+    description: >
+      Standard requirement. Exceptions require a review comment in the
+      associated pull request and tracking in the repository's issue tracker.
+
+  P4:
+    code: P4
+    label: Low
+    description: >
+      Informational or aspirational requirement. Non-compliance has no gate
+      impact. Used to track future maturity targets.

@@ -1,0 +1,22 @@
+
+action_references:
+- pin_type: branch
+  pinned: false
+  step: Checkout
+  uses: actions/checkout@main
+  workflow: .github/workflows/ci.yml
+- pin_type: branch
+  pinned: false
+  step: Build
+  uses: docker/build-push-action@latest
+  workflow: .github/workflows/ci.yml
+- pin_type: none
+  pinned: false
+  step: Upload
+  uses: actions/upload-artifact
+  workflow: .github/workflows/ci.yml
+repository:
+  name: unpinned-workflows-repo
+  type: service
+workflow_files:
+- .github/workflows/ci.yml

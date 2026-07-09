@@ -1,0 +1,39 @@
+$schema: "../../schemas/release-record.schema.json"
+
+# Release record for platform-compliance v1.0.0
+# This is the first release of the platform compliance backbone.
+# All downstream repositories may be created after this gate passes.
+
+id: "v1.0.0"
+schema_version: "1.0.0"
+
+release_date: "2026-07-08"
+
+change_record_ids:
+  - CHG-20260708-001   # Initial platform-compliance build — architecture, controls, schemas
+  # NOTE: Formal change records (CHG-YYYYMMDD-NNN YAML files) are created in
+  # a subsequent PR per the CHG-001 process. This release record declares the
+  # logical change record IDs. The actual YAML files should be created before
+  # the release gate is formally evaluated in CI.
+
+gate_assessment_id: "ASSESS-PLATFORM-COMPLIANCE-20260708-001"
+
+release_summary: >
+  Initial release of platform-compliance. Establishes the complete compliance
+  backbone for the platform including:
+  - Standards source registry (9 registered standards)
+  - Platform taxonomy (13 control domains, all controlled vocabularies)
+  - Platform control catalog (23 controls across 10 domains)
+  - Compliance profiles (PROF-PLATFORM-V1 with 4 gates)
+  - Standard-to-control mappings (provenance chain complete)
+  - Implementation bindings (24 bindings across 4 technology contexts)
+  - OPA policy checks (12 policies covering all merge-gate mandatory controls)
+  - Evidence model and ledger format
+  - Assessment model with 5-result type system
+  - Reusable compliance workflow (7-job GitHub Actions pipeline)
+  - Self-compliance declaration (.compliance-manifest.yaml)
+  - Consuming documentation (docs/consuming-compliance.md)
+
+breaking_changes: false
+
+released_by: platform-team

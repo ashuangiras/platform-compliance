@@ -1,0 +1,16 @@
+id: POL-RUN-002-DOCKER-001
+title: "All Dockerfiles specify a non-root USER before ENTRYPOINT/CMD"
+binding_ids:
+  - BIND-RUN-002-DOCKER
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-002-DOCKER-001.rego"
+pass_criteria: >
+  Every Dockerfile in the repository has a USER instruction before any
+  ENTRYPOINT or CMD, and the USER value is not "root", "0", or absent.
+fail_criteria: >
+  Any Dockerfile is missing a USER instruction (implicit root), has USER root
+  or USER 0, or has a USER instruction after ENTRYPOINT/CMD.
+evidence_type: dockerfile-user-instruction
+severity: high
+introduced_date: "2026-07-08"
+status: active

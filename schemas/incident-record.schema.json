@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "platform-compliance/schemas/incident-record.schema.json",
+  "schemaVersion": "1.0.0",
+  "title": "Incident Record",
+  "description": "A structured record of a compliance incident: a failure, gap, or breach in the platform's compliance state. Required for any incident meeting the severity threshold (high or critical). Must be created within 48 hours of resolution. Lives in 09-assessments/incidents/.",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "title",
+    "severity",
+    "description",
+    "affected_control_ids",
+    "affected_resources",
+    "discovered_at",
+    "root_cause",
+    "remediation",
+    "recurrence_prevention",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{8}-[0-9]{3}$",
+      "description": "Incident record identifier. Format: INC-{YYYYMMDD}-{NNN}.",
+      "examples": ["INC-20260708-001"]
+    },
+    "schema_version": { "type": "string" },
+    "title": {
+      "type": "string",
+      "description": "Short, factual title of the incident."
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "high"],
+      "description": "Only high and critical incidents require formal incident records. Lower severity events are tracked as GitHub Issues."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20,
+      "description": "What happened and how the incident was discovered."
+    },
+    "affected_control_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z]{2,4}-[0-9]{3}$"
+      },
+      "description": "Control IDs that were violated or exposed as inadequate by this incident."
+    },
+    "affected_resources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type", "identifier"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["repository", "service", "environment", "infrastructure"]
+          },
+          "identifier": { "type": "string" }
+        }
+      }
+    },
+    "discovered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the incident was resolved. Absent if status is open or monitoring."
+    },
+    "root_cause": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Factual root cause analysis. What caused this? Not who caused it."
+    },
+    "remediation": {
+      "type": "string",
+      "minLength": 10,
+      "description": "What was done to resolve the incident."
+    },
+    "recurrence_prevention": {
+      "type": "string",
+      "minLength": 10,
+      "description": "What changes will prevent this incident from recurring."
+    },
+    "lessons_learned_adr_id": {
+      "type": "string",
+      "pattern": "^ADR-[0-9]{4}$",
+      "description": "ADR generated from lessons learned, if any."
+    },
+    "lessons_learned_change_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^CHG-[0-9]{8}-[0-9]{3}$"
+      },
+      "description": "Change records created as a direct result of this incident."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "resolved", "monitoring"],
+      "description": "open: incident is active. resolved: fully resolved. monitoring: resolved but under observation."
+    }
+  },
+  "if": {
+    "properties": { "status": { "enum": ["resolved", "monitoring"] } },
+    "required": ["status"]
+  },
+  "then": {
+    "required": ["resolved_at"]
+  }
+}

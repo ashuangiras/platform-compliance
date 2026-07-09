@@ -1,0 +1,47 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-DOC-002-MANUAL
+control_id: DOC-002
+technology_context: github
+introduced_date: "2026-07-08"
+status: active
+
+specification: >
+  For any significant architecture decision made during a release cycle,
+  an ADR must be present in the decisions/ directory with status: accepted
+  before the implementation it documents is merged to the default branch.
+
+  A "significant decision" requires an ADR when it:
+  - Affects the compliance model (new domains, changed enforcement levels,
+    removed controls or mappings)
+  - Introduces a new technology choice (new build tool, runtime, framework)
+  - Changes a structural aspect of the platform-compliance repository layout
+  - Changes the release or deployment gate criteria
+  - Adopts, removes, or changes the role of a registered standard
+  - Overrides or significantly adapts an external standard
+
+  This control is not automatable for the "significance" determination —
+  that requires human judgment. Automation can verify that ADR files are
+  syntactically valid YAML front-matter and follow the template format.
+
+  Evidence: The release gate assessment includes a checklist step where
+  the author or reviewer confirms that all significant decisions made in
+  the release have corresponding ADRs with status: accepted.
+
+observable_artifact: >
+  Manual attestation (release gate checklist):
+  {
+    "attestor": "platform-team-reviewer",
+    "attestation_date": "2026-07-08",
+    "statement": "All significant decisions in this release have accepted ADRs",
+    "adr_ids_confirmed": ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0004"],
+    "no_undocumented_significant_decisions": true
+  }
+
+policy_check_ids: []
+
+notes: >
+  automation_status: not-automatable (the "significance" determination is inherently
+  a human judgment). Automation can check that ADR files in decisions/ are valid
+  YAML with required fields — this is covered by the self-compliance check for
+  platform-compliance's own repository quality.

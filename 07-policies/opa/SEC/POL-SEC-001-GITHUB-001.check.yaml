@@ -1,0 +1,16 @@
+id: POL-SEC-001-GITHUB-001
+title: "No plaintext secrets in repository files or open GitHub secret scanning alerts"
+binding_ids:
+  - BIND-SEC-001-GITHUB
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-001-GITHUB-001.rego"
+pass_criteria: >
+  Secret scan (gitleaks or detect-secrets) produces zero findings AND
+  GitHub secret scanning reports zero open alerts.
+fail_criteria: >
+  One or more findings from the secret scan tool, OR one or more open
+  GitHub secret scanning alerts.
+evidence_type: secret-scan-clean
+severity: critical
+introduced_date: "2026-07-08"
+status: active

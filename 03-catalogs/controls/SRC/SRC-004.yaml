@@ -1,0 +1,71 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SRC-004
+title: All commits to protected branches must be cryptographically signed
+domain: SRC
+type: detective
+priority: P3
+severity: low
+
+statement: >
+  All commits merged to any protected branch must carry a valid cryptographic
+  signature (GPG or SSH) from a key associated with the committing identity's
+  verified GitHub account.
+
+rationale: >
+  Commit signatures provide tamper evidence and identity assurance beyond what
+  username authentication alone provides. A signed commit proves that the private
+  key holder authored the commit, reducing the risk of commit impersonation or
+  commit history manipulation.
+
+mapped_standards:
+  - source_id: SRC-OPENSSF-SCORECARD-V2
+    clause: "Signed-Releases check"
+    mapping_note: >
+      Scorecard's Signed-Releases check evaluates whether releases are signed.
+      SRC-004 is broader (all commits, not just release artifacts) but the
+      provenance rationale is identical.
+      [PLACEHOLDER: verify whether Scorecard has a per-commit signing check
+      distinct from Signed-Releases; SRC-004 may need a separate provenance source]
+  - source_id: SRC-OPENSSF-SLSA-V1
+    clause: "[PLACEHOLDER: SLSA v1.0 Build L2+ requirement for signed provenance]"
+    mapping_note: >
+      SLSA's provenance requirements at Build L2+ include signing requirements.
+      SRC-004 is a complementary control that addresses Git commit signing
+      rather than artifact provenance signing.
+
+implementation_expectations: >
+  GitHub branch protection must have "Require signed commits" enabled.
+  Developers must configure GPG or SSH commit signing in their local Git client.
+  The signing key must be registered and verified in their GitHub account.
+
+  Team setup requirements:
+  - A documented onboarding guide for key generation and registration
+  - A grace period for existing contributors to register keys before the control
+    is enforced (migration waiver required)
+
+evidence_required:
+  - type: github-branch-protection-signed-commits
+    description: >
+      GitHub API response confirming "required_signatures" is enabled on the
+      default branch protection settings.
+    format: json
+
+automation_status: automation-target
+assessment_cadence: per-merge
+failure_behavior: warn
+failure_applies_to:
+  - merge_gate
+  - release_gate
+
+lifecycle_status: deferred
+
+introduced_date: "2026-07-08"
+
+notes: >
+  Deferred in PROF-PLATFORM-V1 because it requires a team-wide key management
+  process before it can be enforced. Activation requires:
+  1. A key management ADR
+  2. An onboarding guide in docs/
+  3. A grace period for all contributors to register keys
+  Target activation: PROF-PLATFORM-V2.

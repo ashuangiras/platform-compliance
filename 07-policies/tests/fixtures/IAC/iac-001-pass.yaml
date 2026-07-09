@@ -1,0 +1,16 @@
+
+fmt_result:
+  diff: ''
+  exit_code: 0
+  terraform_version: 1.5.7
+repository:
+  name: well-formatted-module
+  type: terraform-module
+  url: https://github.com/org/well-formatted-module
+validate_result:
+  directories_checked:
+  - .
+  - modules/vpc
+  errors: []
+  exit_code: 0
+  warnings: []

@@ -1,0 +1,52 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-NYGARD-ADR-2011
+name: Documenting Architecture Decisions
+version: "2011 blog post (canonical original)"
+publisher: Michael Nygard (Cognitect)
+source_url: "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions"
+retrieved_at: "2026-07-08"
+registered_date: "2026-07-08"
+registered_by: platform-team
+role: adopted
+
+applies_to:
+  - DOC  # Documentation and Decisions
+
+status: active
+
+notes: >
+  Michael Nygard's 2011 blog post is the canonical source for the Architecture
+  Decision Record (ADR) format used by the platform. The platform adopts the
+  original Nygard format (Context, Decision, Status, Consequences) without
+  modification, as it is deliberately minimal.
+
+  The post defines that ADRs should:
+  - Capture the most significant decisions
+  - Record both the decision and the context that made it necessary
+  - Be immutable once accepted (status changes only through supersession)
+  - Be stored close to the code they affect
+
+  Platform ADR structure (directly adopted):
+  - Title (imperative verb phrase)
+  - Status: Proposed | Accepted | Deprecated | Superseded
+  - Context
+  - Decision
+  - Consequences
+
+  Additional fields added by the platform (not in original):
+  - Date (ISO 8601)
+  - Deciders (list of individuals)
+  - Superseded By (when applicable)
+
+  These additions are a conservative extension, consistent with the spirit of
+  the original. They are documented as platform choices, not attributed to the
+  original source.
+
+  Informs: DOC-002 (architecture decisions must be recorded as ADRs)
+
+  Note: The original blog post has been widely cited, adapted, and extended
+  by the software community. Arachne (GitHub adr-tools), MADR, and Y-Statements
+  are popular extensions. The platform uses the original Nygard format.
+  If a different ADR format is adopted, a new source entry should be registered
+  and this entry superseded.

@@ -1,0 +1,12 @@
+# Fixture: SEC-001 — PASS
+# Scenario: Clean repository with no secret findings from gitleaks scan
+# and zero open GitHub secret scanning alerts.
+# Expected policy result: { "result": "pass" }
+findings: []
+github_alerts_open: 0
+repository:
+  name: clean-repo
+  type: terraform-module
+  url: https://github.com/org/clean-repo
+scan_tool: gitleaks
+scan_tool_version: 8.18.0
