@@ -1,0 +1,11 @@
+# Fixture: SEC-011 — FAIL
+# Scenario: Frontend project with bundle exceeding the 2 MB block gate
+# Expected policy result: { "result": "fail" }
+has_frontend_project: true
+context: frontend
+bundle:
+  max_bundle_size_kb_gzipped: 2500
+  largest_bundle_file: "main.abc123.js"
+  raw_size_kb: 8000
+repository:
+  name: my-frontend-app

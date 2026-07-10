@@ -96,6 +96,10 @@ POLICY_MAP = {
     "QUA-004-PYTHON": ("QUA/POL-QUA-004-PYTHON-001.rego", "python-info.json", "data.platform.qua.qua_004_python.result", ["python"]),
     "TST-001-PYTHON": ("TST/POL-TST-001-PYTHON-001.rego", "python-info.json", "data.platform.tst.tst_001_python.result", ["python"]),
     "TST-002-PYTHON": ("TST/POL-TST-002-PYTHON-001.rego", "python-info.json", "data.platform.tst.tst_002_python.result", ["python"]),
+    # ── ADR-0016 P4: Frontend security (SEC) ──────────────────────────────────
+    "SEC-009-FRONTEND": ("SEC/POL-SEC-009-FRONTEND-001.rego", "frontend-info.json", "data.platform.sec.sec_009_frontend.result", ["frontend"]),
+    "SEC-010-FRONTEND": ("SEC/POL-SEC-010-FRONTEND-001.rego", "frontend-info.json", "data.platform.sec.sec_010_frontend.result", ["frontend"]),
+    "SEC-011-FRONTEND": ("SEC/POL-SEC-011-FRONTEND-001.rego", "frontend-info.json", "data.platform.sec.sec_011_frontend.result", ["frontend"]),
 }
 
 

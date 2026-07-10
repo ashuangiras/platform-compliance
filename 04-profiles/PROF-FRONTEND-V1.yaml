@@ -1,0 +1,84 @@
+$schema: ../schemas/profile.schema.json
+id: PROF-FRONTEND-V1
+name: Frontend Application Profile v1
+description: >
+  Compliance profile for frontend web applications. Inherits the universal baseline
+  from PROF-BASE and adds frontend-specific security controls: Content Security Policy
+  enforcement (SEC-009), production source map protection (SEC-010), and JavaScript
+  bundle size governance (SEC-011). (ADR-0016 Phase P4.)
+
+version: "1.0.0"
+inherits: PROF-BASE
+applicable_to:
+  - frontend-app
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+
+categories:
+  mandatory:
+    description: >
+      Frontend-specific controls beyond PROF-BASE. All controls inherited from
+      PROF-BASE remain in force. These additional controls apply exclusively to
+      frontend-app repositories. SEC-009 and SEC-010 are blocking; SEC-011 warns
+      at 500 KB and blocks at 2 MB (dual threshold encoded in policy logic).
+    controls:
+      - id: SEC-009
+      - id: SEC-010
+      - id: SEC-011
+        enforcement_override: warn
+  manual_initially:
+    description: >
+      No additional manual controls beyond those inherited from PROF-BASE.
+    controls: []
+  deferred:
+    description: >
+      No additional deferred controls beyond those inherited from PROF-BASE.
+    controls: []
+
+gates:
+  merge_gate:
+    description: >
+      Evaluated before any frontend application change PR is merged. CSP header
+      and production source map controls block merge on failure. Bundle size
+      warns when the 500 KB threshold is exceeded.
+    required_controls:
+      - id: SEC-009
+        enforcement: block
+      - id: SEC-010
+        enforcement: block
+      - id: SEC-011
+        enforcement: warn
+  release_gate:
+    description: >
+      Evaluated before a frontend application version is published. All blocking
+      frontend controls must pass. Bundle size warns at release.
+    required_controls:
+      - id: SEC-009
+        enforcement: block
+      - id: SEC-010
+        enforcement: block
+      - id: SEC-011
+        enforcement: warn
+  deployment_gate:
+    description: >
+      Evaluated before a frontend application deployment proceeds to any
+      environment. Security controls must pass; bundle size warns.
+    required_controls:
+      - id: SEC-009
+        enforcement: block
+      - id: SEC-010
+        enforcement: block
+      - id: SEC-011
+        enforcement: warn
+  continuous_audit:
+    description: >
+      Continuous monitoring of frontend security compliance. Results recorded
+      in the evidence ledger on every assessed commit.
+    required_controls:
+      - id: SEC-009
+        enforcement: block
+      - id: SEC-010
+        enforcement: block
+      - id: SEC-011
+        enforcement: warn

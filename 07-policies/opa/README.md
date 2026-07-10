@@ -120,7 +120,7 @@ Every OPA policy must define a `result` rule that produces this structure:
 
 ```rego
 result := {
-  "result": "pass",       # "pass" | "fail" | "not_applicable" | "error"
+  "result": "pass",       # "pass" | "fail" | "warn" | "not_applicable" | "error"
   "details": {
     "checked": "What the policy evaluated",
     "found": "What was actually found",
@@ -131,6 +131,8 @@ result := {
 ```
 
 The `evidence-collect` workflow extracts this `result` object, computes the `artifact_hash` over `details`, and writes the full evidence record.
+
+> **`warn`** is used when a threshold-based control triggers the lower of two thresholds (e.g. bundle-size budget at 500 KB); the block gate fires at the higher threshold (e.g. 2 MB). A `warn` result does not block the gate but is surfaced as an advisory in the assessment report.
 
 ---
 

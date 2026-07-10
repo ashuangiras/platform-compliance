@@ -1,0 +1,9 @@
+# Fixture: SEC-011 — NOT APPLICABLE
+# Scenario: Repository is not a frontend project — bundle size check does not apply
+# Expected policy result: { "result": "not_applicable" }
+has_frontend_project: false
+context: backend
+bundle:
+  max_bundle_size_kb_gzipped: null
+repository:
+  name: my-backend-service

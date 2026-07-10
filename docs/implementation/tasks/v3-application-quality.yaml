@@ -124,22 +124,22 @@ phases:
   tasks:
   - id: PC-0248
     title: 'Register standards: SRC-WEB-CSP, SRC-WCAG-2-2'
-    status: not_started
+    status: done
   - id: PC-0249
     title: Write collect-frontend-info.sh (CSP header, bundle size, source maps)
-    status: not_started
+    status: done
   - id: PC-0250
     title: Define frontend security controls (CSP present, no prod source maps)
-    status: not_started
+    status: done
   - id: PC-0251
     title: Define bundle-size budget control
-    status: not_started
+    status: done
   - id: PC-0252
     title: Create PROF-FRONTEND-V1
-    status: not_started
+    status: done
   - id: PC-0253
     title: Full CI validation of P4; merge; cut v2.0.0
-    status: not_started
+    status: done
 - id: phase-P5-library
   title: 'P5 — Library: reuse QUA/TST, relax RUN/NET/OBS, PROF-LIBRARY-V1'
   horizon: v2.1.0

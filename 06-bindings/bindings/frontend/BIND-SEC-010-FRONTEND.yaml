@@ -1,0 +1,18 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SEC-010-FRONTEND
+control_id: SEC-010
+technology_context: frontend
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  No .map files may be present in the production build output directory. The
+  production artefact directory (typically dist/ or build/) must contain zero
+  files matching the glob pattern **/*.map. A non-zero count of .map files
+  fails this control.
+observable_artifact: >
+  collect-frontend-info.sh output field: security.prod_source_maps_found (bool).
+  True when one or more .map files are found in the production build output
+  directory; false when none are found. A value of true is a control failure.
+policy_check_ids:
+  - POL-SEC-010-FRONTEND-001

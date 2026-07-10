@@ -1,0 +1,46 @@
+# Mappings: W3C Content Security Policy Level 3 → SEC domain controls
+#
+# Source: SRC-WEB-CSP
+# Domain: SEC (Security)
+# Populated: 2026-07-10
+
+source_id: SRC-WEB-CSP
+domain: SEC
+
+mappings:
+  - id: MAP-WEB-CSP-SEC-001
+    source_id: SRC-WEB-CSP
+    source_clause: "Section 5 — Delivery"
+    source_clause_text: >
+      The Content-Security-Policy HTTP response header is the primary delivery
+      mechanism for a CSP policy. Servers should deliver this header on every
+      response that could result in a Document being created.
+    control_id: SEC-009
+    rationale: >
+      CSP Level 3 Section 5 normatively requires servers to send the
+      Content-Security-Policy header on responses that produce a Document.
+      SEC-009 operationalises this requirement for platform frontend applications,
+      making CSP delivery a blocking compliance control rather than a recommendation.
+    mapping_type: derived
+    mapped_date: "2026-07-10"
+    mapped_by: platform-team
+
+  - id: MAP-WEB-CSP-SEC-002
+    source_id: SRC-WEB-CSP
+    source_clause: "Section 3 — Policy"
+    source_clause_text: >
+      A Content Security Policy consists of a set of directives, each of which
+      governs the behaviour of a protected resource in some specific context.
+      An empty policy is treated as the most restrictive possible baseline.
+    control_id: SEC-010
+    rationale: >
+      Serving source map files alongside production assets undermines the
+      information-hiding intent of CSP by exposing original source structure
+      to any party who can observe network traffic. While CSP does not directly
+      address source map serving, the principle of minimising the attack surface
+      of production resources is consistent with the spirit of CSP Level 3.
+      SEC-010 captures this related production hardening requirement in the
+      same SEC domain.
+    mapping_type: partial
+    mapped_date: "2026-07-10"
+    mapped_by: platform-team

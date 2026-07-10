@@ -18,7 +18,8 @@ every new rule and verify both a passing and a failing case.
 
 ## Output contract
 
-A policy exposes `result` ∈ {`pass`, `fail`, `error`, `not_applicable`} plus a `reason`.
+A policy exposes `result` ∈ {`pass`, `fail`, `warn`, `error`, `not_applicable`} plus a `reason`.
+`warn` is used when a threshold-based control triggers the lower of two thresholds (e.g. bundle-size budget at 500 KB); the block gate fires at the higher threshold (e.g. 2 MB). A `warn` result does not block the gate.
 `result` rules MUST be **mutually exclusive** — overlapping outputs cause `eval_conflict_error`.
 
 ## Gotchas that have bitten this repo (do not repeat)

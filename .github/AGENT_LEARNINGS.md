@@ -10,6 +10,26 @@ agents more effective* — not just what files changed.
 
 ---
 
+## AGT-LEARNING-004 — ADR-0016 P4 Frontend controls + TST-002 block promotion (2026-07-10)
+
+**Date:** 2026-07-10 | **Change Record:** CHG-20260710-015
+**Tag:** v2.0.0 (MAJOR) | **Covers:** ADR-0016 P4 Frontend (SEC-009/010/011), TST-002 block promotion, `warn` OPA result formalisation
+
+P4 delivered SEC-009/010/011 (CSP, source maps, bundle budget) for the frontend context.
+The Compliance Reviewer correctly blocked on missing fixture files and an undocumented `warn`
+result value — both fixed before merge, proving the review chain works.
+
+TST-002 promoted from warn → block at v2.0.0 per ADR-0016 decision 4; all three language
+profiles (Go, Node, Python) and their TST-002 bindings updated.
+
+`warn` is now a formally documented OPA result value in README.md and opa-policies.instructions.md.
+
+**Agent improvement:** policy-engineer instructions should note that inline fixture runs during
+authoring do NOT substitute for on-disk fixture files — the reviewer checks for the files
+themselves, not just correct logic.
+
+---
+
 ## AGT-LEARNING-003 — Full session retro: v1.7.0–v1.9.0 (2026-07-10)
 
 **Date:** 2026-07-10 | **Change Records:** CHG-20260710-011 through CHG-20260710-014

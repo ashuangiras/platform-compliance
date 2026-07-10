@@ -1,0 +1,17 @@
+id: POL-SEC-009-FRONTEND-001
+title: "Content-Security-Policy header or meta tag present in frontend application"
+binding_ids:
+  - BIND-SEC-009-FRONTEND
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-009-FRONTEND-001.rego"
+pass_criteria: >
+  The frontend application serves a Content-Security-Policy header or includes
+  a CSP meta tag; collect-frontend-info.sh reports
+  security.csp_header_present == true.
+fail_criteria: >
+  No Content-Security-Policy header or meta tag is detected in build output or
+  framework/server config files; security.csp_header_present == false.
+evidence_type: frontend-security
+severity: high
+introduced_date: "2026-07-10"
+status: active

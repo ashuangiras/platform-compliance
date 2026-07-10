@@ -12,12 +12,12 @@
 | Artifact | Count | Validation |
 |---|---|---|
 | JSON schemas | 16 | All pass meta-schema validation |
-| Standards source entries | 15 | All validate against `standard-source.schema.json` |
-| Control files | 34 | All validate against `control.schema.json` |
-| Compliance profiles | 9 (PROF-BASE, PROF-PLATFORM-V1, PROF-SERVICE-V1, PROF-AGENTIC-V1, PROF-GO-SERVICE-V1, PROF-TERRAFORM-MODULE-V1, PROF-TERRAFORM-ROOT-V1, PROF-NODE-SERVICE-V1, PROF-PYTHON-SERVICE-V1) | All validate against `profile.schema.json` |
-| Mapping collection files | 10 | All validate against `mapping-collection.schema.json` |
-| Implementation bindings | 44 | Across GitHub, Terraform, Docker, GitHub Actions, Go, Node, Python contexts |
-| OPA policy files | 34 Rego + 34 `.check.yaml` | All automated merge-gate controls covered |
+| Standards source entries | 17 | All validate against `standard-source.schema.json` |
+| Control files | 37 | All validate against `control.schema.json` |
+| Compliance profiles | 10 (PROF-BASE, PROF-PLATFORM-V1, PROF-SERVICE-V1, PROF-AGENTIC-V1, PROF-GO-SERVICE-V1, PROF-TERRAFORM-MODULE-V1, PROF-TERRAFORM-ROOT-V1, PROF-NODE-SERVICE-V1, PROF-PYTHON-SERVICE-V1, PROF-FRONTEND-V1) | All validate against `profile.schema.json` |
+| Mapping collection files | 11 | All validate against `mapping-collection.schema.json` |
+| Implementation bindings | 47 | Across GitHub, Terraform, Docker, GitHub Actions, Go, Node, Python, Frontend contexts |
+| OPA policy files | 37 Rego + 37 `.check.yaml` | All automated merge-gate controls covered |
 | Policy test fixtures | 23 YAML | Pass/fail pairs per policy |
 | Evidence test fixtures | 4 YAML | valid-pass, valid-fail, valid-waived, invalid |
 | Assessment report | 1 (manual, v1.0.0 self-assessment) | Validates against `assessment.schema.json` |

@@ -322,3 +322,25 @@ evidence_types:
     format: json
     controls: [TST-001, TST-002]
     collection: automated
+
+  # ── Frontend Security ────────────────────────────────────────────────────────
+
+  frontend-security:
+    description: >
+      Output of the frontend security collector, capturing Content-Security-Policy
+      header presence in HTTP responses and production source map exposure in build
+      output. Consumed by frontend security policies SEC-009 and SEC-010.
+    format: json
+    controls: [SEC-009, SEC-010]
+    collection: automated
+
+  # ── Frontend Performance ─────────────────────────────────────────────────────
+
+  frontend-performance:
+    description: >
+      Output of the frontend performance collector, capturing the maximum gzipped
+      JavaScript bundle size (in KB) from the production build output directory.
+      Consumed by frontend bundle size policy SEC-011.
+    format: json
+    controls: [SEC-011]
+    collection: automated

@@ -1,0 +1,17 @@
+id: POL-SEC-010-FRONTEND-001
+title: "No JavaScript source maps (.map files) present in production build output"
+binding_ids:
+  - BIND-SEC-010-FRONTEND
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-010-FRONTEND-001.rego"
+pass_criteria: >
+  No .map files are present in the production build output directory;
+  collect-frontend-info.sh reports security.prod_source_maps_found == false.
+fail_criteria: >
+  One or more .map files are found in the production build output directory;
+  security.prod_source_maps_found == true. The count is reported in the
+  policy fail message.
+evidence_type: frontend-security
+severity: high
+introduced_date: "2026-07-10"
+status: active
