@@ -7,6 +7,19 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v1.9.1] — 2026-07-10 (CHG-20260710-014)
+
+### AGT — Session Retro + Final Agent Instruction Improvements
+
+**Agent layer improvements:**
+- `AGENT_LEARNINGS.md` — AGT-LEARNING-003: full retrospective for the v1.7.0–v1.9.0 session
+- `release-manager.agent.md` — pre-flight step 5 formalised: retro must be genuine prose, not
+  checkbox-only; CI collector will reject a retro that contains only checkbox-style bullets
+- `collector-engineer.agent.md` — post-flight note added: regex patterns in collectors must be
+  scoped to avoid false positives; always test on a PR body that contains only checkboxes
+
+---
+
 ## [v1.9.0] — 2026-07-10 (CHG-20260710-014)
 
 ### AGT-014 Enforcement — Stronger Retro/Readiness Detection + Router Gate
