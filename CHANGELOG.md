@@ -7,6 +7,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.4.0] — 2026-07-10 (CHG-20260710-019)
+
+### ADR-0018 ratified — forge CLI (supersedes ADR-0011)
+
+- CLI renamed from `plt` to `forge`; primary command is `forge new repo <name>`
+- Location: `tools/forge/` in this repository (not a separate platform-plt repo)
+- Distribution: pre-built Go binaries attached to each platform-compliance release tag
+- ADR-0011 status updated to `superseded by ADR-0018`
+- `tools/README.md` updated to describe `forge`
+
+---
+
 ## [v2.3.0] — 2026-07-10 (CHG-20260710-018)
 
 ### ADR-0011 ratified — plt CLI technology selection
