@@ -10,6 +10,28 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — fix: reusable-compliance.yml now works from downstream repos
+
+**Date:** 2026-07-10
+**Change Record:** CHG-20260710-032
+
+- The OPA policy-checks job in reusable-compliance.yml used relative paths like
+  `07-policies/scripts/collect-all-inputs.py` from the calling repo's CWD.
+  This worked only when self-governing platform-compliance (where those files
+  exist in the working directory) but broke silently on every downstream repo.
+  The bug was invisible during self-compliance and only surfaced when
+  platform-modules attempted its first PR merge gate run.
+- Fix: extract all collector scripts from the platform-compliance source archive
+  to `/tmp/platform-compliance-scripts/`. Both scripts now referenced by
+  absolute path from the reusable-compliance.yml OPA job.
+- Fix: `collect-all-inputs.py` is now self-locating via `Path(__file__).resolve().parent`.
+  All sibling collector calls (`collect-terraform-info.sh` etc.) resolve
+  relative to the script's own directory, not the process CWD.
+- Rule learned: **always test reusable workflows from at least one downstream
+  repo before tagging**. Self-compliance does not exercise the downstream path.
+
+---
+
 ## 2026-07-10 — forge new repo: agents by default, compliance workflow always scaffolded
 
 **Date:** 2026-07-10
