@@ -22,9 +22,9 @@ Change Record: CHG-YYYYMMDD-NNN
 
 **Readiness check** — confirm before merge:
 
-- [ ] Agent configuration still passes the AGT suite locally (`tools/check-agents.sh`)
-- [ ] Any new/changed workflow, control, or convention is reflected in the relevant agent instructions
-- [ ] The pre-flight / post-flight checklists and specialist tool scopes are still accurate
+- [ ] Author post-flight checks pass (lint, format, build, tests — see the author agent)
+- [ ] `module-reviewer` / `service-reviewer` / `lib-reviewer` / `infra-reviewer` has reviewed this change
+- [ ] Compliance gate CI is green (jobs 1–7), or failing controls are waived
 
 **Retrospective** — what did this change teach us, and how did the agents improve?
 
