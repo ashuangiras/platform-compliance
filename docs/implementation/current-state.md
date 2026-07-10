@@ -1,7 +1,7 @@
 # Current State — Honest Progress Snapshot
 
-**Date:** 2026-07-10  
-**Overall status:** Foundation complete. forge v1.0.0 deployed. Phase C active — platform-modules fully governed (PC-0135 ✅). platform-infrastructure next.
+**Date:** 2026-07-11  
+**Overall status:** Foundation complete. forge v3.3.3 deployed. Phase C active — platform-modules fully governed (PC-0135 ✅, PC-0136 in-review), platform-infrastructure created (PC-0137 ✅).
 
 ---
 
@@ -21,11 +21,11 @@
 | Policy test fixtures | ~40 YAML | Pass/fail/warn/not-applicable tuples per policy |
 | Evidence test fixtures | 4 YAML | valid-pass, valid-fail, valid-waived, invalid |
 | Assessment report | 1 (self-compliance, auto-generated per PR) | Validates against `assessment.schema.json` |
-| Release records | 26 tagged releases (v1.0.0 → v3.0.0) | Validates against `release-record.schema.json` |
+| Release records | 35 tagged releases (v1.0.0 → v3.3.3) | Validates against `release-record.schema.json` |
 | Compliance manifest | 1 (`.compliance-manifest.yaml`) | Validates against `repository-compliance.schema.json` |
 | Gate criteria files | 2 (release, deployment) | Match profile gate sections exactly (verified by script) |
-| ADRs | 18 (ADR-0001 through ADR-0018) | All status: accepted |
-| forge CLI | v1.0.0; 50+ subcommands | `go test` green; CI pipeline + CodeQL + binary releases |
+| ADRs | 19 (ADR-0001 through ADR-0019) | All status: accepted |
+| forge CLI | v3.3.3; typed agent stubs per repo type | `go test` green; CI pipeline + CodeQL + binary releases; `forge new repo` tested end-to-end against 2 downstream repos |
 
 ### What the validation sweep confirms
 
@@ -63,6 +63,9 @@ Running `check-jsonschema` against all major artifacts:
 - Branch protection fully configured (1 required review + CODEOWNERS + `Compliance: Merge Gate`)
 - forge CLI v1.0.0 released with binary artifacts; `go test` green; CodeQL scanning active
 - Phase C active: platform-modules (PC-0135) fully governed and passing compliance gate
+- Phase C active: platform-infrastructure created with PROF-TERRAFORM-ROOT-V1 (PC-0137)
+- forge typed agent stubs: `forge new repo` generates role-appropriate agents per repo type (v3.3.3)
+- Profile-aware gate enforcement: BLOCK vs WARN vs DEFERRED honours the profile (v3.3.2)
 
 ---
 
@@ -70,15 +73,16 @@ Running `check-jsonschema` against all major artifacts:
 
 | Item | Notes |
 |---|---|
-| Platform downstream repos | Phase C active: platform-modules ✅ governed (v3.3.2); platform-infra and platform-services not started |
-| forge new-repo real mode | `--dry-run` tested only; real repo scaffold not yet executed against a downstream repo |
+| Platform downstream repos | Phase C active: platform-modules ✅ governed; platform-infrastructure ✅ created (PC-0137); platform-services not started |
+| Initial terraform modules | PR #4 on platform-modules (in review): docker-network, minio, vault, consul |
+| Terraform state bootstrap | platform-infrastructure needs first PR to configure MinIO state backend (PC-0138) |
 | plt CLI dashboard | Phase D; not yet designed |
-| Real evidence records from downstream CI | Self-compliance only; no downstream repo CI evidence yet |
+| Real evidence from downstream CI | platform-modules compliance gate now runs on every PR |
 | `docs/onboarding.md` | Referenced in roadmap; not created |
 | `docs/authoring-controls.md` | Referenced in roadmap; not created |
 | CAT domain controls | Domain defined in taxonomy; no controls authored |
 | REL domain controls | Domain defined in taxonomy; no controls authored |
-| Waiver records | None granted; no real waivers exist |
+| Waiver records (YAML) | Active waivers for SRC-001/002 in manifest but waiver record YAML files need creation |
 
 ---
 
@@ -90,4 +94,4 @@ Some mapping files and source entries may still contain `[PLACEHOLDER: ...]` mar
 
 ## Summary judgment
 
-The compliance backbone is operational and self-governing. The data model, OPA policies, reusable workflow, forge CLI, and 33-release delivery train all work end-to-end against this repository and platform-modules. Phase C is underway: platform-modules is governed (PC-0135 ✅); platform-infrastructure is next.
+The compliance backbone is operational and self-governing. The data model, OPA policies, reusable workflow, forge CLI, and 35-release delivery train work end-to-end. Phase C is underway: platform-modules is governed (PC-0135 ✅) with initial Terraform modules in PR; platform-infrastructure is created (PC-0137 ✅) and awaiting its first module PR. The system now governs 3 repositories.

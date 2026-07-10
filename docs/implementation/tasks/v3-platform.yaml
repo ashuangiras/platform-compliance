@@ -31,12 +31,14 @@ phases:
         note: "Both PRs merged; gate passes with v3.3.2 profile-aware enforcement"
       - id: PC-0136
         title: "Add initial Terraform modules to platform-modules"
-        status: not-started
+        status: in-progress
         depends_on: [PC-0135]
+        note: "PR #4 open — docker-network, minio (ADR-0014), vault (ADR-0008), consul (ADR-0019); kreuzwerker/docker provider"
       - id: PC-0137
         title: "Create platform-infrastructure repository with PROF-TERRAFORM-ROOT-V1"
-        status: not-started
+        status: done
         depends_on: [PC-0133, PC-0135]
+        note: "Created with forge new repo v3.3.3; infra-router agent team; PLATFORM_ADMIN_TOKEN + required signatures + secret scanning configured"
       - id: PC-0138
         title: "Configure Terraform state backend for platform-infrastructure"
         status: not-started
