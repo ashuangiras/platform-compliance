@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -60,7 +61,11 @@ func RenderTemplate(name string, vars TemplateVars) ([]byte, error) {
 		return nil, fmt.Errorf("scaffold: template %s not found: %w", name, err)
 	}
 
-	tmpl, err := template.New(name).Parse(string(data))
+	tmpl, err := template.New(name).Funcs(template.FuncMap{
+		"TechContextsStr": func(ctxs []string) string {
+			return strings.Join(ctxs, ",")
+		},
+	}).Parse(string(data))
 	if err != nil {
 		return nil, fmt.Errorf("scaffold: parse template %s: %w", name, err)
 	}
@@ -95,6 +100,8 @@ func RenderRepoFiles(vars TemplateVars, withAgents bool, agentSourceDir string) 
 		{"repo/CODEOWNERS.tmpl", "CODEOWNERS"},
 		{"repo/pull_request_template.md.tmpl", ".github/pull_request_template.md"},
 		{"repo/forge-yaml.tmpl", ".forge.yaml"},
+		{"repo/compliance-workflow.yml.tmpl", ".github/workflows/compliance.yml"},
+		{"repo/copilot-instructions.md.tmpl", ".github/copilot-instructions.md"},
 	}
 
 	if withAgents {
