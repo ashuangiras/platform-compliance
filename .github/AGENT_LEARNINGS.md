@@ -10,6 +10,18 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — forge Go module scaffolded + implementation plan written
+
+- tools/forge/ is a compiling Go module with stub main.go; `forge --version` works.
+- Implementation plan (tools/forge/docs/IMPLEMENTATION-PLAN.md) specifies exact Go types,
+  function signatures, package dependency order, deliverable checklists, and Makefile targets
+  for all 6 phases (B.1 validate → B.2 new repo → B.3 check/gate → B.4 evidence →
+  B.5 scaffolds → B.6 registry/report).
+- Phase B.1 is the correct starting point: offline validation proves the package architecture
+  before any API calls are written. A developer can start immediately from the plan.
+
+---
+
 ## 2026-07-10 — forge full architecture documented (pre-implementation design)
 
 - forge architecture covers the complete command taxonomy (50+ subcommands), Go package
