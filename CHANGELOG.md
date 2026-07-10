@@ -7,6 +7,29 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.3.2] — 2026-07-10 (CHG-20260710-033)
+
+### fix(gate): profile-aware enforcement levels for downstream repos
+
+The compliance gate pipeline now correctly enforces BLOCK vs WARN vs DEFERRED
+distinctions from the active profile. Previously, any failing OPA policy (even
+WARN-level or DEFERRED controls) would cause `run-all-policies.py` to exit 1,
+preventing jobs 5–7 from running and making gate evaluation impossible.
+
+**Changes:**
+- `run-all-policies.py`: exits 0 always; missing input file → `not_applicable`
+- `reusable-compliance.yml` job 4: `if: always()` on Upload policy results step
+- Jobs 5/6/7: `if: always()` conditions — full pipeline always runs to completion
+- `run-all-policies.py`: waived controls now embed `waiver_id` in result JSON
+- Job 5 (evidence): propagates `waiver_id` from result JSON to evidence YAML
+- Job 6 (assessment): fetches profile YAML from the platform-compliance archive,
+  builds BLOCK control set for the active gate, and only fails the gate when
+  BLOCK controls have unwaived failures; WARN/DEFERRED produce `pass-with-warnings`
+- Profile YAML from `04-profiles/` is fetched by job 6 independently (different
+  runner than job 4)
+
+---
+
 ## [v3.3.1] — 2026-07-10 (CHG-20260710-032)
 
 ### fix(reusable-workflow): absolute script paths for downstream repo support
