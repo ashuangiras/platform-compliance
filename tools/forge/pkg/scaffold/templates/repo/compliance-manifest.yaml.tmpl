@@ -1,0 +1,22 @@
+schema_version: "1.0.0"
+
+repository:
+  name: {{ .RepoName }}
+  url: "https://github.com/{{ .OwnerOrg }}/{{ .RepoName }}"
+  type: {{ .RepoType }}
+  has_container_images: false
+
+declared_profiles:
+{{- range .Profiles }}
+  - {{ . }}
+{{- end }}
+
+technology_contexts:
+{{- range .TechContexts }}
+  - {{ . }}
+{{- end }}
+
+waiver_ids: []
+
+compliance_contact: platform-team
+last_updated: "{{ .Date }}"

@@ -10,6 +10,7 @@ import (
 	"os"
 
 	validatecmd "github.com/ashuangiras/platform-compliance/forge/cmd/validate"
+	newcmd "github.com/ashuangiras/platform-compliance/forge/cmd/new"
 	"github.com/ashuangiras/platform-compliance/forge/pkg/config"
 	"github.com/spf13/cobra"
 )
@@ -72,6 +73,7 @@ func init() {
 		"Suppress all output except errors and final verdict")
 
 	rootCmd.AddCommand(validatecmd.NewCmd(&cfg, &outputFormat, &verboseFlag, &quietFlag))
+	rootCmd.AddCommand(newcmd.NewCmd(&cfg))
 }
 
 func main() {
