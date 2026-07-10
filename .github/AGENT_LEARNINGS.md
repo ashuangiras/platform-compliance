@@ -10,6 +10,20 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — ADR-0018: forge CLI supersedes plt (name + location change)
+
+- The CLI is renamed from `plt` to `forge` — a strong verb that implies creating a
+  governed repository from scratch. The name reflects the primary use case: `forge new repo`.
+- Location changed from separate `platform-plt` repo back to `tools/forge/` in this repo.
+  Co-location with schemas, controls, and profiles means the tool is always in sync with
+  the compliance version it targets — no separate pinning required.
+- Binaries will be attached to each platform-compliance release tag, not a separate repo's releases.
+- Agent improvement: when a user changes a previously ratified ADR decision, issue a new ADR
+  (ADR-0018) that supersedes the old one rather than amending in place. The ADR ledger is
+  append-only; supersession is the correct pattern.
+
+---
+
 ## 2026-07-10 — ADR-0011 ratified: plt CLI (Go, GitHub Releases, platform-plt repo)
 
 - ADR-0011 ratified: plt CLI will be built in Go, distributed as pre-built binaries via

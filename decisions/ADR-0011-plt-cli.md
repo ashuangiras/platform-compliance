@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | **ID** | ADR-0011 |
-| **Status** | accepted |
+| **Status** | superseded by ADR-0018 |
 | **Date** | 2026-07-10 |
 | **Deciders** | platform-team |
 

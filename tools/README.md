@@ -1,18 +1,25 @@
 # tools — Platform CLI and Tooling
 
-Supporting scripts for interacting with the compliance system.
+Supporting scripts and the `forge` CLI for interacting with the compliance system.
 
-## `plt` CLI
+## `forge` CLI
 
-The `plt` command-line tool lives in its own repository: **[ashuangiras/platform-plt](https://github.com/ashuangiras/platform-plt)**
+The `forge` command-line tool lives at **`tools/forge/`** in this repository
+(per [ADR-0018](../decisions/ADR-0018-forge-cli.md), supersedes ADR-0011).
 
-Per [ADR-0011](../decisions/ADR-0011-plt-cli.md): Go binary, distributed via GitHub Releases.
-
-**Install:**
+**Primary command — bootstrap a governed repository:**
 ```bash
-curl -sSfL https://github.com/ashuangiras/platform-plt/releases/latest/download/plt_$(uname -s)_$(uname -m) \
-  -o plt && chmod +x plt
+forge new repo <name> --profile PROF-SERVICE-V1 --with-agents
 ```
+
+**Install (once the binary is built):**
+```bash
+curl -sSfL \
+  https://github.com/ashuangiras/platform-compliance/releases/latest/download/forge_$(uname -s)_$(uname -m) \
+  -o forge && chmod +x forge && sudo mv forge /usr/local/bin/forge
+```
+
+**Status:** implementation pending (Phase B) — `tools/forge/` not yet populated.
 
 ## Scripts in this directory
 
