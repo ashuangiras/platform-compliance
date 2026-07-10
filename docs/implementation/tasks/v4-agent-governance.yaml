@@ -41,7 +41,7 @@ phases:
     status: done
   - id: PC-0267
     title: Full CI validation of A1; merge; cut v1.4.0
-    status: not_started
+    status: done
 - id: phase-A2-effectiveness
   title: 'A2 — Effectiveness + continuous improvement (stringent, all block)'
   horizon: v1.5.0
@@ -75,7 +75,7 @@ phases:
     status: done
   - id: PC-0279
     title: Define AGT-015 (team-wide agent discovery settings) + downstream settings template + policy (block); cut v1.6.0
-    status: not_started
+    status: done
 - id: phase-A3-baseline
   title: 'A3 — Baseline: fold into PROF-BASE'
   horizon: v2.0.0

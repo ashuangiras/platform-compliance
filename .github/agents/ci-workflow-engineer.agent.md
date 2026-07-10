@@ -30,4 +30,14 @@ Follow [.github/instructions/workflows.instructions.md](../instructions/workflow
 - For release changes, confirm `release.yml` emits `policies.tar.gz` (+ `.sha256`) and `sbom.cdx.json`.
 
 ## Output
-The workflow diff, the CI run URL/result, and any token/permission implications.
+The workflow diff, the CI run URL/result, any token/permission implications, and a structured
+handoff block for the router:
+
+```
+## HANDOFF
+- Files created/modified: <list with paths>
+- Validation status: PASS / FAIL (self-compliance.yml job results)
+- Blocking issues: none OR list
+- Ready for: compliance-reviewer  (if new artifacts need re-validation)  OR  release-manager
+- Context for next agent: <CI run URL, job names that changed, bundle/asset implications>
+```

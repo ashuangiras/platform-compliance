@@ -36,4 +36,14 @@ and [07-policies/opa/README.md](../../07-policies/opa/README.md).
 - The policy is registered in `run-all-policies.py` `POLICY_MAP` (coordinate with collector-engineer if not).
 
 ## Output
-The policy + check + fixtures, the `opa check` result, and each fixture's evaluated `result`/`reason`.
+The policy + check + fixtures, the `opa check` result, each fixture's evaluated `result`/`reason`,
+and a structured handoff block for the router:
+
+```
+## HANDOFF
+- Files created/modified: <list with paths>
+- Validation status: PASS / FAIL (opa check + fixture eval results)
+- Blocking issues: none OR list
+- Ready for: compliance-reviewer
+- Context for next agent: <policy IDs written, fixture paths, any schema changes needed>
+```

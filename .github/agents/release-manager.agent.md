@@ -33,5 +33,16 @@ Run the documented bootstrap-merge sequence exactly (status → relax protection
 - Tracker task(s) under `docs/implementation/tasks/` marked done.
 
 ## Output
-PR merge result, restored-protection confirmation, tag + release-asset list, and the Change
-Record used.
+PR merge result, restored-protection confirmation, tag + release-asset list, the Change Record
+used, and a structured handoff block (final — closes the chain):
+
+```
+## HANDOFF
+- Tag cut: <vX.Y.Z>
+- Change Record: <CHG-YYYYMMDD-NNN>
+- CHANGELOG entry: added under <version>
+- Tracker tasks closed: <PC-XXXX list>
+- Blocking issues: none OR list
+- Ready for: DONE (chain complete)
+- Context: <anything the user or router should know post-merge>
+```

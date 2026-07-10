@@ -95,3 +95,56 @@ AGT suite locally — it fails loudly if the setup is below standard.
 
 Start in **compliance-router**; it dispatches to the specialist that owns the work.
 See [.github/agents/compliance-router.agent.md](agents/compliance-router.agent.md) for the routing table.
+
+## Agent operating rules (MANDATORY — read before every multi-step task)
+
+### 1. The 7 defined agents are the only agents
+Never create a new agent or persona. The team is exactly:
+`compliance-router`, `control-author`, `policy-engineer`, `collector-engineer`,
+`compliance-reviewer`, `ci-workflow-engineer`, `release-manager`.
+If a task does not fit one of these roles, extend the nearest agent's instructions — do not
+invent a new one.
+
+### 2. Maximize agent involvement
+Every multi-step task MUST route through the **full specialist chain**. Do not compress
+multiple specialist roles into a single agent call. A typical new control touches all six
+non-router agents in sequence:
+
+```
+compliance-router        (decomposes + coordinates)
+  → control-author       (standards, controls, mappings, bindings, profiles)
+  → collector-engineer   (collector script + POLICY_MAP wiring)
+  → policy-engineer      (OPA policy + *.check.yaml + fixtures)
+  → compliance-reviewer  (schema validation + opa check + fixture tests — read-only)
+  → ci-workflow-engineer (if workflow or bundle changes are needed)
+  → release-manager      (CHANGELOG + CHG record + bootstrap-merge + tag)
+```
+
+Skipping a specialist whose domain is touched is a quality failure.
+
+### 3. The router coordinates; specialists execute
+`compliance-router` decomposes the request, delegates **one focused task at a time** to the
+right specialist via `runSubagent`, waits for the result, and hands the result as context to
+the next specialist. The router NEVER authors governance objects, policies, collectors, or
+workflows itself.
+
+### 4. Inter-agent handoff protocol
+Each specialist must end its output with a structured handoff block so the router can feed
+it verbatim into the next agent:
+
+```
+## HANDOFF
+- Files created/modified: <list with paths>
+- Validation status: <PASS / FAIL + evidence>
+- Blocking issues: <none OR list for previous agent to fix>
+- Ready for: <next-agent-name>
+- Context for next agent: <any facts the next agent needs that aren't obvious from files>
+```
+
+The router MUST include the previous agent's HANDOFF block in full when prompting the next
+specialist.
+
+### 5. Ordering is enforced
+The router must respect the canonical sequence above. Do not ask `policy-engineer` to write a
+policy before the control and collector exist. Do not ask `release-manager` to merge before
+`compliance-reviewer` is green. Partial shortcuts are not permitted.

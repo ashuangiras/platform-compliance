@@ -24,6 +24,14 @@ edit files — you report findings so the responsible specialist can fix them.
    membership resolves.
 
 ## Output
-A pass/fail verdict per check with the command run, plus a consolidated list of blocking issues
-(routed back to control-author / policy-engineer / collector-engineer / ci-workflow-engineer).
-Never a green verdict unless every check actually passed.
+A pass/fail verdict per check with the command run, a consolidated list of any blocking issues
+(routed back to the responsible specialist — never fix them yourself), and a structured handoff:
+
+```
+## HANDOFF
+- Files reviewed: <list>
+- Validation status: PASS / FAIL (every check listed with command + result)
+- Blocking issues: none OR list with responsible specialist to fix each
+- Ready for: release-manager  (if PASS)  OR  <specialist>  (if FAIL)
+- Context for next agent: <anything release-manager needs: CHG record, tag target, CHANGELOG note>
+```

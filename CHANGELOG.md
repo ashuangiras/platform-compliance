@@ -7,6 +7,42 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v1.7.1] — 2026-07-10
+
+### Summary
+
+Agent inter-communication protocol: handoff blocks, exclusivity rules, and specialist ordering.
+Adds mandatory `## HANDOFF` output sections to all 7 agent files and codifies the 5 operating
+rules (agent exclusivity, maximize agent involvement, router-coordinates/specialists-execute,
+inter-agent handoff protocol, ordering enforcement) in `.github/copilot-instructions.md`.
+Change record: CHG-20260710-012. Improvement recorded per AGT-013.
+
+### Changed
+
+**Agent operating layer:**
+- `.github/copilot-instructions.md` — Agent Operating Rules section added (5 rules, canonical
+  specialist sequence, inter-agent handoff protocol definition)
+- `.github/agents/compliance-router.agent.md` — routing table extended; `## HANDOFF` output
+  block + decomposition protocol added
+- `.github/agents/control-author.agent.md` — `## HANDOFF` output block added
+- `.github/agents/collector-engineer.agent.md` — `## HANDOFF` output block added
+- `.github/agents/policy-engineer.agent.md` — `## HANDOFF` output block added
+- `.github/agents/compliance-reviewer.agent.md` — `## HANDOFF` output block added
+- `.github/agents/ci-workflow-engineer.agent.md` — `## HANDOFF` output block added
+- `.github/agents/release-manager.agent.md` — `## HANDOFF` output block added
+
+**Tracker:**
+- `docs/implementation/tasks/v4-agent-governance.yaml` — PC-0267 and PC-0279 marked `done`
+
+### AGT-013 Improvement
+
+Inter-agent handoff protocol is now formally defined and enforced. All 7 agents emit a
+structured `## HANDOFF` block. The router is explicitly prohibited from authoring governance
+objects. Specialist ordering (control-author → collector → policy → reviewer → ci → release)
+is now a mandatory constraint, not a guideline.
+
+---
+
 ## [v1.7.0] — 2026-07-10
 
 ### Summary

@@ -31,4 +31,14 @@ Follow [.github/instructions/collectors.instructions.md](../instructions/collect
 - `python3 -m py_compile` / `bash -n` clean on changed scripts.
 
 ## Output
-Collector path, sample JSON it produced for both cases, and the `POLICY_MAP` entries added.
+Collector path, sample JSON it produced for both cases, the `POLICY_MAP` entries added, and
+a structured handoff block for the router:
+
+```
+## HANDOFF
+- Files created/modified: <list with paths>
+- Validation status: PASS / FAIL (bash -n / py_compile results)
+- Blocking issues: none OR list
+- Ready for: policy-engineer
+- Context for next agent: <input field names the policy must consume, POLICY_MAP key, context gate>
+```

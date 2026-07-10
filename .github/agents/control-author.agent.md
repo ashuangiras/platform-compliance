@@ -36,5 +36,14 @@ and [docs/authoring-controls.md](../../docs/authoring-controls.md).
 - Note the follow-ups a full control needs: collector + policy + `POLICY_MAP` (hand back to router).
 
 ## Output
-List of created/edited files, the schema-validation result for each, and the remaining chain
-steps (collector, policy, review, release) so the router can sequence them.
+List of created/edited files, the schema-validation result for each, and a structured
+handoff block for the router:
+
+```
+## HANDOFF
+- Files created/modified: <list with paths>
+- Validation status: PASS / FAIL + evidence (check-jsonschema output)
+- Blocking issues: none OR list of issues that must be fixed before proceeding
+- Ready for: collector-engineer
+- Context for next agent: <new control IDs, technology context, what the collector must detect>
+```
