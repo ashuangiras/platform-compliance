@@ -7,6 +7,26 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v1.9.0] — 2026-07-10 (CHG-20260710-014)
+
+### AGT-014 Enforcement — Stronger Retro/Readiness Detection + Router Gate
+
+**Agent layer improvements (CHG-20260710-014):**
+- `collect-agent-info.py` — `pr_has_retro` regex scoped to the `## Retrospective` subsection
+  and excludes checkbox lines; `pr_has_readiness` aligned to the same pattern
+- `07-policies/opa/AGT/` — AGT-013 and AGT-014 policies updated to use the stronger detection
+- `compliance-router.agent.md` — explicit AGT-014 gate step before handing off to
+  `release-manager`; router now blocks the chain if readiness or retro is missing
+- `release-manager.agent.md` — pre-flight steps 4–6 formalised: AGT-013 ledger check,
+  AGT-014 retro confirmation, task file horizon verification
+
+**Bug fix:**
+- `pr_has_retro` regex previously matched bullet items inside checkbox lines as "retro text";
+  now anchored to the `**Retrospective**` heading and excludes lines starting with `- [` to
+  prevent false positives
+
+---
+
 ## [v1.8.0] — 2026-07-10 (CHG-20260710-013)
 
 ### ADR-0016 Phase P3 — Node + Python Quality Controls (PC-0241–PC-0247)

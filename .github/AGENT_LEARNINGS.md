@@ -10,7 +10,32 @@ agents more effective* — not just what files changed.
 
 ---
 
-## 2026-07-10 — AGT-014 Retro: P2/P3 session (ADR-0016 P2 + P3 + agent handoff protocol)
+## AGT-LEARNING-002 — CHG-20260710-014: pr_has_retro regex false-positive on checkbox lines
+
+**Date:** 2026-07-10
+**Change Record:** CHG-20260710-014
+
+### What happened
+The `pr_has_retro` check in `collect-agent-info.py` was matching bullet text inside checkbox
+lines (e.g., `- [x] release-manager now verifies ...`) as "retro content", because the regex
+searched for any non-empty line after a `Retrospective` heading without excluding `- [` prefixes.
+This caused the AGT-014 gate to pass even when no genuine retrospective narrative was present —
+a PR with only checkboxes and no prose would appear compliant.
+
+Additionally, the detection was scanning the entire PR body rather than scoping to the
+`**Retrospective**` subsection, so a stray retro-like sentence anywhere in the body would pass.
+
+### Fix
+Regex now anchors to the `**Retrospective**` subsection heading and requires at least one line
+that does **not** start with `- [` (i.e., not a checkbox). The `pr_has_readiness` check was
+aligned to the same scoped pattern.
+
+### Agent config improvement
+Release-manager pre-flight now explicitly states: "confirm the retro is a genuine prose
+narrative, not just checkbox re-statements." Collector-engineer instructions note the scoped
+detection pattern so future regex updates stay anchored to subsection headings.
+
+ (ADR-0016 P2 + P3 + agent handoff protocol)
 
 **Agent Readiness Check (AGT-014):**
 - [x] AGT suite passes locally (`tools/check-agents.sh`) — all 15 controls pass
