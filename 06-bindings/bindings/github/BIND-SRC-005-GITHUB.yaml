@@ -1,0 +1,14 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SRC-005-GITHUB
+control_id: SRC-005
+technology_context: github
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Repository must have a CI workflow step that runs commitlint or equivalent
+  commit-message linting on every PR. A commitlint configuration file must be
+  committed to the repository.
+observable_artifact: "GitHub Actions workflow files — presence of commitlint step"
+policy_check_ids:
+  - POL-SRC-005-GITHUB-001

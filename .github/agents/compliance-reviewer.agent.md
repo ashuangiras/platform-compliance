@@ -16,14 +16,25 @@ edit files — you report findings so the responsible specialist can fix them.
 ## Approach
 1. **Schemas** — validate each changed governance object:
    `/tmp/penv/bin/check-jsonschema --schemafile schemas/<type>.schema.json <file>`
-2. **Manifest** — re-validate `.compliance-manifest.yaml` if taxonomy/schema/contexts changed.
-3. **Policies** — `/tmp/opa check 07-policies/opa/` and run each changed policy's pass/fail fixtures.
-4. **Engine** — dry-run `run-all-policies.py` against representative inputs; confirm
+2. **Evidence types** — for every `*.check.yaml` file in scope, verify its `evidence_type`
+   value appears in `08-evidence/evidence-types.yaml`. Missing entries are a **blocking issue
+   for control-author**. Run: `grep -F "<type>" 08-evidence/evidence-types.yaml`
+3. **Manifest** — re-validate `.compliance-manifest.yaml` if taxonomy/schema/contexts changed.
+4. **Policies** — `/tmp/opa check 07-policies/opa/` and run each changed policy's pass/fail fixtures.
+5. **Engine** — dry-run `run-all-policies.py` against representative inputs; confirm
    context-gated policies report `not_applicable` where expected.
-5. **Integrity** — spot-check that referenced `SRC-*`/controls/contexts exist and profile
+6. **Integrity** — spot-check that referenced `SRC-*`/controls/contexts exist and profile
    membership resolves.
 
 ## Output
-A pass/fail verdict per check with the command run, plus a consolidated list of blocking issues
-(routed back to control-author / policy-engineer / collector-engineer / ci-workflow-engineer).
-Never a green verdict unless every check actually passed.
+A pass/fail verdict per check with the command run, a consolidated list of any blocking issues
+(routed back to the responsible specialist — never fix them yourself), and a structured handoff:
+
+```
+## HANDOFF
+- Files reviewed: <list>
+- Validation status: PASS / FAIL (every check listed with command + result)
+- Blocking issues: none OR list with responsible specialist to fix each
+- Ready for: release-manager  (if PASS)  OR  <specialist>  (if FAIL)
+- Context for next agent: <anything release-manager needs: CHG record, tag target, CHANGELOG note>
+```

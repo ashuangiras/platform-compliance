@@ -1,0 +1,47 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: API-002
+title: OpenAPI spec must declare an explicit version and versioned path prefix
+domain: API
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  The OpenAPI specification must declare an explicit API version in info.version
+  and all API paths must use a major-version prefix (e.g., /v1/, /v2/) that
+  matches the declared major version.
+
+rationale: >
+  Explicit versioning in both the spec and URL paths prevents silent breaking
+  changes from reaching consumers. A versioned path prefix allows running multiple
+  API versions simultaneously during transitions, and makes it unambiguous which
+  contract a client is bound to. Without declared versioning, any change to the
+  API surface is a potential breaking change with no migration path.
+
+mapped_standards:
+  - source_id: SRC-OPENAPI-3-1
+    clause: "Info Object — info.version REQUIRED: the version of the OpenAPI document (which is distinct from the OpenAPI Specification version or the API implementation version)"
+    mapping_note: >
+      OAS 3.1 requires info.version. API-002 extends this to require that the
+      version is meaningful (non-empty, follows semver) and is reflected in the
+      URL path prefix.
+
+implementation_expectations: >
+  The OpenAPI spec must have:
+  - info.version set to a non-empty semver string (e.g., "1.0.0", "2.3.1")
+  - All paths prefixed with /vN/ where N is the major version integer
+
+  The platform CI collects api_version_declared via collect-go-info.sh by parsing
+  the openapi.yaml/json file.
+
+evidence_required:
+  - type: go-quality
+    description: "openapi.yaml/json info.version field and /vN/ path prefix presence"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"

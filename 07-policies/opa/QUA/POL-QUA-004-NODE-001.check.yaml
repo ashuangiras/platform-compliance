@@ -1,0 +1,11 @@
+id: POL-QUA-004-NODE-001
+title: "QUA-004 (node): TypeScript type check (tsc) must pass"
+binding_ids: [BIND-QUA-004-NODE]
+engine: opa
+file_path: "07-policies/opa/QUA/POL-QUA-004-NODE-001.rego"
+pass_criteria: "TypeScript type check must pass — Node.js module present and typecheck passes."
+fail_criteria: "Node.js module present and tsc type check fails."
+evidence_type: node-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

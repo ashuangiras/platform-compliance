@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-004-PYTHON
+control_id: QUA-004
+technology_context: python
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  mypy type checking must exit 0 in CI; mypy must be configured and a mypy.ini or
+  pyproject.toml [mypy] section must be committed to the repository.
+observable_artifact: "collect-python-info.sh output field: quality.typecheck.result"
+policy_check_ids:
+  - POL-QUA-004-PYTHON-001

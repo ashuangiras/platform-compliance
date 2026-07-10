@@ -1,0 +1,54 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: OBS-004
+title: Services must instrument distributed tracing using OpenTelemetry
+domain: OBS
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  Every platform service must instrument distributed tracing using the OpenTelemetry
+  Go SDK. Evidence is the presence of go.opentelemetry.io/otel as a direct or
+  transitive dependency in go.sum.
+
+rationale: >
+  Distributed tracing is essential for diagnosing latency issues, identifying
+  cascading failures, and understanding request flow across service boundaries.
+  Without tracing, incidents that span multiple services are extremely difficult
+  to diagnose. OpenTelemetry is the CNCF standard that provides a vendor-neutral
+  instrumentation API, allowing platform operators to change backend observability
+  providers (Jaeger, Zipkin, Cloud Trace, etc.) without re-instrumenting services.
+
+mapped_standards:
+  - source_id: SRC-CNCF-OTEL
+    clause: "OpenTelemetry Go SDK — go.opentelemetry.io/otel provides the tracing, metrics and logging API"
+    mapping_note: >
+      OBS-004 directly requires adoption of the OpenTelemetry Go SDK as the
+      instrumentation layer. The go.sum entry for go.opentelemetry.io/otel is the
+      machine-verifiable evidence.
+  - source_id: SRC-GOOGLE-SRE
+    clause: "Chapter 6 — Monitoring Distributed Systems: distributed tracing is required for multi-service systems"
+    mapping_note: >
+      Google SRE Chapter 6 identifies distributed tracing as a key observability
+      primitive for multi-service architectures. OBS-004 delivers the implementation
+      mechanism.
+
+implementation_expectations: >
+  Go service repositories must:
+  - Import go.opentelemetry.io/otel in at least one Go source file
+  - Have go.opentelemetry.io/otel in go.sum
+
+  The platform CI collects otel_dependency_present by scanning go.sum for the
+  go.opentelemetry.io/otel module prefix.
+
+evidence_required:
+  - type: go-quality
+    description: "go.sum entry for go.opentelemetry.io/otel"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"

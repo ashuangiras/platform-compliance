@@ -1,0 +1,19 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+id: SRC-CONVENTIONAL-COMMITS
+name: Conventional Commits Specification v1.0.0
+version: "1.0.0"
+publisher: Conventional Commits contributors
+source_url: "https://www.conventionalcommits.org/en/v1.0.0/"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+applies_to:
+  - SRC
+  - CHG
+status: active
+notes: >
+  Conventional Commits v1.0.0 defines a lightweight convention for commit messages
+  (<type>(<scope>): <subject>) that enables automated changelogs, semantic versioning
+  triggers, and improved navigation of project history. Platform control SRC-005
+  requires this format on all default-branch commits.

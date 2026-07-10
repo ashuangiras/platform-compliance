@@ -7,6 +7,156 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v1.9.0] — 2026-07-10 (CHG-20260710-014)
+
+### AGT-014 Enforcement — Stronger Retro/Readiness Detection + Router Gate
+
+**Agent layer improvements (CHG-20260710-014):**
+- `collect-agent-info.py` — `pr_has_retro` regex scoped to the `## Retrospective` subsection
+  and excludes checkbox lines; `pr_has_readiness` aligned to the same pattern
+- `07-policies/opa/AGT/` — AGT-013 and AGT-014 policies updated to use the stronger detection
+- `compliance-router.agent.md` — explicit AGT-014 gate step before handing off to
+  `release-manager`; router now blocks the chain if readiness or retro is missing
+- `release-manager.agent.md` — pre-flight steps 4–6 formalised: AGT-013 ledger check,
+  AGT-014 retro confirmation, task file horizon verification
+
+**Bug fix:**
+- `pr_has_retro` regex previously matched bullet items inside checkbox lines as "retro text";
+  now anchored to the `**Retrospective**` heading and excludes lines starting with `- [` to
+  prevent false positives
+
+---
+
+## [v1.8.0] — 2026-07-10 (CHG-20260710-013)
+
+### ADR-0016 Phase P3 — Node + Python Quality Controls (PC-0241–PC-0247)
+
+**New standards:**
+- `SRC-TS-STYLE` — TypeScript Style Guide (ESLint + typescript-eslint)
+- `SRC-PYTHON-PEP8` — Python Style Guide (PEP 8 + ruff)
+
+**New bindings:**
+- Node: `BIND-QUA-{001,002,003,004}-NODE`, `BIND-TST-{001,002}-NODE` (6 bindings)
+- Python: `BIND-QUA-{001,002,004}-PYTHON`, `BIND-TST-{001,002}-PYTHON` (5 bindings; QUA-003 intentionally absent)
+
+**New profiles:**
+- `PROF-NODE-SERVICE-V1` (inherits `PROF-SERVICE-V1`)
+- `PROF-PYTHON-SERVICE-V1` (inherits `PROF-SERVICE-V1`)
+
+**New policies (11):**
+- `07-policies/opa/QUA/`: POL-QUA-{001,002,003,004}-NODE-001, POL-QUA-{001,002,004}-PYTHON-001
+- `07-policies/opa/TST/`: POL-TST-{001,002}-NODE-001, POL-TST-{001,002}-PYTHON-001
+
+**New input collectors:**
+- `collect-node-info.sh` (ESLint, tsc, jest/vitest, coverage)
+- `collect-python-info.sh` (ruff, mypy, pytest, coverage)
+
+**Evidence types registered:** `node-quality`, `node-testing`, `python-quality`, `python-testing`
+(also back-filled `go-quality`, `go-testing` from P1)
+
+---
+
+## [v1.7.1] — 2026-07-10
+
+### Summary
+
+Agent inter-communication protocol: handoff blocks, exclusivity rules, and specialist ordering.
+Adds mandatory `## HANDOFF` output sections to all 7 agent files and codifies the 5 operating
+rules (agent exclusivity, maximize agent involvement, router-coordinates/specialists-execute,
+inter-agent handoff protocol, ordering enforcement) in `.github/copilot-instructions.md`.
+Change record: CHG-20260710-012. Improvement recorded per AGT-013.
+
+### Changed
+
+**Agent operating layer:**
+- `.github/copilot-instructions.md` — Agent Operating Rules section added (5 rules, canonical
+  specialist sequence, inter-agent handoff protocol definition)
+- `.github/agents/compliance-router.agent.md` — routing table extended; `## HANDOFF` output
+  block + decomposition protocol added
+- `.github/agents/control-author.agent.md` — `## HANDOFF` output block added
+- `.github/agents/collector-engineer.agent.md` — `## HANDOFF` output block added
+- `.github/agents/policy-engineer.agent.md` — `## HANDOFF` output block added
+- `.github/agents/compliance-reviewer.agent.md` — `## HANDOFF` output block added
+- `.github/agents/ci-workflow-engineer.agent.md` — `## HANDOFF` output block added
+- `.github/agents/release-manager.agent.md` — `## HANDOFF` output block added
+
+**Tracker:**
+- `docs/implementation/tasks/v4-agent-governance.yaml` — PC-0267 and PC-0279 marked `done`
+
+### AGT-013 Improvement
+
+Inter-agent handoff protocol is now formally defined and enforced. All 7 agents emit a
+structured `## HANDOFF` block. The router is explicitly prohibited from authoring governance
+objects. Specialist ordering (control-author → collector → policy → reviewer → ci → release)
+is now a mandatory constraint, not a guideline.
+
+---
+
+## [v1.7.0] — 2026-07-10
+
+### Summary
+
+ADR-0016 Phase P2: Go service controls. Adds 9 new controls (ARC-001, ARC-003, API-001/002/003,
+OBS-004, SRC-005, SUP-005, DOC-003) with bindings, OPA policies, and a new Go-service profile
+(PROF-GO-SERVICE-V1) that inherits from PROF-SERVICE-V1. Change record: CHG-20260710-011.
+
+### Added
+
+**Standards (01-sources/registry/):**
+- `SRC-OPENAPI-3-1` — OpenAPI Specification 3.1 (OpenAPI Initiative)
+- `SRC-CNCF-OTEL` — OpenTelemetry observability framework (CNCF)
+- `SRC-CONVENTIONAL-COMMITS` — Conventional Commits v1.0.0
+- `SRC-12-FACTOR` — The Twelve-Factor App (12factor.net)
+
+**Controls (03-catalogs/controls/):**
+- `ARC-001` — Go repositories must follow standard project layout (cmd/internal/pkg) [warn]
+- `ARC-003` — Zero import cycles and layer boundaries (go vet) [block]
+- `API-001` — Services must include a machine-readable OpenAPI spec [block]
+- `API-002` — OpenAPI spec must declare explicit version and versioned path prefix [block]
+- `API-003` — PRs modifying OpenAPI spec must include breaking-change analysis [warn]
+- `OBS-004` — Services must instrument distributed tracing using OpenTelemetry [warn]
+- `SRC-005` — All commits must follow Conventional Commits format [warn]
+- `SUP-005` — Go repositories must commit go.sum and keep it tidy [block]
+- `DOC-003` — Service repositories must include a runbook [warn]
+
+**Bindings (06-bindings/bindings/):**
+- `BIND-ARC-001-GO`, `BIND-ARC-003-GO` — ARC controls for go context
+- `BIND-API-001-GO`, `BIND-API-002-GO`, `BIND-API-003-GO` — API controls for go context
+- `BIND-OBS-004-GO` — OBS-004 for go context
+- `BIND-SRC-005-GITHUB` — SRC-005 for github context
+- `BIND-SUP-005-GO` — SUP-005 for go context
+- `BIND-DOC-003-GO` — DOC-003 for go context
+
+**OPA policies (07-policies/opa/):**
+- `ARC/POL-ARC-001-GO-001`, `ARC/POL-ARC-003-GO-001`
+- `API/POL-API-001-GO-001`, `API/POL-API-002-GO-001`, `API/POL-API-003-GO-001`
+- `OBS/POL-OBS-004-GO-001`
+- `SRC/POL-SRC-005-GITHUB-001`
+- `SUP/POL-SUP-005-GO-001`
+- `DOC/POL-DOC-003-GO-001`
+- All 9 policies compile clean (`/tmp/opa check`) and validate against `policy-check.schema.json`
+
+**Profile:**
+- `PROF-GO-SERVICE-V1` — Go service compliance profile inheriting PROF-SERVICE-V1;
+  4 new blocking controls (ARC-003, API-001, API-002, SUP-005) + 5 warn controls
+
+**Collector updates (07-policies/scripts/):**
+- `collect-go-info.sh` — extended with architecture, api, observability, supply_chain,
+  documentation, and source_hygiene sections
+- `run-all-policies.py` — 9 new POLICY_MAP entries for all P2 controls
+
+### Validation results
+- 4/4 standard-source files: `check-jsonschema` PASS
+- 9/9 control files: `check-jsonschema` PASS
+- 9/9 binding files: `check-jsonschema` PASS
+- 1/1 profile file: `check-jsonschema` PASS
+- 9/9 policy `.check.yaml` files: `check-jsonschema` PASS
+- OPA compile: `/tmp/opa check 07-policies/opa/` PASS (exit 0)
+- `bash -n collect-go-info.sh` PASS
+- `py_compile run-all-policies.py` PASS
+
+---
+
 ## [v1.0.0] — 2026-07-09
 
 ### Summary

@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-TST-002-NODE
+control_id: TST-002
+technology_context: node
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Test coverage must be >= 70% as measured by istanbul/v8 coverage; coverage report
+  must be generated and checked in CI.
+observable_artifact: "collect-node-info.sh output field: testing.coverage_percent"
+policy_check_ids:
+  - POL-TST-002-NODE-001

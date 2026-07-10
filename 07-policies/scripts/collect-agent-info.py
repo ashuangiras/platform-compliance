@@ -430,8 +430,31 @@ def main():
     agent_config_updated_in_pr = any(_is_agent_config_path(cf) for cf in changed_files)
 
     body_low = pr_body.lower()
-    pr_has_readiness = ("readiness" in body_low) and bool(re.search(r"\[x\]", pr_body, re.IGNORECASE))
-    pr_has_retro = ("retro" in body_low) or ("retrospective" in body_low)
+
+    # AGT-014 readiness: the "Agent Readiness & Retro" section must exist AND at least
+    # one [x] checkbox must appear within that section (not just anywhere in the body).
+    readiness_section_match = re.search(
+        r"agent readiness.*?retro.*?\n(.*?)(?=\n##|\Z)",
+        pr_body, re.IGNORECASE | re.DOTALL
+    )
+    readiness_section_text = readiness_section_match.group(1) if readiness_section_match else ""
+    pr_has_readiness = (
+        "readiness" in body_low
+        and bool(re.search(r"\[x\]", readiness_section_text or pr_body, re.IGNORECASE))
+    )
+
+    # AGT-014 retro: the "**Retrospective**" subsection (not just any "retro" heading)
+    # must contain at least one non-checkbox substantive bullet point.
+    # Match the Retrospective subsection specifically — it follows "**Retrospective**"
+    # and ends at the next ## heading or end of string.
+    retro_section_match = re.search(
+        r"\*\*Retrospective\b[^*]*\*\*[^\n]*\n(.*?)(?=\n##|\Z)",
+        pr_body, re.IGNORECASE | re.DOTALL
+    )
+    retro_section_text = retro_section_match.group(1) if retro_section_match else ""
+    # A valid bullet: starts with "- " or "* ", is NOT a checkbox ([ ] or [x]), has content.
+    retro_bullets = re.findall(r"^[-*]\s+(?!\[[ xX]\])(\S.+)", retro_section_text, re.MULTILINE)
+    pr_has_retro = bool(retro_bullets)  # at least one substantive non-checkbox bullet
 
     result = {
         "repository": {"name": repo_name},

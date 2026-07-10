@@ -1,0 +1,11 @@
+id: POL-DOC-003-GO-001
+title: "DOC-003 (go): service runbook must be present"
+binding_ids: [BIND-DOC-003-GO]
+engine: opa
+file_path: "07-policies/opa/DOC/POL-DOC-003-GO-001.rego"
+pass_criteria: "Go module present and docs/runbook.md or RUNBOOK.md found."
+fail_criteria: "Go module present and no runbook file found."
+evidence_type: go-quality
+severity: medium
+introduced_date: "2026-07-10"
+status: active

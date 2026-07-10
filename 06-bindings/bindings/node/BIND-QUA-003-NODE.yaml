@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-003-NODE
+control_id: QUA-003
+technology_context: node
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  tsc --noEmit must exit 0 in CI; a tsconfig.json must be committed to the repository.
+observable_artifact: "collect-node-info.sh output field: quality.build.result"
+policy_check_ids:
+  - POL-QUA-003-NODE-001

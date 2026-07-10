@@ -10,6 +10,94 @@ agents more effective* — not just what files changed.
 
 ---
 
+## AGT-LEARNING-002 — CHG-20260710-014: pr_has_retro regex false-positive on checkbox lines
+
+**Date:** 2026-07-10
+**Change Record:** CHG-20260710-014
+
+### What happened
+The `pr_has_retro` check in `collect-agent-info.py` was matching bullet text inside checkbox
+lines (e.g., `- [x] release-manager now verifies ...`) as "retro content", because the regex
+searched for any non-empty line after a `Retrospective` heading without excluding `- [` prefixes.
+This caused the AGT-014 gate to pass even when no genuine retrospective narrative was present —
+a PR with only checkboxes and no prose would appear compliant.
+
+Additionally, the detection was scanning the entire PR body rather than scoping to the
+`**Retrospective**` subsection, so a stray retro-like sentence anywhere in the body would pass.
+
+### Fix
+Regex now anchors to the `**Retrospective**` subsection heading and requires at least one line
+that does **not** start with `- [` (i.e., not a checkbox). The `pr_has_readiness` check was
+aligned to the same scoped pattern.
+
+### Agent config improvement
+Release-manager pre-flight now explicitly states: "confirm the retro is a genuine prose
+narrative, not just checkbox re-statements." Collector-engineer instructions note the scoped
+detection pattern so future regex updates stay anchored to subsection headings.
+
+ (ADR-0016 P2 + P3 + agent handoff protocol)
+
+**Agent Readiness Check (AGT-014):**
+- [x] AGT suite passes locally (`tools/check-agents.sh`) — all 15 controls pass
+- [x] New conventions (handoff protocol, specialist ordering) reflected in all 7 agent files
+  and `copilot-instructions.md`
+- [x] Pre-flight / post-flight checklists updated (control-author, collector-engineer,
+  compliance-reviewer, release-manager) based on session retro findings
+
+**Retrospective — what this session taught us and what changed:**
+
+1. **Router self-execution (original problem → fixed)**
+   The router was invoked as a single subagent for P2 and did all the work itself, defeating
+   the multi-specialist model. Root cause: the router's instructions did not mandate sequential
+   single-agent delegation with HANDOFF blocks. Fixed by adding `## Agent operating rules` to
+   `copilot-instructions.md` and rewriting `compliance-router.agent.md` with explicit delegation
+   rules, the inter-agent handoff protocol, and a template for prompting each specialist.
+   *All 7 agent files now carry a typed `## HANDOFF` output section.*
+
+2. **Evidence type registration gap (caught at review → control-author pre-flight updated)**
+   P3 node/python policies used `evidence_type` values (`node-quality`, `node-testing`, etc.)
+   that were not registered in `08-evidence/evidence-types.yaml`. The compliance-reviewer
+   blocked the chain and routed back to control-author. A pre-existing P1 gap (`go-quality`,
+   `go-testing`) was also caught and back-filled.
+   *Control-author pre-flight now has an explicit step 4: register all evidence_type values
+   before handing off. Compliance-reviewer approach now lists evidence-type check as step 2.*
+
+3. **collect-all-inputs.py dispatch was implicit (collector-engineer clarified)**
+   The collector-engineer correctly updated `collect-all-inputs.py` for new contexts, but this
+   responsibility was not explicit in the instructions.
+   *Collector-engineer pre-flight step 2 now states: "adding the dispatch block is part of this
+   task — not optional."*
+
+4. **Release manager skipped AGT-013/014 gates (release-manager pre-flight strengthened)**
+   Two merges (v1.7.0 and v1.7.1) completed without verifying that AGENT_LEARNINGS.md was
+   updated and without recording a retro. The release-manager let this pass.
+   *Release-manager pre-flight now has explicit steps 4 and 5: AGT-013 ledger check and
+   AGT-014 retro confirmation before any merge is allowed.*
+
+5. **Feature branch was not verified before specialist delegation (router pre-flight added)**
+   The router delegated to control-author without first confirming the feature branch was
+   checked out. Specialists must always work on a feature branch, never on main.
+   *Router now has a `## Pre-flight` block: create/verify branch before Step 1.*
+
+6. **Task file horizons go stale when versions are displaced by other work**
+   Agent governance work consumed v1.4.0–v1.6.1, pushing the P2/P3/P4/P5 horizons forward.
+   The task file was not updated promptly, creating confusion about which version to target.
+   *Release-manager pre-flight step 6: confirm task file horizons are correct before merging.*
+
+
+
+- **Lesson:** `evidence_type` values in `*.check.yaml` files must be registered in
+  `08-evidence/evidence-types.yaml` before `compliance-reviewer` will pass the validation
+  sweep. The Go (P1) policies set the precedent, but `go-quality` and `go-testing` were never
+  registered at the time — this gap went undetected until P3 added `node-quality`,
+  `node-testing`, `python-quality`, and `python-testing`, which triggered the reviewer check
+  and blocked the chain until evidence types were back-filled for all four contexts.
+- **Action:** `control-author` must register all new `evidence_type` values in
+  `08-evidence/evidence-types.yaml` as part of every new policy phase — not deferred to review.
+  The registration step is now a required pre-flight item in the control-author handoff.
+
+---
+
 ## 2026-07-10 — Relocated the learnings ledger out of .github/agents/
 
 - Moved this ledger from `.github/agents/LEARNINGS.md` to `.github/AGENT_LEARNINGS.md`. VS Code
@@ -74,3 +162,29 @@ agents more effective* — not just what files changed.
   configuration, and a PreToolUse safety hook, with universal pre-flight/post-flight checklists.
 - Efficiency gain: work is routed to the right specialist with least-privilege tools and a
   deterministic safety backstop.
+
+---
+
+## AGT-LEARNING-001 — ADR-0016 P2: Schema ID pattern constraints affect standard source naming
+
+**Date:** 2026-07-10  
+**Phase:** ADR-0016 P2 (Go service controls)  
+**Change Record:** CHG-20260710-011
+
+### What happened
+When registering the OpenTelemetry standard source as `SRC-OPENTELEMETRY`, the schema
+validation failed because the `standard-source.schema.json` ID pattern `^SRC-[A-Z0-9]+-[A-Z0-9-]+$`
+requires at least two hyphen-delimited segments after `SRC-`. A single word like `OPENTELEMETRY`
+only produces one segment. The ID was corrected to `SRC-CNCF-OTEL` (vendor prefix + short name).
+
+### Learning
+Before naming a new standard source, verify the ID satisfies the pattern
+`^SRC-[A-Z0-9]+-[A-Z0-9-]+$` — it requires at minimum `SRC-{WORD1}-{WORD2}`.
+Single-word issuer names like `OPENTELEMETRY`, `DOCKER`, `GOLANG` must be prefixed with
+an issuer/org abbreviation or split: `SRC-CNCF-OTEL`, `SRC-DOCKER-CIS`, `SRC-GO-STYLE`.
+
+### Agent config improvement
+Added this rule to the control-author mental checklist. Before registering a standard source:
+1. Check the schema ID pattern
+2. Use format `SRC-{ORG/ISSUER}-{STANDARD}` — at least two hyphen-separated components after `SRC-`
+3. For well-known single-name standards, prefix with the owning org (CNCF, NIST, OWASP, etc.)

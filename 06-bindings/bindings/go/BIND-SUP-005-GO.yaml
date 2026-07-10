@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SUP-005-GO
+control_id: SUP-005
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  go.sum must exist and be committed to the repository. Running go mod tidy must
+  produce no changes to go.sum (file is up to date).
+observable_artifact: "collect-go-info.sh output fields: supply_chain.gosum_committed, supply_chain.gosum_tidy"
+policy_check_ids:
+  - POL-SUP-005-GO-001

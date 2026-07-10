@@ -22,19 +22,36 @@ and [docs/authoring-controls.md](../../docs/authoring-controls.md).
 1. Identify the domain, context, and target schema.
 2. Confirm the vocabulary exists in `02-taxonomy/` and the relevant schema enums.
 3. Check that referenced IDs (`SRC-*`, controls, contexts) already exist.
+4. **Evidence types** — for every new `*.check.yaml` that will be created in this change,
+   identify its `evidence_type` value and verify it is registered in
+   `08-evidence/evidence-types.yaml`. Register any missing values **in this same change**,
+   before handing off to collector-engineer. Do not defer this to review.
 
 ## Approach
 1. Register any new taxonomy/standard.
-2. Author the control(s) with clear rationale and correct `enforcement` (`block`/`warn`).
-3. Add the mapping-collection entry and the binding(s) for each applicable context.
-4. Validate each file:
+2. Register any new `evidence_type` values in `08-evidence/evidence-types.yaml`.
+3. Author the control(s) with clear rationale and correct `enforcement` (`block`/`warn`).
+4. Add the mapping-collection entry and the binding(s) for each applicable context.
+5. Validate each file:
    `/tmp/penv/bin/check-jsonschema --schemafile schemas/<type>.schema.json <file>`
 
 ## Post-flight
 - Every changed object validates against its schema.
 - Referential integrity holds (mappings, bindings, profile membership).
+- All `evidence_type` values used in `*.check.yaml` files are confirmed registered in
+  `08-evidence/evidence-types.yaml` — include this confirmation in the HANDOFF block.
 - Note the follow-ups a full control needs: collector + policy + `POLICY_MAP` (hand back to router).
 
 ## Output
-List of created/edited files, the schema-validation result for each, and the remaining chain
-steps (collector, policy, review, release) so the router can sequence them.
+List of created/edited files, the schema-validation result for each, and a structured
+handoff block for the router:
+
+```
+## HANDOFF
+- Files created/modified: <list with paths>
+- Validation status: PASS / FAIL + evidence (check-jsonschema output)
+- Evidence types registered: <list of evidence_type values confirmed in evidence-types.yaml>
+- Blocking issues: none OR list of issues that must be fixed before proceeding
+- Ready for: collector-engineer
+- Context for next agent: <new control IDs, technology context, what the collector must detect>
+```

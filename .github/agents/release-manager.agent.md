@@ -22,6 +22,14 @@ Follow [.github/instructions/release.instructions.md](../instructions/release.in
 1. Verify CI is green on the PR.
 2. Ensure `CHANGELOG.md` has the change under the right version (not a stale `Unreleased`).
 3. Allocate the next `CHG-YYYYMMDD-NNN`.
+4. **AGT-013 check** — confirm `.github/AGENT_LEARNINGS.md` has a new entry for this change.
+   If not, stop and request it before proceeding.
+5. **AGT-014 retro** — verify the PR body (or the agent chain output) includes a completed
+   Agent Readiness & Retro: readiness checkboxes ticked, and a retro note recording what was
+   learned and what agent instructions were updated as a result. If not present, write a brief
+   retro summary now and record it before merging.
+6. **Task file horizons** — confirm that any phase whose target version was consumed by other
+   work has its `horizon:` field updated to the next available tag.
 
 ## Approach
 Run the documented bootstrap-merge sequence exactly (status → relax protection → squash-merge
@@ -33,5 +41,16 @@ Run the documented bootstrap-merge sequence exactly (status → relax protection
 - Tracker task(s) under `docs/implementation/tasks/` marked done.
 
 ## Output
-PR merge result, restored-protection confirmation, tag + release-asset list, and the Change
-Record used.
+PR merge result, restored-protection confirmation, tag + release-asset list, the Change Record
+used, and a structured handoff block (final — closes the chain):
+
+```
+## HANDOFF
+- Tag cut: <vX.Y.Z>
+- Change Record: <CHG-YYYYMMDD-NNN>
+- CHANGELOG entry: added under <version>
+- Tracker tasks closed: <PC-XXXX list>
+- Blocking issues: none OR list
+- Ready for: DONE (chain complete)
+- Context: <anything the user or router should know post-merge>
+```

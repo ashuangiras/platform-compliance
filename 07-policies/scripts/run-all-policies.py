@@ -47,6 +47,16 @@ POLICY_MAP = {
     "TST-001":   ("TST/POL-TST-001-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_001_go.result",                ["go"]),
     "TST-002":   ("TST/POL-TST-002-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_002_go.result",                ["go"]),
     "TST-003":   ("TST/POL-TST-003-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_003_go.result",                ["go"]),
+    # ── ADR-0016 P2: Go service controls (ARC, API, OBS, SRC, SUP, DOC) ────────
+    "ARC-001":   ("ARC/POL-ARC-001-GO-001.rego",              "go-info.json",         "data.platform.arc.arc_001_go.result",                ["go"]),
+    "ARC-003":   ("ARC/POL-ARC-003-GO-001.rego",              "go-info.json",         "data.platform.arc.arc_003_go.result",                ["go"]),
+    "API-001":   ("API/POL-API-001-GO-001.rego",              "go-info.json",         "data.platform.api.api_001_go.result",                ["go"]),
+    "API-002":   ("API/POL-API-002-GO-001.rego",              "go-info.json",         "data.platform.api.api_002_go.result",                ["go"]),
+    "API-003":   ("API/POL-API-003-GO-001.rego",              "go-info.json",         "data.platform.api.api_003_go.result",                ["go"]),
+    "OBS-004":   ("OBS/POL-OBS-004-GO-001.rego",              "go-info.json",         "data.platform.obs.obs_004_go.result",                ["go"]),
+    "SRC-005":   ("SRC/POL-SRC-005-GITHUB-001.rego",          "go-info.json",         "data.platform.src.src_005_github.result",            ["go"]),
+    "SUP-005":   ("SUP/POL-SUP-005-GO-001.rego",              "go-info.json",         "data.platform.sup.sup_005_go.result",                ["go"]),
+    "DOC-003":   ("DOC/POL-DOC-003-GO-001.rego",              "go-info.json",         "data.platform.doc.doc_003_go.result",                ["go"]),
 
     # ── ADR-0017 A1: Agent configuration governance (AGT) ───────────────────
     "AGT-001":   ("AGT/POL-AGT-001-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_001_agent.result",             ["agent"]),
@@ -74,6 +84,18 @@ POLICY_MAP = {
     "SEC-007":   ("SEC/POL-SEC-007-GITHUB-001.rego",           "sec-vuln-sla.json",   "data.platform.sec.sec_007_github.result",            ["github"]),
     "IAC-005":   ("IAC/POL-IAC-005-GITHUB-ACTIONS-001.rego",   "actions-info.json",   "data.platform.iac.iac_005_github_actions.result",    ["terraform"]),
     "AUD-001":   ("AUD/POL-AUD-001-GITHUB-001.rego",           "aud-security.json",   "data.platform.aud.aud_001_github.result",            ["github"]),
+    # ── ADR-0016 P3: Node + Python quality (QUA, TST) ────────────────────────
+    "QUA-001-NODE":   ("QUA/POL-QUA-001-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_001_node.result",   ["node"]),
+    "QUA-002-NODE":   ("QUA/POL-QUA-002-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_002_node.result",   ["node"]),
+    "QUA-003-NODE":   ("QUA/POL-QUA-003-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_003_node.result",   ["node"]),
+    "QUA-004-NODE":   ("QUA/POL-QUA-004-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_004_node.result",   ["node"]),
+    "TST-001-NODE":   ("TST/POL-TST-001-NODE-001.rego",   "node-info.json",   "data.platform.tst.tst_001_node.result",   ["node"]),
+    "TST-002-NODE":   ("TST/POL-TST-002-NODE-001.rego",   "node-info.json",   "data.platform.tst.tst_002_node.result",   ["node"]),
+    "QUA-001-PYTHON": ("QUA/POL-QUA-001-PYTHON-001.rego", "python-info.json", "data.platform.qua.qua_001_python.result", ["python"]),
+    "QUA-002-PYTHON": ("QUA/POL-QUA-002-PYTHON-001.rego", "python-info.json", "data.platform.qua.qua_002_python.result", ["python"]),
+    "QUA-004-PYTHON": ("QUA/POL-QUA-004-PYTHON-001.rego", "python-info.json", "data.platform.qua.qua_004_python.result", ["python"]),
+    "TST-001-PYTHON": ("TST/POL-TST-001-PYTHON-001.rego", "python-info.json", "data.platform.tst.tst_001_python.result", ["python"]),
+    "TST-002-PYTHON": ("TST/POL-TST-002-PYTHON-001.rego", "python-info.json", "data.platform.tst.tst_002_python.result", ["python"]),
 }
 
 

@@ -1,0 +1,17 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+id: SRC-CNCF-OTEL
+name: OpenTelemetry Observability Framework
+version: "1.0.0"
+publisher: Cloud Native Computing Foundation (CNCF)
+source_url: "https://opentelemetry.io/docs/"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+applies_to:
+  - OBS
+status: active
+notes: >
+  OpenTelemetry is a CNCF incubating project providing a vendor-neutral standard
+  for distributed tracing, metrics, and logging. Platform control OBS-004 requires
+  services to instrument distributed tracing using the OpenTelemetry Go SDK.

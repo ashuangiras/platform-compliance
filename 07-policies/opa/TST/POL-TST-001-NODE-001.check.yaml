@@ -1,0 +1,11 @@
+id: POL-TST-001-NODE-001
+title: "TST-001 (node): tests exist and npm test passes"
+binding_ids: [BIND-TST-001-NODE]
+engine: opa
+file_path: "07-policies/opa/TST/POL-TST-001-NODE-001.rego"
+pass_criteria: "Tests exist and npm test passes — Node.js module present and check passes."
+fail_criteria: "Node.js module present and tests are absent or failing."
+evidence_type: node-testing
+severity: high
+introduced_date: "2026-07-10"
+status: active

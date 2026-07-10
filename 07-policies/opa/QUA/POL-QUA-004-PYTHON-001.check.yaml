@@ -1,0 +1,11 @@
+id: POL-QUA-004-PYTHON-001
+title: "QUA-004 (python): mypy type check must pass"
+binding_ids: [BIND-QUA-004-PYTHON]
+engine: opa
+file_path: "07-policies/opa/QUA/POL-QUA-004-PYTHON-001.rego"
+pass_criteria: "mypy type check must pass — Python project present and typecheck passes."
+fail_criteria: "Python project present and mypy type check fails."
+evidence_type: python-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

@@ -117,6 +117,122 @@ if grep -rl "//go:build integration" --include="*_test.go" . 2>/dev/null | grep 
   INTEGRATION_TEST_PRESENT="true"
 fi
 
+# ── ARC-001: Standard Go project layout ─────────────────────────────────────
+# Check for cmd/ directory (primary entry points)
+PROJECT_LAYOUT_CMD="false"
+PROJECT_LAYOUT_INTERNAL="false"
+PROJECT_LAYOUT_PKG="false"
+[ -d "cmd" ] && PROJECT_LAYOUT_CMD="true"
+[ -d "internal" ] && PROJECT_LAYOUT_INTERNAL="true"
+[ -d "pkg" ] && PROJECT_LAYOUT_PKG="true"
+# Standard layout: has cmd/ OR (single-binary: only main.go at root, no other .go files at root)
+LAYOUT_OK="false"
+if [ "$PROJECT_LAYOUT_CMD" = "true" ]; then
+  LAYOUT_OK="true"
+elif [ -f "main.go" ]; then
+  # Single-binary repo: main.go at root is acceptable
+  ROOT_GO_COUNT=$(find . -maxdepth 1 -name "*.go" -not -name "main.go" 2>/dev/null | grep -c . || true)
+  ROOT_GO_COUNT=${ROOT_GO_COUNT:-0}
+  [ "$ROOT_GO_COUNT" -eq 0 ] 2>/dev/null && LAYOUT_OK="true"
+fi
+
+# ── API-001: OpenAPI spec present ─────────────────────────────────────────────
+OPENAPI_SPEC_PRESENT="false"
+OPENAPI_SPEC_PATH=""
+for spec_path in openapi.yaml openapi.json docs/openapi.yaml docs/openapi.json api/openapi.yaml api/openapi.json; do
+  if [ -f "$spec_path" ]; then
+    OPENAPI_SPEC_PRESENT="true"
+    OPENAPI_SPEC_PATH="$spec_path"
+    break
+  fi
+done
+
+# ── API-002: API version declared ──────────────────────────────────────────────
+API_VERSION_DECLARED="false"
+if [ "$OPENAPI_SPEC_PRESENT" = "true" ] && [ -n "$OPENAPI_SPEC_PATH" ]; then
+  # Check info.version field exists and is non-empty
+  if command -v python3 >/dev/null 2>&1; then
+    VERSION_CHECK=$(python3 -c "
+import sys
+try:
+    import json, yaml
+    with open('${OPENAPI_SPEC_PATH}') as f:
+        content = f.read()
+    try:
+        spec = json.loads(content)
+    except:
+        spec = yaml.safe_load(content)
+    version = spec.get('info', {}).get('version', '')
+    paths = spec.get('paths', {})
+    has_version = bool(version and str(version).strip())
+    # Check if any path starts with /v followed by a digit
+    has_versioned_path = any(str(p).startswith('/v') and len(str(p)) > 2 and str(p)[2].isdigit() for p in paths)
+    print('true' if (has_version and has_versioned_path) else 'false')
+except Exception as e:
+    print('false')
+" 2>/dev/null || echo "false")
+    API_VERSION_DECLARED="${VERSION_CHECK:-false}"
+  fi
+fi
+
+# ── API-003: OpenAPI spec changed (in current PR / working tree) ───────────────
+# Detect if openapi spec was modified vs main branch (best-effort)
+OPENAPI_SPEC_CHANGED="false"
+if [ "$OPENAPI_SPEC_PRESENT" = "true" ]; then
+  # Check git diff vs origin/main or HEAD~1 for openapi files
+  if git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -qE '(openapi\.(yaml|json)|docs/openapi\.(yaml|json)|api/openapi\.(yaml|json))'; then
+    OPENAPI_SPEC_CHANGED="true"
+  elif git diff --name-only origin/main...HEAD 2>/dev/null | grep -qE '(openapi\.(yaml|json)|docs/openapi\.(yaml|json)|api/openapi\.(yaml|json))'; then
+    OPENAPI_SPEC_CHANGED="true"
+  fi
+fi
+
+# ── OBS-004: OpenTelemetry dependency present ─────────────────────────────────
+OTEL_DEPENDENCY_PRESENT="false"
+if [ -f "go.sum" ]; then
+  if grep -q "go.opentelemetry.io/otel" go.sum 2>/dev/null; then
+    OTEL_DEPENDENCY_PRESENT="true"
+  fi
+fi
+
+# ── SUP-005: go.sum committed and tidy ────────────────────────────────────────
+GOSUM_COMMITTED="false"
+GOSUM_TIDY="false"
+if [ -f "go.sum" ] && git ls-files --error-unmatch go.sum >/dev/null 2>&1; then
+  GOSUM_COMMITTED="true"
+fi
+if [ "$GOSUM_COMMITTED" = "true" ] && [ "$HAS_GO_MODULE" = "true" ] && [ "$GO_AVAILABLE" = "true" ]; then
+  # Copy go.sum, run tidy, compare
+  cp go.sum /tmp/gosum-before.txt 2>/dev/null || true
+  if go mod tidy 2>/dev/null; then
+    if diff -q go.sum /tmp/gosum-before.txt >/dev/null 2>&1; then
+      GOSUM_TIDY="true"
+    fi
+    # Restore original go.sum
+    cp /tmp/gosum-before.txt go.sum 2>/dev/null || true
+  fi
+fi
+
+# ── DOC-003: Service runbook present ─────────────────────────────────────────
+RUNBOOK_PRESENT="false"
+for runbook_path in docs/runbook.md RUNBOOK.md runbook.md docs/RUNBOOK.md; do
+  if [ -f "$runbook_path" ]; then
+    RUNBOOK_PRESENT="true"
+    break
+  fi
+done
+
+# ── SRC-005: Conventional Commits CI enforcement ──────────────────────────────
+CONVENTIONAL_COMMITS_ENFORCED="false"
+if find .github/workflows -name "*.yml" -o -name "*.yaml" 2>/dev/null | xargs grep -l "commitlint\|conventional-commits-check\|commit-lint" 2>/dev/null | grep -q .; then
+  CONVENTIONAL_COMMITS_ENFORCED="true"
+fi
+# Also check for commitlint config files
+COMMITLINT_CONFIG="false"
+for cfg in .commitlintrc .commitlintrc.yaml .commitlintrc.yml .commitlintrc.json commitlint.config.js commitlint.config.ts; do
+  [ -f "$cfg" ] && COMMITLINT_CONFIG="true" && break
+done
+
 # ── Emit JSON ─────────────────────────────────────────────────────────────────
 python3 - "$REPO_NAME" <<PYTHON
 import json, sys
@@ -147,6 +263,34 @@ output = {
         "test_result": "${TEST_EXIT}",
         "coverage_percent": to_num("${COVERAGE_PERCENT}"),
         "integration_test_present": to_bool("${INTEGRATION_TEST_PRESENT}"),
+    },
+    "architecture": {
+        "project_layout": {
+            "cmd_present": to_bool("${PROJECT_LAYOUT_CMD}"),
+            "internal_present": to_bool("${PROJECT_LAYOUT_INTERNAL}"),
+            "pkg_present": to_bool("${PROJECT_LAYOUT_PKG}"),
+            "layout_ok": to_bool("${LAYOUT_OK}"),
+        },
+    },
+    "api": {
+        "openapi_spec_present": to_bool("${OPENAPI_SPEC_PRESENT}"),
+        "openapi_spec_path": "${OPENAPI_SPEC_PATH}",
+        "api_version_declared": to_bool("${API_VERSION_DECLARED}"),
+        "openapi_spec_changed": to_bool("${OPENAPI_SPEC_CHANGED}"),
+    },
+    "observability": {
+        "otel_dependency_present": to_bool("${OTEL_DEPENDENCY_PRESENT}"),
+    },
+    "supply_chain": {
+        "gosum_committed": to_bool("${GOSUM_COMMITTED}"),
+        "gosum_tidy": to_bool("${GOSUM_TIDY}"),
+    },
+    "documentation": {
+        "runbook_present": to_bool("${RUNBOOK_PRESENT}"),
+    },
+    "source_hygiene": {
+        "conventional_commits_enforced": to_bool("${CONVENTIONAL_COMMITS_ENFORCED}"),
+        "commitlint_config_present": to_bool("${COMMITLINT_CONFIG}"),
     },
 }
 print(json.dumps(output, indent=2, ensure_ascii=False, default=str))

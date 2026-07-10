@@ -1,0 +1,52 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SUP-005
+title: Go repositories must commit go.sum and keep it tidy
+domain: SUP
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Go repositories must commit go.sum to version control, and the file must be
+  up to date (running go mod tidy must produce no changes to go.sum).
+
+rationale: >
+  go.sum contains the cryptographic hashes of every module version used by the
+  project, providing reproducible, tamper-evident builds. Without a committed
+  go.sum, builds may silently use different dependency versions across environments.
+  An out-of-tidy go.sum indicates undeclared dependencies or stale entries that
+  can mask supply chain attacks. go mod tidy also removes unused indirect
+  dependencies, keeping the attack surface minimal.
+
+mapped_standards:
+  - source_id: SRC-12-FACTOR
+    clause: "Factor II — Dependencies: explicitly declare and isolate dependencies; go.sum is the declaration artifact"
+    mapping_note: >
+      12-Factor II requires explicit dependency declarations. go.sum is the Go
+      toolchain's mechanism for locking and verifying exact dependency versions.
+      SUP-005 enforces its presence and consistency.
+  - source_id: SRC-OPENSSF-SLSA-V1
+    clause: "Build L1 — Scripted build: build must be hermetic and reproducible; committed go.sum enables reproducibility"
+    mapping_note: >
+      SLSA Build L1 requires reproducible builds. A committed, tidy go.sum is the
+      Go-native mechanism for reproducibility and tamper detection.
+
+implementation_expectations: >
+  Go repositories must:
+  - Have go.sum committed to the repository
+  - Have go.sum that matches go mod tidy (no diff after running tidy)
+
+  The platform CI collects gosum_committed and gosum_tidy booleans via
+  collect-go-info.sh.
+
+evidence_required:
+  - type: go-quality
+    description: "go.sum committed and tidy check result"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"

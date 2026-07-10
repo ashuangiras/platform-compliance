@@ -1,0 +1,11 @@
+id: POL-OBS-004-GO-001
+title: "OBS-004 (go): OpenTelemetry SDK must be present in go.sum"
+binding_ids: [BIND-OBS-004-GO]
+engine: opa
+file_path: "07-policies/opa/OBS/POL-OBS-004-GO-001.rego"
+pass_criteria: "Go module present and go.opentelemetry.io/otel in go.sum."
+fail_criteria: "Go module present and go.opentelemetry.io/otel not found in go.sum."
+evidence_type: go-quality
+severity: medium
+introduced_date: "2026-07-10"
+status: active

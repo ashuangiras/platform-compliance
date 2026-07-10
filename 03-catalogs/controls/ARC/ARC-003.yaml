@@ -1,0 +1,50 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: ARC-003
+title: Go packages must have zero import cycles and respect layer boundaries
+domain: ARC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Go packages within a repository must contain zero import cycles. Additionally,
+  packages under internal/ must not import from cmd/, enforcing a one-way dependency
+  direction from entry points to library code.
+
+rationale: >
+  Import cycles are a compile error in Go and represent a fundamental architectural
+  flaw — they indicate that two packages are so tightly coupled neither can exist
+  without the other, making them impossible to test or replace independently. The
+  Go compiler detects cycles; go vet and build will fail if cycles exist. cmd/ →
+  internal/ is the correct direction; the reverse (internal/ → cmd/) creates a
+  dependency inversion that defeats the purpose of internal/ isolation.
+
+mapped_standards:
+  - source_id: SRC-GO-STYLE
+    clause: "Go Code Review Comments — Package names and import organisation; internal package visibility"
+    mapping_note: >
+      Go Code Review Comments explicitly address package organisation. ARC-003
+      codifies the compiler-enforced constraint (no import cycles) and the
+      architectural convention (cmd/ imports internal/, not vice versa).
+
+implementation_expectations: >
+  Go repositories must:
+  - Build successfully (go build ./... passes) — this is a necessary but not
+    sufficient condition for cycle detection
+  - Pass go vet ./... which includes cycle detection heuristics
+  - Not have any internal/ package that imports from cmd/
+
+  Evidence is collected via go vet output in collect-go-info.sh (quality.vet.result).
+  A failing go vet is strong evidence of cycle or layer boundary violations.
+
+evidence_required:
+  - type: go-quality
+    description: "go vet ./... result — cycle detection and layer boundary check"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"

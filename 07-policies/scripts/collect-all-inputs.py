@@ -138,6 +138,49 @@ def main():
             data = {"repository": {"name": repo_name}, "workflow_files": [], "action_references": []}
         (out / "actions-info.json").write_text(json.dumps(data))
 
+    # ── Node context (QUA, TST) ─────────────────────────────────────────────
+    if "node" in contexts:
+        result = subprocess.run(
+            ["bash", "07-policies/scripts/collect-node-info.sh", "."],
+            capture_output=True, text=True
+        )
+        try:
+            data = json.loads(result.stdout)
+        except Exception:
+            data = {"repository": {"name": repo_name}, "language": "node",
+                    "has_node_module": False,
+                    "tools": {"node_available": False, "npm_available": False,
+                              "eslint_available": False, "tsc_available": False,
+                              "jest_available": False, "vitest_available": False,
+                              "prettier_available": False},
+                    "quality": {"lint": {"result": "unavailable", "lint_config_present": False},
+                                "format": {"result": "unavailable"},
+                                "build": {"result": "unavailable", "build_config_present": False},
+                                "typecheck": {"result": "unavailable"}},
+                    "testing": {"tests_present": False, "test_file_count": 0,
+                                "test_result": "unavailable", "coverage_percent": None}}
+        (out / "node-info.json").write_text(json.dumps(data))
+
+    # ── Python context (QUA, TST) ────────────────────────────────────────────
+    if "python" in contexts:
+        result = subprocess.run(
+            ["bash", "07-policies/scripts/collect-python-info.sh", "."],
+            capture_output=True, text=True
+        )
+        try:
+            data = json.loads(result.stdout)
+        except Exception:
+            data = {"repository": {"name": repo_name}, "language": "python",
+                    "has_python_project": False,
+                    "tools": {"python3_available": False, "ruff_available": False,
+                              "mypy_available": False, "pytest_available": False},
+                    "quality": {"lint": {"result": "unavailable", "lint_config_present": False},
+                                "format": {"result": "unavailable"},
+                                "typecheck": {"result": "unavailable", "typecheck_config_present": False}},
+                    "testing": {"tests_present": False, "test_file_count": 0,
+                                "test_result": "unavailable", "coverage_percent": None}}
+        (out / "python-info.json").write_text(json.dumps(data))
+
     # ── Go context (QUA, TST) ────────────────────────────────────────────────
     if "go" in contexts:
         result = subprocess.run(

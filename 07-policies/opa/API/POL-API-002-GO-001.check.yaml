@@ -1,0 +1,11 @@
+id: POL-API-002-GO-001
+title: "API-002 (go): OpenAPI spec must declare version and versioned path prefix"
+binding_ids: [BIND-API-002-GO]
+engine: opa
+file_path: "07-policies/opa/API/POL-API-002-GO-001.rego"
+pass_criteria: "Go module and OpenAPI spec present; info.version set and paths have /vN/ prefix."
+fail_criteria: "Go module and spec present; info.version missing or no versioned path prefix."
+evidence_type: go-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

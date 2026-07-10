@@ -1,0 +1,51 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: API-001
+title: Services must include a machine-readable OpenAPI specification
+domain: API
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Every platform service must include a machine-readable OpenAPI 3.x specification
+  file (openapi.yaml or openapi.json) located at the repository root or under docs/.
+  The specification must be committed to version control and kept up to date with
+  the implemented API surface.
+
+rationale: >
+  A committed OpenAPI specification is the single source of truth for the API
+  contract. Without it, there is no machine-verifiable definition of what the
+  service exposes, making breaking-change detection, client SDK generation, and
+  automated documentation impossible. The OpenAPI Specification (OAS) 3.x is the
+  industry standard adopted by all major API gateways, tooling vendors, and the
+  OpenAPI Initiative (Linux Foundation).
+
+mapped_standards:
+  - source_id: SRC-OPENAPI-3-1
+    clause: "OpenAPI Specification 3.1 — The spec file is the contract between producer and consumer"
+    mapping_note: >
+      API-001 directly enforces the OpenAPI Initiative's core premise: a committed
+      spec file is the authoritative contract for an HTTP API.
+
+implementation_expectations: >
+  Service repositories must have one of:
+  - openapi.yaml or openapi.json at the repository root
+  - docs/openapi.yaml or docs/openapi.json
+  - api/openapi.yaml or api/openapi.json
+
+  The file must be a valid OpenAPI 3.x document. Validation of the spec content
+  is covered by API-002 and API-003.
+
+  The platform CI collects presence via collect-go-info.sh (openapi_spec_present).
+
+evidence_required:
+  - type: go-quality
+    description: "Presence of openapi.yaml/openapi.json at root or docs/"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"

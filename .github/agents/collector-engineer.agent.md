@@ -18,11 +18,13 @@ Follow [.github/instructions/collectors.instructions.md](../instructions/collect
 ## Pre-flight
 1. Identify the technology context and the facts the target policy needs.
 2. Check whether `collect-all-inputs.py` already dispatches for that context.
+   If **not**, adding the dispatch block is part of this task — not optional.
 
 ## Approach
 1. Write/extend the collector; `set -euo pipefail`-safe, quote expansions, `chmod +x` shell scripts.
 2. Use the capture-then-default pattern for counts: `X=$(...); X=${X:-0}` (avoid doubled `0`).
-3. Dispatch it from `collect-all-inputs.py` for the matching context.
+3. **Always** wire the new collector into `collect-all-inputs.py` under the matching context,
+   even if the context dispatch block already partially exists.
 4. Add the policy→input mapping to `run-all-policies.py` `POLICY_MAP`, context-gated.
 
 ## Post-flight
@@ -31,4 +33,14 @@ Follow [.github/instructions/collectors.instructions.md](../instructions/collect
 - `python3 -m py_compile` / `bash -n` clean on changed scripts.
 
 ## Output
-Collector path, sample JSON it produced for both cases, and the `POLICY_MAP` entries added.
+Collector path, sample JSON it produced for both cases, the `POLICY_MAP` entries added, and
+a structured handoff block for the router:
+
+```
+## HANDOFF
+- Files created/modified: <list with paths>
+- Validation status: PASS / FAIL (bash -n / py_compile results)
+- Blocking issues: none OR list
+- Ready for: policy-engineer
+- Context for next agent: <input field names the policy must consume, POLICY_MAP key, context gate>
+```

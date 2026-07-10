@@ -1,0 +1,11 @@
+id: POL-TST-002-NODE-001
+title: "TST-002 (node): coverage >= 70%"
+binding_ids: [BIND-TST-002-NODE]
+engine: opa
+file_path: "07-policies/opa/TST/POL-TST-002-NODE-001.rego"
+pass_criteria: "coverage >= 70% — Node.js module present and coverage meets threshold."
+fail_criteria: "Node.js module present and coverage is below 70%."
+evidence_type: node-testing
+severity: medium
+introduced_date: "2026-07-10"
+status: active
