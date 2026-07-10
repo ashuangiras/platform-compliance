@@ -22,6 +22,7 @@ func newRepoCmd(cfg **config.Config) *cobra.Command {
 		repoType     string
 		contexts     []string
 		withAgents   bool
+		noAgents     bool
 		private      bool
 		dryRun       bool
 		description  string
@@ -37,7 +38,7 @@ func newRepoCmd(cfg **config.Config) *cobra.Command {
   - .forge.yaml for local forge configuration
   - Branch protection: requires PR + Compliance Merge Gate status check
 
-Use --with-agents to also commit the agent operating layer (.github/agents/).
+Agent operating layer (.github/agents/) is included by default. Use --no-agents to skip it.
 Use --dry-run to preview all files without touching GitHub.`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -102,6 +103,27 @@ Use --dry-run to preview all files without touching GitHub.`,
 			vars.TechContexts = contexts
 			vars.Date = time.Now().UTC().Format("2006-01-02")
 
+			// --no-agents overrides --with-agents
+			if noAgents {
+				withAgents = false
+			}
+
+			// If withAgents is still true from its default but the "agent" technology
+			// context is not in the resolved contexts list, suppress agent file
+			// copying unless the user explicitly passed --with-agents on the CLI.
+			if withAgents {
+				agentInContexts := false
+				for _, ctx := range contexts {
+					if ctx == "agent" {
+						agentInContexts = true
+						break
+					}
+				}
+				if !agentInContexts && !cmd.Flags().Changed("with-agents") {
+					withAgents = false
+				}
+			}
+
 			// Determine agent source dir
 			agentSourceDir := ""
 			if withAgents {
@@ -128,7 +150,8 @@ Use --dry-run to preview all files without touching GitHub.`,
 	cmd.Flags().StringVar(&profileID, "profile", "", "Compliance profile ID (default: PROF-SERVICE-V1)")
 	cmd.Flags().StringVar(&repoType, "type", "", "Repository type from taxonomy (inferred from profile if not set)")
 	cmd.Flags().StringSliceVar(&contexts, "contexts", nil, "Technology contexts (comma-separated)")
-	cmd.Flags().BoolVar(&withAgents, "with-agents", false, "Include agent operating layer (.github/agents/)")
+	cmd.Flags().BoolVar(&withAgents, "with-agents", true, "Include agent operating layer (.github/agents/) [default: true]")
+	cmd.Flags().BoolVar(&noAgents, "no-agents", false, "Skip the agent operating layer (overrides --with-agents)")
 	cmd.Flags().BoolVar(&private, "private", false, "Create as a private repository")
 	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "Preview files without creating the repository")
 	cmd.Flags().StringVar(&description, "description", "", "Repository description")
@@ -239,12 +262,12 @@ func inferRepoType(profileID string) string {
 // defaultContexts returns sensible technology contexts for a repository type.
 func defaultContexts(repoType string) []string {
 	m := map[string][]string{
-		"service":          {"github", "github-actions"},
-		"library":          {"github", "github-actions"},
-		"frontend-app":     {"github", "github-actions", "frontend"},
+		"service":          {"github", "github-actions", "agent"},
+		"library":          {"github", "github-actions", "agent"},
+		"frontend-app":     {"github", "github-actions", "frontend", "agent"},
 		"terraform-module": {"github", "github-actions", "terraform"},
 		"terraform-root":   {"github", "github-actions", "terraform"},
-		"platform-repo":    {"github", "github-actions"},
+		"platform-repo":    {"github", "github-actions", "agent"},
 	}
 	if ctxs, ok := m[repoType]; ok {
 		return ctxs

@@ -1,0 +1,25 @@
+# {{ .RepoName }} — Agent Guidelines
+
+This repository is governed by [platform-compliance](https://github.com/{{ .ComplianceOrg }}/platform-compliance) at `{{ .ComplianceRef }}`.
+Repository type: `{{ .RepoType }}` | Profile: `{{ .ProfileID }}`
+
+Read the platform-compliance [copilot-instructions](https://github.com/{{ .ComplianceOrg }}/platform-compliance/blob/main/.github/copilot-instructions.md) for the full governance chain.
+
+## Repository-specific context
+
+- **Technology contexts:** {{ TechContextsStr .TechContexts }}
+- **Compliance workflow:** `.github/workflows/compliance.yml` — runs on every PR
+- **Manifest:** `.compliance-manifest.yaml` — declares profile and contexts
+
+## Quick reference
+
+```bash
+# Validate any governance file
+forge validate <file> --compliance-dir /path/to/platform-compliance
+
+# Check all applicable policies locally
+forge check all --compliance-dir /path/to/platform-compliance
+
+# Evaluate the merge gate
+forge gate merge --compliance-dir /path/to/platform-compliance
+```

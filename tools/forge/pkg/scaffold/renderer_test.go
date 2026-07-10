@@ -85,7 +85,7 @@ func TestRenderTemplate_PullRequestTemplate(t *testing.T) {
 	}
 }
 
-func TestRenderRepoFiles_WithoutAgents(t *testing.T) {
+func TestRenderRepoFiles_WithoutAgentFiles(t *testing.T) {
 	vars := defaultVars()
 	files, err := scaffold.RenderRepoFiles(vars, false, "")
 	if err != nil {
@@ -93,10 +93,13 @@ func TestRenderRepoFiles_WithoutAgents(t *testing.T) {
 	}
 
 	expected := map[string]bool{
-		".compliance-manifest.yaml":        false,
-		"CODEOWNERS":                       false,
-		".github/pull_request_template.md": false,
-		".forge.yaml":                      false,
+		".compliance-manifest.yaml":             false,
+		"CODEOWNERS":                            false,
+		".github/pull_request_template.md":      false,
+		".forge.yaml":                           false,
+		".github/workflows/compliance.yml":      false,
+		".github/copilot-instructions.md":       false,
+		".vscode/settings.json":                 false,
 	}
 	for _, f := range files {
 		if _, ok := expected[f.RepoPath]; ok {
@@ -111,10 +114,10 @@ func TestRenderRepoFiles_WithoutAgents(t *testing.T) {
 			t.Errorf("expected file %s not rendered", path)
 		}
 	}
-	// Should not include vscode settings without --with-agents
+	// Agent files should not be present without withAgents=true
 	for _, f := range files {
-		if strings.Contains(f.RepoPath, ".vscode") {
-			t.Errorf("unexpected .vscode file without --with-agents: %s", f.RepoPath)
+		if strings.HasPrefix(f.RepoPath, ".github/agents/") {
+			t.Errorf("unexpected agent file without withAgents: %s", f.RepoPath)
 		}
 	}
 }
@@ -129,19 +132,29 @@ func TestRenderRepoFiles_WithAgents(t *testing.T) {
 		t.Fatalf("RenderRepoFiles error: %v", err)
 	}
 
-	// Should include vscode settings
-	hasVSCode := false
-	hasAgent := false
+	fileSet := make(map[string]bool, len(files))
 	for _, f := range files {
-		if f.RepoPath == ".vscode/settings.json" {
-			hasVSCode = true
-		}
-		if strings.HasPrefix(f.RepoPath, ".github/agents/") {
-			hasAgent = true
+		fileSet[f.RepoPath] = true
+	}
+
+	alwaysExpected := []string{
+		".vscode/settings.json",
+		".github/workflows/compliance.yml",
+		".github/copilot-instructions.md",
+	}
+	for _, path := range alwaysExpected {
+		if !fileSet[path] {
+			t.Errorf("expected always-rendered file %s not found with withAgents=true", path)
 		}
 	}
-	if !hasVSCode {
-		t.Error("expected .vscode/settings.json with --with-agents")
+
+	// Agent files should be present when withAgents=true
+	hasAgent := false
+	for _, f := range files {
+		if strings.HasPrefix(f.RepoPath, ".github/agents/") {
+			hasAgent = true
+			break
+		}
 	}
 	if !hasAgent {
 		t.Error("expected at least one .github/agents/*.agent.md with --with-agents")
