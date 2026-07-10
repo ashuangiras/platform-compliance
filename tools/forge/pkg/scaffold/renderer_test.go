@@ -126,7 +126,8 @@ func TestRenderRepoFiles_WithAgents(t *testing.T) {
 	root := complianceRoot(t)
 	agentDir := filepath.Join(root, ".github", "agents")
 
-	vars := defaultVars()
+	// For service type: should use embedded stubs (not copy from agentDir)
+	vars := defaultVars() // RepoType = "service"
 	files, err := scaffold.RenderRepoFiles(vars, true, agentDir)
 	if err != nil {
 		t.Fatalf("RenderRepoFiles error: %v", err)
@@ -158,6 +159,135 @@ func TestRenderRepoFiles_WithAgents(t *testing.T) {
 	}
 	if !hasAgent {
 		t.Error("expected at least one .github/agents/*.agent.md with --with-agents")
+	}
+}
+
+func TestRenderAgentStubs_TerraformModule(t *testing.T) {
+	vars := scaffold.TemplateVars{
+		RepoName:      "my-modules",
+		RepoType:      "terraform-module",
+		OwnerOrg:      "acme",
+		ComplianceRef: "v3.3.2",
+		ProfileID:     "PROF-TERRAFORM-MODULE-V1",
+		ComplianceOrg: "acme",
+	}
+	files, err := scaffold.RenderAgentStubs(vars, "terraform-module")
+	if err != nil {
+		t.Fatalf("RenderAgentStubs error: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatal("expected agent stubs for terraform-module, got none")
+	}
+
+	names := make(map[string]bool, len(files))
+	for _, f := range files {
+		names[f.RepoPath] = true
+		if len(f.Content) == 0 {
+			t.Errorf("agent stub %s has empty content", f.RepoPath)
+		}
+		// Every stub must be in .github/agents/ and end with .agent.md
+		if !strings.HasPrefix(f.RepoPath, ".github/agents/") {
+			t.Errorf("unexpected path for agent stub: %s", f.RepoPath)
+		}
+		if !strings.HasSuffix(f.RepoPath, ".agent.md") {
+			t.Errorf("agent stub path should end in .agent.md: %s", f.RepoPath)
+		}
+		// Template vars must be resolved — no raw {{ }} in output
+		if strings.Contains(string(f.Content), "{{") {
+			t.Errorf("agent stub %s contains unresolved template vars", f.RepoPath)
+		}
+		// Repo name and org must appear
+		if !strings.Contains(string(f.Content), "my-modules") && !strings.Contains(string(f.Content), "acme") {
+			t.Errorf("agent stub %s does not reference repo name or org", f.RepoPath)
+		}
+	}
+
+	// Verify the full expected team is scaffolded
+	expected := []string{
+		".github/agents/module-router.agent.md",
+		".github/agents/module-author.agent.md",
+		".github/agents/compliance-gate.agent.md",
+		".github/agents/pr-engineer.agent.md",
+		".github/agents/module-reviewer.agent.md",
+		".github/agents/module-qa.agent.md",
+	}
+	for _, path := range expected {
+		if !names[path] {
+			t.Errorf("expected agent stub %s not found in output", path)
+		}
+	}
+}
+
+func TestRenderAgentStubs_ServiceType(t *testing.T) {
+	vars := scaffold.TemplateVars{
+		RepoName:      "my-service",
+		RepoType:      "service",
+		OwnerOrg:      "acme",
+		ComplianceRef: "v3.3.2",
+		ProfileID:     "PROF-SERVICE-V1",
+		ComplianceOrg: "acme",
+	}
+	files, err := scaffold.RenderAgentStubs(vars, "service")
+	if err != nil {
+		t.Fatalf("RenderAgentStubs error: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatal("expected agent stubs for service, got none")
+	}
+	for _, f := range files {
+		if strings.Contains(string(f.Content), "{{") {
+			t.Errorf("agent stub %s contains unresolved template vars", f.RepoPath)
+		}
+	}
+}
+
+func TestRenderAgentStubs_DefaultFallback(t *testing.T) {
+	vars := scaffold.TemplateVars{
+		RepoName:      "my-docs",
+		RepoType:      "documentation",
+		OwnerOrg:      "acme",
+		ComplianceRef: "v3.3.2",
+		ProfileID:     "PROF-PLATFORM-V1",
+		ComplianceOrg: "acme",
+	}
+	// "documentation" has no specific stubs — should fall back to fallback/
+	files, err := scaffold.RenderAgentStubs(vars, "documentation")
+	if err != nil {
+		t.Fatalf("RenderAgentStubs error: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatal("expected _default fallback stubs for documentation type, got none")
+	}
+}
+
+func TestRenderRepoFiles_PlatformRepoCopiesFromSource(t *testing.T) {
+	root := complianceRoot(t)
+	agentDir := filepath.Join(root, ".github", "agents")
+
+	vars := scaffold.TemplateVars{
+		RepoName:      "another-governance-repo",
+		RepoType:      "platform-repo",
+		OwnerOrg:      "acme",
+		ComplianceRef: "v3.3.2",
+		ProfileID:     "PROF-PLATFORM-V1",
+		ComplianceOrg: "acme",
+		TechContexts:  []string{"github", "github-actions"},
+		Date:          "2026-07-11",
+	}
+	files, err := scaffold.RenderRepoFiles(vars, true, agentDir)
+	if err != nil {
+		t.Fatalf("RenderRepoFiles error: %v", err)
+	}
+
+	// platform-repo should copy the real governance agents from .github/agents/
+	agentCount := 0
+	for _, f := range files {
+		if strings.HasPrefix(f.RepoPath, ".github/agents/") {
+			agentCount++
+		}
+	}
+	if agentCount == 0 {
+		t.Error("platform-repo should copy agent files from compliance dir")
 	}
 }
 

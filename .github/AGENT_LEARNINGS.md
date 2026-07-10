@@ -542,3 +542,29 @@ Added this rule to the control-author mental checklist. Before registering a sta
 - Fix 3: bootstrap-merge now uses DELETE /enforce_admins + --admin merge instead of
   relaxing required_approving_review_count. This keeps approvals=1 during the merge window
   so CI collectors see the correct value. SRC-001/002 now pass in CI.
+
+---
+
+## 2026-07-11 — feat(forge): role-appropriate agent stubs per repo type
+
+**Date:** 2026-07-11
+**Change Record:** CHG-20260711-036
+
+- `forge new repo` previously copied platform-compliance's internal agents
+  (compliance-router, control-author, policy-engineer, etc.) verbatim into every
+  new repo. These are governance-repo internals that make no sense for terraform
+  modules, services, or libraries.
+- New: `RenderAgentStubs(vars, repoType)` renders type-appropriate agent stubs from
+  embedded Go templates, keyed by repo type.
+- Templates exist for: `terraform-module` (6 agents), `terraform-root` (5 agents),
+  `service` (6 agents), `library` (5 agents), `fallback` (3 minimal agents).
+- `platform-repo` type still copies live agents from the compliance dir (correct —
+  it IS the governance repo).
+- `copilot-instructions.md.tmpl` updated with type-specific content sections using
+  Go template conditionals.
+- `pull_request_template.md.tmpl` updated: `tools/check-agents.sh` reference
+  replaced with type-agnostic readiness checklist.
+- 4 new tests confirm: stubs render for terraform-module, service, fallback, and
+  platform-repo copies from source.
+- Rule learned: scaffold tools must generate role-appropriate content per repo type,
+  not copy the mother repo's internal tooling.

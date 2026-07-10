@@ -114,12 +114,25 @@ func RenderRepoFiles(vars TemplateVars, withAgents bool, agentSourceDir string) 
 		files = append(files, RepoFile{RepoPath: e.repoPath, Content: content})
 	}
 
-	// Copy agent files verbatim from the local compliance directory
-	if withAgents && agentSourceDir != "" {
-		agentFiles, err := copyAgentFiles(agentSourceDir)
-		if err != nil {
-			// Non-fatal: warn but continue
-			fmt.Printf("⚠  could not copy agent files from %s: %v\n", agentSourceDir, err)
+	// Render agent operating layer.
+	// platform-repo copies the live governance team from the compliance dir;
+	// every other type gets role-appropriate stubs from embedded templates.
+	if withAgents {
+		var agentFiles []RepoFile
+		var agentErr error
+
+		if vars.RepoType == "platform-repo" && agentSourceDir != "" {
+			agentFiles, agentErr = copyAgentFiles(agentSourceDir)
+		} else {
+			agentFiles, agentErr = RenderAgentStubs(vars, vars.RepoType)
+			// If embedded stubs are absent and a source dir was provided, fall back.
+			if agentErr == nil && len(agentFiles) == 0 && agentSourceDir != "" {
+				agentFiles, agentErr = copyAgentFiles(agentSourceDir)
+			}
+		}
+
+		if agentErr != nil {
+			fmt.Printf("⚠  could not generate agent files: %v\n", agentErr)
 		} else {
 			files = append(files, agentFiles...)
 		}
