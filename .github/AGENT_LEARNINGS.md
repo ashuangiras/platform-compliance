@@ -10,6 +10,16 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — ADR-0011 ratified: plt CLI (Go, GitHub Releases, platform-plt repo)
+
+- ADR-0011 ratified: plt CLI will be built in Go, distributed as pre-built binaries via
+  GitHub Releases at ashuangiras/platform-plt. The CLI lives in its own repo (separate
+  release cadence, own CI, own issue tracker) — not in tools/plt/ of this repo.
+- tools/README.md updated to point at platform-plt and drop the stale planned-structure comment.
+- Phase B implementation can now start: first command is plt validate <file>.
+
+---
+
 ## AGT-LEARNING-006 — ADR-0017 A3: AGT-001/002/003 promoted to PROF-BASE baseline (2026-07-10)
 
 **Date:** 2026-07-10 | **Change Record:** CHG-20260710-017

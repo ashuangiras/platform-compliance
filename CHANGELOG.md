@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.3.0] — 2026-07-10 (CHG-20260710-018)
+
+### ADR-0011 ratified — plt CLI technology selection
+
+- Decision: Go language, pre-built binaries via GitHub Releases, separate repository
+  `ashuangiras/platform-plt`
+- `tools/README.md` updated: pointer to platform-plt, drop stale planned structure
+- Phase B (plt CLI implementation) unblocked
+
+---
+
 ## [v2.2.0] — 2026-07-10 (CHG-20260710-017)
 
 ### ADR-0017 A3 — Agent baseline promotion (PC-0277, PC-0278)
