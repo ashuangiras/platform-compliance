@@ -7,6 +7,19 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.5.0] — 2026-07-10 (CHG-20260710-020)
+
+### forge full architecture (pre-implementation design)
+
+- `docs/forge-architecture.md` — complete design:
+  full command taxonomy (50+ subcommands), 16 Go packages, 6 implementation phases,
+  GitHub API + OPA + compliance-ref-cache integration, configuration model, testing strategy
+- ADR-0018 updated to reference the architecture document
+- Phase B implementation sequence: B.1 (validate) → B.2 (new repo, unlocks Phase C) →
+  B.3 (check/gate) → B.4 (evidence/assess) → B.5 (authoring scaffolds) → B.6 (registry/report)
+
+---
+
 ## [v2.4.0] — 2026-07-10 (CHG-20260710-019)
 
 ### ADR-0018 ratified — forge CLI (supersedes ADR-0011)
