@@ -84,6 +84,18 @@ POLICY_MAP = {
     "SEC-007":   ("SEC/POL-SEC-007-GITHUB-001.rego",           "sec-vuln-sla.json",   "data.platform.sec.sec_007_github.result",            ["github"]),
     "IAC-005":   ("IAC/POL-IAC-005-GITHUB-ACTIONS-001.rego",   "actions-info.json",   "data.platform.iac.iac_005_github_actions.result",    ["terraform"]),
     "AUD-001":   ("AUD/POL-AUD-001-GITHUB-001.rego",           "aud-security.json",   "data.platform.aud.aud_001_github.result",            ["github"]),
+    # ── ADR-0016 P3: Node + Python quality (QUA, TST) ────────────────────────
+    "QUA-001-NODE":   ("QUA/POL-QUA-001-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_001_node.result",   ["node"]),
+    "QUA-002-NODE":   ("QUA/POL-QUA-002-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_002_node.result",   ["node"]),
+    "QUA-003-NODE":   ("QUA/POL-QUA-003-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_003_node.result",   ["node"]),
+    "QUA-004-NODE":   ("QUA/POL-QUA-004-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_004_node.result",   ["node"]),
+    "TST-001-NODE":   ("TST/POL-TST-001-NODE-001.rego",   "node-info.json",   "data.platform.tst.tst_001_node.result",   ["node"]),
+    "TST-002-NODE":   ("TST/POL-TST-002-NODE-001.rego",   "node-info.json",   "data.platform.tst.tst_002_node.result",   ["node"]),
+    "QUA-001-PYTHON": ("QUA/POL-QUA-001-PYTHON-001.rego", "python-info.json", "data.platform.qua.qua_001_python.result", ["python"]),
+    "QUA-002-PYTHON": ("QUA/POL-QUA-002-PYTHON-001.rego", "python-info.json", "data.platform.qua.qua_002_python.result", ["python"]),
+    "QUA-004-PYTHON": ("QUA/POL-QUA-004-PYTHON-001.rego", "python-info.json", "data.platform.qua.qua_004_python.result", ["python"]),
+    "TST-001-PYTHON": ("TST/POL-TST-001-PYTHON-001.rego", "python-info.json", "data.platform.tst.tst_001_python.result", ["python"]),
+    "TST-002-PYTHON": ("TST/POL-TST-002-PYTHON-001.rego", "python-info.json", "data.platform.tst.tst_002_python.result", ["python"]),
 }
 
 

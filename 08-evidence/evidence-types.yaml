@@ -258,3 +258,67 @@ evidence_types:
     format: yaml
     controls: [NET-001]
     collection: automation-target
+
+  # ── Application Quality (Go) ────────────────────────────────────────────────
+
+  go-quality:
+    description: >
+      Output of the Go quality collector, capturing golangci-lint results, go vet,
+      gofmt/goimports formatting status, go.sum tidiness, and module metadata.
+      Consumed by Go-language quality, supply-chain, documentation, API, and
+      observability policies.
+    format: json
+    controls: [QUA-001, QUA-002, QUA-003, QUA-004, SUP-005, DOC-003, API-001, API-002, API-003, OBS-004, SRC-005]
+    collection: automated
+
+  # ── Application Testing (Go) ────────────────────────────────────────────────
+
+  go-testing:
+    description: >
+      Output of the Go testing collector, capturing `go test` results (pass/fail/skip),
+      test coverage percentage, and benchmark data for all packages in the module.
+    format: json
+    controls: [TST-001, TST-002, TST-003]
+    collection: automated
+
+  # ── Application Quality (Node.js) ───────────────────────────────────────────
+
+  node-quality:
+    description: >
+      Output of the Node.js quality collector, capturing ESLint lint results,
+      TypeScript compiler diagnostics (if applicable), and npm audit output.
+      Consumed by all Node.js quality policies.
+    format: json
+    controls: [QUA-001, QUA-002, QUA-003, QUA-004]
+    collection: automated
+
+  # ── Application Testing (Node.js) ───────────────────────────────────────────
+
+  node-testing:
+    description: >
+      Output of the Node.js testing collector, capturing npm test results
+      (pass/fail counts), test coverage percentage, and test runner exit status.
+    format: json
+    controls: [TST-001, TST-002]
+    collection: automated
+
+  # ── Application Quality (Python) ────────────────────────────────────────────
+
+  python-quality:
+    description: >
+      Output of the Python quality collector, capturing ruff lint results,
+      mypy type-checking output (if configured), and formatting status.
+      Consumed by all Python quality policies.
+    format: json
+    controls: [QUA-001, QUA-002, QUA-004]
+    collection: automated
+
+  # ── Application Testing (Python) ────────────────────────────────────────────
+
+  python-testing:
+    description: >
+      Output of the Python testing collector, capturing pytest results
+      (passed/failed/error counts), test coverage percentage, and exit status.
+    format: json
+    controls: [TST-001, TST-002]
+    collection: automated

@@ -12,12 +12,12 @@
 | Artifact | Count | Validation |
 |---|---|---|
 | JSON schemas | 16 | All pass meta-schema validation |
-| Standards source entries | 13 | All validate against `standard-source.schema.json` |
+| Standards source entries | 15 | All validate against `standard-source.schema.json` |
 | Control files | 34 | All validate against `control.schema.json` |
-| Compliance profiles | 7 (PROF-BASE, PROF-PLATFORM-V1, PROF-SERVICE-V1, PROF-AGENTIC-V1, PROF-GO-SERVICE-V1, PROF-TERRAFORM-MODULE-V1, PROF-TERRAFORM-ROOT-V1) | All validate against `profile.schema.json` |
+| Compliance profiles | 9 (PROF-BASE, PROF-PLATFORM-V1, PROF-SERVICE-V1, PROF-AGENTIC-V1, PROF-GO-SERVICE-V1, PROF-TERRAFORM-MODULE-V1, PROF-TERRAFORM-ROOT-V1, PROF-NODE-SERVICE-V1, PROF-PYTHON-SERVICE-V1) | All validate against `profile.schema.json` |
 | Mapping collection files | 10 | All validate against `mapping-collection.schema.json` |
-| Implementation bindings | 33 | Across GitHub, Terraform, Docker, GitHub Actions, Go contexts |
-| OPA policy files | 23 Rego + 23 `.check.yaml` | All automated merge-gate controls covered |
+| Implementation bindings | 44 | Across GitHub, Terraform, Docker, GitHub Actions, Go, Node, Python contexts |
+| OPA policy files | 34 Rego + 34 `.check.yaml` | All automated merge-gate controls covered |
 | Policy test fixtures | 23 YAML | Pass/fail pairs per policy |
 | Evidence test fixtures | 4 YAML | valid-pass, valid-fail, valid-waived, invalid |
 | Assessment report | 1 (manual, v1.0.0 self-assessment) | Validates against `assessment.schema.json` |
@@ -43,7 +43,7 @@ Running `check-jsonschema` against all major artifacts:
 ## What is partial or incomplete
 
 ### Phase 07 — Policies (~65% complete)
-- **Written (23 policies):** SRC-001, SRC-002, SRC-003, SEC-001, SEC-002, SEC-003, IAC-001, SUP-001 (Terraform), SUP-001 (GitHub Actions), SUP-002, RUN-001, RUN-002, DOC-001, CHG-002; plus ADR-0016 P2: ARC-001, ARC-003, API-001, API-002, API-003, OBS-004, SRC-005, SUP-005, DOC-003
+- **Written (34 policies):** SRC-001, SRC-002, SRC-003, SEC-001, SEC-002, SEC-003, IAC-001, SUP-001 (Terraform), SUP-001 (GitHub Actions), SUP-002, RUN-001, RUN-002, DOC-001, CHG-002; plus ADR-0016 P2: ARC-001, ARC-003, API-001, API-002, API-003, OBS-004, SRC-005, SUP-005, DOC-003; plus ADR-0016 P3: POL-QUA-{001,002,003,004}-NODE-001, POL-QUA-{001,002,004}-PYTHON-001, POL-TST-{001,002}-NODE-001, POL-TST-{001,002}-PYTHON-001
 - **Missing (release/deployment gate controls):** OBS-001, OBS-002, BAK-001, NET-001, CHG-001, IAC-002, IAC-003, RUN-003, SEC-003 deployment enforcement, and several more
 - **Note:** ADR-0016 P2 Go service controls complete (PC-0229–PC-0240). All 7 automation-target bindings have `policy_check_ids: []` with planned IDs in comments — honest about current state
 

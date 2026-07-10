@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-001-NODE
+control_id: QUA-001
+technology_context: node
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  ESLint must run clean in CI with typescript-eslint; a .eslintrc or eslint.config
+  file must be committed to the repository.
+observable_artifact: "collect-node-info.sh output field: quality.lint.result"
+policy_check_ids:
+  - POL-QUA-001-NODE-001

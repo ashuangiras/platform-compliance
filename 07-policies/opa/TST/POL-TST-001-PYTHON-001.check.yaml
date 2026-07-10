@@ -1,0 +1,11 @@
+id: POL-TST-001-PYTHON-001
+title: "TST-001 (python): tests exist and pytest passes"
+binding_ids: [BIND-TST-001-PYTHON]
+engine: opa
+file_path: "07-policies/opa/TST/POL-TST-001-PYTHON-001.rego"
+pass_criteria: "Tests exist and pytest passes — Python project present and check passes."
+fail_criteria: "Python project present and tests are absent or failing."
+evidence_type: python-testing
+severity: high
+introduced_date: "2026-07-10"
+status: active

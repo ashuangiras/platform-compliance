@@ -99,25 +99,25 @@ phases:
   tasks:
   - id: PC-0241
     title: 'Register standards: SRC-TS-STYLE, SRC-PYTHON-PEP8'
-    status: not_started
+    status: done
   - id: PC-0242
     title: Write collect-node-info.sh (ESLint, tsc, jest/vitest, coverage)
-    status: not_started
+    status: done
   - id: PC-0243
     title: Write collect-python-info.sh (ruff, mypy, pytest, coverage)
-    status: not_started
+    status: done
   - id: PC-0244
     title: Add node bindings for QUA-001/002/003/004, TST-001/002
-    status: not_started
+    status: done
   - id: PC-0245
     title: Add python bindings for QUA-001/002/004, TST-001/002
-    status: not_started
+    status: done
   - id: PC-0246
     title: Create PROF-NODE-SERVICE-V1, PROF-PYTHON-SERVICE-V1
-    status: not_started
+    status: done
   - id: PC-0247
     title: Full CI validation of P3; merge; cut v1.6.0
-    status: not_started
+    status: done
 - id: phase-P4-frontend
   title: 'P4 — Frontend: CSP, bundle budget, a11y, PROF-FRONTEND-V1'
   horizon: v1.7.0

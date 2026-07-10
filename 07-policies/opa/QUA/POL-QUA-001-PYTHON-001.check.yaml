@@ -1,0 +1,11 @@
+id: POL-QUA-001-PYTHON-001
+title: "QUA-001 (python): ruff lint must pass"
+binding_ids: [BIND-QUA-001-PYTHON]
+engine: opa
+file_path: "07-policies/opa/QUA/POL-QUA-001-PYTHON-001.rego"
+pass_criteria: "ruff lint must pass — Python project present and lint check passes."
+fail_criteria: "Python project present and ruff lint check fails."
+evidence_type: python-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

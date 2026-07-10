@@ -1,0 +1,31 @@
+$schema: "../../schemas/standard-source.schema.json"
+
+id: SRC-TS-STYLE
+name: TypeScript Style Guide (ESLint + typescript-eslint recommended)
+version: "2024"
+publisher: ESLint / typescript-eslint maintainers
+source_url: "https://typescript-eslint.io/getting-started/"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - QUA  # Code quality (eslint, prettier, tsc --noEmit, strict type checking)
+
+status: active
+
+notes: >
+  The canonical sources for idiomatic TypeScript/Node.js code quality:
+
+  - typescript-eslint recommended ruleset (https://typescript-eslint.io/getting-started/)
+    — strict, stylistic, and type-checked rules for TypeScript
+  - ESLint (https://eslint.org/) — pluggable linting for JavaScript/TypeScript
+  - Prettier (https://prettier.io/) — opinionated code formatter
+  - TypeScript compiler strict mode (https://www.typescriptlang.org/tsconfig#strict)
+
+  Platform control mappings:
+  - QUA-001 (linter): eslint with typescript-eslint must run clean
+  - QUA-002 (formatting): prettier or eslint formatting rules must pass
+  - QUA-003 (build): tsc --noEmit must exit 0; tsconfig.json must be committed
+  - QUA-004 (type checking): TypeScript strict-mode type checking must pass

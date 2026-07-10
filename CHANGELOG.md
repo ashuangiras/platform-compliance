@@ -7,6 +7,35 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v1.8.0] — 2026-07-10 (CHG-20260710-013)
+
+### ADR-0016 Phase P3 — Node + Python Quality Controls (PC-0241–PC-0247)
+
+**New standards:**
+- `SRC-TS-STYLE` — TypeScript Style Guide (ESLint + typescript-eslint)
+- `SRC-PYTHON-PEP8` — Python Style Guide (PEP 8 + ruff)
+
+**New bindings:**
+- Node: `BIND-QUA-{001,002,003,004}-NODE`, `BIND-TST-{001,002}-NODE` (6 bindings)
+- Python: `BIND-QUA-{001,002,004}-PYTHON`, `BIND-TST-{001,002}-PYTHON` (5 bindings; QUA-003 intentionally absent)
+
+**New profiles:**
+- `PROF-NODE-SERVICE-V1` (inherits `PROF-SERVICE-V1`)
+- `PROF-PYTHON-SERVICE-V1` (inherits `PROF-SERVICE-V1`)
+
+**New policies (11):**
+- `07-policies/opa/QUA/`: POL-QUA-{001,002,003,004}-NODE-001, POL-QUA-{001,002,004}-PYTHON-001
+- `07-policies/opa/TST/`: POL-TST-{001,002}-NODE-001, POL-TST-{001,002}-PYTHON-001
+
+**New input collectors:**
+- `collect-node-info.sh` (ESLint, tsc, jest/vitest, coverage)
+- `collect-python-info.sh` (ruff, mypy, pytest, coverage)
+
+**Evidence types registered:** `node-quality`, `node-testing`, `python-quality`, `python-testing`
+(also back-filled `go-quality`, `go-testing` from P1)
+
+---
+
 ## [v1.7.1] — 2026-07-10
 
 ### Summary
