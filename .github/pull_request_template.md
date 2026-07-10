@@ -10,7 +10,13 @@
 
 ## Change Record
 
-<!-- CHG-YYYYMMDD-NNN -->
+Change Record: CHG-YYYYMMDD-NNN
+
+<!--
+  Replace the placeholder above with the actual change record ID.
+  Allocate one with: forge new change-record --compliance-dir .
+  CHG-001 policy requires the format "Change Record: CHG-YYYYMMDD-NNN" on one line.
+-->
 
 ---
 
@@ -25,9 +31,10 @@
 
 **Retrospective** — what did this change teach us, and how did the agents improve?
 
-<!--
-  Briefly: what worked, what was harder than expected, and what understanding or configuration
-  was updated as a result. A corresponding entry has been added to
+- <!-- Replace this line with at least one substantive bullet point describing what was learned
+     and how any agent instruction file was improved. A checkbox-only retro will not pass
+     the AGT-014 gate. Example: "SEC-009 was missing evidence_type registration; added to
+     control-author pre-flight step 4." -->
   .github/AGENT_LEARNINGS.md (required — AGT-013).
 -->
 

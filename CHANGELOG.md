@@ -7,6 +7,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.9.2] — 2026-07-10 (CHG-20260710-026)
+
+### fix: CHG-001 PR body format + AGT-014 retro guidance
+
+- `.github/pull_request_template.md`: Change Record section now shows
+  `Change Record: CHG-YYYYMMDD-NNN` inline (matching CHG-001 policy regex)
+- `tools/forge/pkg/scaffold/templates/repo/pull_request_template.md.tmpl`: same fix
+- `.github/agents/release-manager.agent.md`: pre-flight step 7 — always write
+  `Change Record: CHG-...` inline, never just a section header
+
+---
+
 ## [v2.9.1] — 2026-07-10 (CHG-20260710-025)
 
 ### forge: data-driven collector dispatch (no code change for new collectors)

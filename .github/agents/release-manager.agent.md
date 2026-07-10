@@ -24,14 +24,19 @@ Follow [.github/instructions/release.instructions.md](../instructions/release.in
 3. Allocate the next `CHG-YYYYMMDD-NNN`.
 4. **AGT-013 check** — confirm `.github/AGENT_LEARNINGS.md` has a new entry for this change.
    If not, stop and request it before proceeding.
-5. **AGT-014 retro** — verify the PR body (or the agent chain output) includes a completed
-   Agent Readiness & Retro: readiness checkboxes ticked, and a retro note recording what was
-   learned and what agent instructions were updated as a result. The retro must be a **genuine
-   prose narrative** — not just a re-statement of the readiness checkboxes. The CI collector
+5. **AGT-014 retro** — verify the PR body includes a completed Agent Readiness & Retro:
+   readiness checkboxes ticked, and a retro note. The retro must be a **genuine prose
+   narrative** — not just a re-statement of the readiness checkboxes. The CI collector
    (`collect-agent-info.py`) will reject a retro that contains only checkbox-style bullets.
    If not present, write a substantive retro now and record it before merging.
 6. **Task file horizons** — confirm that any phase whose target version was consumed by other
    work has its `horizon:` field updated to the next available tag.
+7. **CHG-001 format** — the PR body MUST contain `Change Record: CHG-YYYYMMDD-NNN` as a
+   literal string on a single line (colon included). Using only a `## Change Record` section
+   header without the inline value will cause CHG-001 to fail. Always write:
+   ```
+   Change Record: CHG-20260710-NNN
+   ```
 
 ## Approach
 Run the documented bootstrap-merge sequence exactly (status → relax protection → squash-merge
