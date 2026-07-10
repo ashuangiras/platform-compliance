@@ -10,6 +10,24 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — forge new repo: agents by default, compliance workflow always scaffolded
+
+**Date:** 2026-07-10
+**Change Record:** CHG-20260710-031
+
+- forge new repo now scaffolds the full agent team by default (--no-agents opts out).
+  Agent copying is context-gated: repos with "agent" in their technology_contexts get
+  agents automatically; terraform/infrastructure repos do not unless --with-agents is
+  explicit. This prevents ungoverned agent files in repos where AGT controls won't run.
+- Every new repo now gets a compliance workflow (.github/workflows/compliance.yml) and
+  copilot-instructions.md regardless of agent flag. These are the minimum required for the
+  "Compliance: Merge Gate" branch protection check to have anything to post a status.
+- Previously, forge new repo created a repo where branch protection required Compliance
+  Merge Gate but no workflow existed to post that status — every PR would be permanently
+  blocked. This was a fundamental gap in the scaffold.
+
+---
+
 ## 2026-07-10 — Phase C start: 4 ADRs ratified, platform-modules created via forge
 
 - forge new repo was used for real for the first time (platform-modules, PROF-TERRAFORM-MODULE-V1).

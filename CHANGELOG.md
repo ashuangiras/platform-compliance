@@ -7,6 +7,27 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.3.0] — 2026-07-10 (CHG-20260710-031)
+
+### forge new repo: complete downstream repo scaffold
+
+Every repository created with `forge new repo` now receives:
+- `.github/workflows/compliance.yml` — calls `reusable-compliance.yml@ComplianceRef`;
+  branch protection "Compliance: Merge Gate" can now actually post a status
+- `.github/copilot-instructions.md` — repo-specific governance context
+- `.vscode/settings.json` — agent discovery settings (always rendered)
+- `.github/agents/*.agent.md` — full 7-agent team (when `agent` context is declared)
+
+**Agent scaffolding logic:**
+- Service/library/frontend/platform repos: agents included by default (agent context in defaultContexts)
+- Terraform/infra repos: agents NOT included by default; use `--with-agents` to opt in
+- Any repo: use `--no-agents` to skip agent files
+
+This fixes the fundamental gap where forge created repos whose branch protection
+required a CI status check that no workflow could ever post.
+
+---
+
 ## [v3.2.0] — 2026-07-10 (CHG-20260710-030)
 
 ### Phase C start — ADRs ratified, platform-modules created

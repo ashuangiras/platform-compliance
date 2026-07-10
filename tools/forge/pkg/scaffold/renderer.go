@@ -102,10 +102,7 @@ func RenderRepoFiles(vars TemplateVars, withAgents bool, agentSourceDir string) 
 		{"repo/forge-yaml.tmpl", ".forge.yaml"},
 		{"repo/compliance-workflow.yml.tmpl", ".github/workflows/compliance.yml"},
 		{"repo/copilot-instructions.md.tmpl", ".github/copilot-instructions.md"},
-	}
-
-	if withAgents {
-		entries = append(entries, tmplEntry{"repo/vscode-settings.json.tmpl", ".vscode/settings.json"})
+		{"repo/vscode-settings.json.tmpl", ".vscode/settings.json"},
 	}
 
 	var files []RepoFile
