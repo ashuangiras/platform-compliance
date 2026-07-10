@@ -188,7 +188,7 @@ phases:
     - PC-0121
   - id: PC-0123
     title: Build and publish plt binary for macOS arm64, macOS amd64, Linux amd64
-    status: not-started
+    status: done
     depends_on:
     - PC-0119
     - PC-0120

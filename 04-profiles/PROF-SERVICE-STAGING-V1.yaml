@@ -1,0 +1,93 @@
+$schema: ../schemas/profile.schema.json
+id: PROF-SERVICE-STAGING-V1
+name: Service Profile — Staging Environment v1
+description: >
+  Staging environment profile — relaxes runtime controls to warn; use for
+  pre-production deployments. Inherits all controls from PROF-SERVICE-V1 and
+  relaxes BAK-001, NET-001, and OBS-001 from block to warn so that services can
+  be deployed to staging before full runtime operational compliance is achieved.
+  All QUA, TST, and SEC controls remain at inherited enforcement.
+
+version: "1.0.0"
+inherits: PROF-SERVICE-V1
+applicable_to:
+  - service
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+
+categories:
+  mandatory:
+    description: >
+      Runtime operational controls whose enforcement is relaxed to warn in the
+      staging environment. All other controls are inherited unchanged from
+      PROF-SERVICE-V1.
+    controls:
+      - id: BAK-001
+        enforcement_override: warn
+        scope_condition: service.type == 'stateful'
+      - id: NET-001
+        enforcement_override: warn
+        scope_condition: service.externally_exposed == true
+      - id: OBS-001
+        enforcement_override: warn
+  manual_initially:
+    description: >
+      No additional manual controls beyond those inherited from PROF-SERVICE-V1.
+    controls: []
+  deferred:
+    description: >
+      No additional deferred controls beyond those inherited from PROF-SERVICE-V1.
+    controls: []
+
+gates:
+  merge_gate:
+    description: >
+      Evaluated before any service change PR is merged. Inherits all merge gate
+      controls from PROF-SERVICE-V1, including NET-001 and OBS-001 at warn.
+      BAK-001 is additionally declared at warn for stateful services.
+    required_controls:
+      - id: BAK-001
+        enforcement: warn
+        scope_condition: service.type == 'stateful'
+  release_gate:
+    description: >
+      Evaluated before a service version tag is published in staging context.
+      Runtime operational controls are advisory; all security and code quality
+      controls remain blocking.
+    required_controls:
+      - id: BAK-001
+        enforcement: warn
+        scope_condition: service.type == 'stateful'
+      - id: NET-001
+        enforcement: warn
+        scope_condition: service.externally_exposed == true
+      - id: OBS-001
+        enforcement: warn
+  deployment_gate:
+    description: >
+      Evaluated before a service deployment proceeds to the staging environment.
+      BAK-001, NET-001, and OBS-001 are advisory and will not block a staging
+      deployment.
+    required_controls:
+      - id: BAK-001
+        enforcement: warn
+        scope_condition: service.type == 'stateful'
+      - id: NET-001
+        enforcement: warn
+        scope_condition: service.externally_exposed == true
+      - id: OBS-001
+        enforcement: warn
+  continuous_audit:
+    description: >
+      Continuous monitoring of staging service compliance. Inherited from
+      PROF-SERVICE-V1 without modification — audit scope is unchanged in staging.
+    required_controls:
+      - id: BAK-001
+        enforcement: warn
+        scope_condition: service.type == 'stateful'
+      - id: NET-001
+        enforcement: warn
+        scope_condition: service.externally_exposed == true
+      - id: OBS-001
+        enforcement: warn

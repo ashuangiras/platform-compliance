@@ -32,7 +32,10 @@ and [docs/authoring-controls.md](../../docs/authoring-controls.md).
 2. Register any new `evidence_type` values in `08-evidence/evidence-types.yaml`.
 3. Author the control(s) with clear rationale and correct `enforcement` (`block`/`warn`).
 4. Add the mapping-collection entry and the binding(s) for each applicable context.
-5. Validate each file:
+5. Profile delta rule: if creating a profile that inherits another, declare ONLY controls
+   whose enforcement level changes from the parent. Do NOT re-declare inherited controls at
+   the same enforcement. The compliance-reviewer checks this — failing it blocks the chain.
+6. Validate each file:
    `/tmp/penv/bin/check-jsonschema --schemafile schemas/<type>.schema.json <file>`
 
 ## Post-flight
