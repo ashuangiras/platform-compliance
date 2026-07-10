@@ -1,0 +1,17 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SEC-009-FRONTEND
+control_id: SEC-009
+technology_context: frontend
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Content-Security-Policy header must be present and non-empty in every HTTP
+  response served by the frontend application. The header must include at
+  minimum one directive (e.g. default-src or script-src). An absent or empty
+  header fails this control.
+observable_artifact: >
+  collect-frontend-info.sh output field: security.csp_header_present (bool).
+  True when the CSP header is present and non-empty; false otherwise.
+policy_check_ids:
+  - POL-SEC-009-FRONTEND-001

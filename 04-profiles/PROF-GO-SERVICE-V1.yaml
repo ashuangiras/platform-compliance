@@ -60,7 +60,7 @@ categories:
       - id: SRC-005
         enforcement_override: warn
       - id: TST-002
-        enforcement_override: warn
+        enforcement_override: block
       - id: TST-003
         enforcement_override: warn
       - id: DOC-003
@@ -149,7 +149,7 @@ gates:
       - id: SRC-005
         enforcement: warn
       - id: TST-002
-        enforcement: warn
+        enforcement: block
       - id: TST-003
         enforcement: warn
       - id: DOC-003
@@ -234,7 +234,7 @@ gates:
       - id: SRC-005
         enforcement: warn
       - id: TST-002
-        enforcement: warn
+        enforcement: block
       - id: TST-003
         enforcement: warn
       - id: DOC-003

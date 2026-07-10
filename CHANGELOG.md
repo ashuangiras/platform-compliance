@@ -7,6 +7,49 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.0.0] — 2026-07-10 (CHG-20260710-015)
+
+### ADR-0016 Phase P4 — Frontend Security Controls + TST-002 Block Promotion
+
+**New standards:**
+- `SRC-WEB-CSP` — W3C Content Security Policy Level 3
+- `SRC-WCAG-2-2` — Web Content Accessibility Guidelines 2.2
+
+**New controls:**
+- `SEC-009` — Content-Security-Policy header required (block)
+- `SEC-010` — No production source maps (block)
+- `SEC-011` — Bundle-size budget: warn ≥500 KB, fail ≥2 MB (warn enforcement)
+
+**New profile:**
+- `PROF-FRONTEND-V1` (inherits `PROF-BASE`; applicable to `frontend-app`)
+
+**New collector:**
+- `collect-frontend-info.sh` (CSP detection, source map scan, bundle sizing)
+
+**New policies (3):**
+- `POL-SEC-009-FRONTEND-001` — CSP header presence check
+- `POL-SEC-010-FRONTEND-001` — Source map detection check
+- `POL-SEC-011-FRONTEND-001` — Bundle size budget check
+
+**New bindings (3):**
+- `BIND-SEC-009-FRONTEND`, `BIND-SEC-010-FRONTEND`, `BIND-SEC-011-FRONTEND`
+
+**New mapping:**
+- `MAP-WEB-CSP-SEC` — W3C CSP Level 3 → SEC-009/SEC-010 mapping
+
+**BREAKING — TST-002 coverage threshold promoted `warn` → `block`:**
+- `PROF-GO-SERVICE-V1`, `PROF-NODE-SERVICE-V1`, `PROF-PYTHON-SERVICE-V1` — TST-002 is now
+  `enforcement: block` across all gate sections (ADR-0016 decision 4, v2.0.0 milestone)
+- `BIND-TST-002-GO` — specification updated to reflect block enforcement from v2.0.0
+
+**OPA contract update:**
+- `warn` result value formally documented in `07-policies/opa/README.md` and
+  `opa-policies.instructions.md`
+
+**Tasks closed:** PC-0248, PC-0249, PC-0250, PC-0251, PC-0252, PC-0253
+
+---
+
 ## [v1.9.1] — 2026-07-10 (CHG-20260710-014)
 
 ### AGT — Session Retro + Final Agent Instruction Improvements

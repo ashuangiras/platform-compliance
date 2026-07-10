@@ -1,0 +1,66 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-009
+title: Content Security Policy header required
+domain: SEC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Frontend applications MUST serve a Content-Security-Policy HTTP response header
+  on every HTML response. A missing or empty CSP exposes users to cross-site
+  scripting (XSS) attacks by permitting browsers to execute injected scripts from
+  arbitrary origins.
+
+rationale: >
+  XSS is consistently ranked among the highest-risk web application vulnerabilities
+  (OWASP Top 10 A03). The Content-Security-Policy header is the primary browser-enforced
+  control that constrains which scripts, styles, and other resources a page may load.
+  Without a CSP, a single injected script can exfiltrate session tokens, perform
+  actions on behalf of users, or load further malicious payloads. W3C CSP Level 3
+  (SRC-WEB-CSP) defines the delivery mechanism. Platform policy requires the header
+  to be present; tightening the policy directives is a separate hardening activity.
+
+mapped_standards:
+  - source_id: SRC-WEB-CSP
+    clause: "Section 5 — Delivery"
+    mapping_note: >
+      CSP Level 3 Section 5 defines the Content-Security-Policy HTTP response header
+      as the normative delivery mechanism. SEC-009 operationalises this by requiring
+      every frontend HTTP response to carry the header.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "Implement security HTTP headers"
+    mapping_note: >
+      AWS WAF Best Practices 2024 includes Content-Security-Policy in the list of
+      security headers recommended for all web applications.
+
+implementation_expectations: >
+  - The Content-Security-Policy header must be present and non-empty in all HTML
+    HTTP responses served by the frontend application.
+  - The CSP policy must at minimum include a default-src or script-src directive.
+  - A report-uri or report-to endpoint is recommended for violation monitoring.
+  - Collector evidence is gathered via collect-frontend-info.sh which performs a
+    HEAD/GET against the deployed application or inspects the server configuration.
+
+evidence_required:
+  - type: frontend-security
+    description: >
+      Output of collect-frontend-info.sh confirming that the Content-Security-Policy
+      header is present and non-empty in HTTP responses.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-commit
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+  - release_gate
+  - deployment_gate
+  - continuous_audit
+
+lifecycle_status: active
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+adr_ids:
+  - ADR-0016

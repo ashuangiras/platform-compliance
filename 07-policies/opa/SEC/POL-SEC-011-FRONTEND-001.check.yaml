@@ -1,0 +1,23 @@
+id: POL-SEC-011-FRONTEND-001
+title: "JavaScript bundle size within warn (500 KB) and block (2 MB) gzip thresholds"
+binding_ids:
+  - BIND-SEC-011-FRONTEND
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-011-FRONTEND-001.rego"
+pass_criteria: >
+  The largest single JavaScript bundle (gzipped) in the production build output
+  is less than 500 KB; collect-frontend-info.sh reports
+  bundle.max_bundle_size_kb_gzipped < 500.
+fail_criteria: >
+  The largest bundle is 500 KB or greater (warn result for 500–2047 KB;
+  fail result for 2048 KB and above). A null bundle size (no production build
+  output or no JS files found) makes the policy not_applicable.
+evidence_type: frontend-performance
+severity: medium
+introduced_date: "2026-07-10"
+status: active
+notes: >
+  SEC-011 emits warn (not fail) for bundle sizes in the 500–2047 KB range.
+  The fail result is reserved for the 2048 KB (2 MB) block threshold.
+  warn is counted as a non-pass by run-all-policies.py, consistent with the
+  BIND-SEC-011-FRONTEND enforcement model.

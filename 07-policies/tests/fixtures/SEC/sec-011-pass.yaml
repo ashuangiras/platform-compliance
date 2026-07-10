@@ -1,0 +1,11 @@
+# Fixture: SEC-011 — PASS
+# Scenario: Frontend project with bundle well within the 500 KB warn threshold
+# Expected policy result: { "result": "pass" }
+has_frontend_project: true
+context: frontend
+bundle:
+  max_bundle_size_kb_gzipped: 250
+  largest_bundle_file: "main.abc123.js"
+  raw_size_kb: 800
+repository:
+  name: my-frontend-app

@@ -1,0 +1,24 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-SEC-011-FRONTEND
+control_id: SEC-011
+technology_context: frontend
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  The largest single JavaScript bundle (gzipped) in the production build output
+  must not exceed the defined thresholds. Warn gate: any bundle exceeds 500 KB
+  gzipped. Block gate: any bundle exceeds 2048 KB (2 MB) gzipped. Policy must
+  implement both thresholds: warn when max_bundle_size_kb_gzipped >= 500 and
+  block when max_bundle_size_kb_gzipped >= 2048.
+observable_artifact: >
+  collect-frontend-info.sh output field: bundle.max_bundle_size_kb_gzipped (number).
+  The maximum gzipped size in KB of any single JavaScript bundle file found in
+  the production build output directory.
+policy_check_ids:
+  - POL-SEC-011-FRONTEND-001
+notes: >
+  The control's base failure_behavior is warn (500 KB threshold). The block
+  threshold (2048 KB) is implemented entirely in policy logic: POL-SEC-011-FRONTEND-001
+  emits a block result when max_bundle_size_kb_gzipped >= 2048 and a warn result
+  when >= 500 but < 2048.

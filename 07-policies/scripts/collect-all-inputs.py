@@ -200,6 +200,25 @@ def main():
                                 "integration_test_present": False}}
         (out / "go-info.json").write_text(json.dumps(data))
 
+    # ── Frontend context (SEC-009, SEC-010, SEC-011) ──────────────────────────
+    if "frontend" in contexts:
+        result = subprocess.run(
+            ["bash", "07-policies/scripts/collect-frontend-info.sh", "."],
+            capture_output=True, text=True
+        )
+        try:
+            data = json.loads(result.stdout)
+        except Exception:
+            data = {"repository": {"name": repo_name}, "context": "frontend",
+                    "has_frontend_project": False,
+                    "tools": {"curl_available": False, "node_available": False,
+                              "npx_available": False},
+                    "security": {"csp_header_present": False, "csp_source": "none",
+                                 "prod_source_maps_found": False, "source_map_count": 0},
+                    "bundle": {"max_bundle_size_kb_gzipped": None,
+                               "largest_bundle_file": None, "raw_size_kb": None}}
+        (out / "frontend-info.json").write_text(json.dumps(data))
+
     # ── Agent context (AGT) ──────────────────────────────────────────────────
     if "agent" in contexts:
         agent_env = {

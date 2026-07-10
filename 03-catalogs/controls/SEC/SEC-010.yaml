@@ -1,0 +1,70 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-010
+title: Production source maps must not be publicly served
+domain: SEC
+type: preventive
+priority: P2
+severity: high
+
+statement: >
+  Frontend applications MUST NOT serve `.map` files in the production build output
+  at any publicly accessible path. Exposed source maps reveal original application
+  source code, internal module structure, comments, and file paths to any user
+  who inspects network traffic.
+
+rationale: >
+  Source maps are debugging artefacts that reconstruct the original TypeScript,
+  JSX, or unminified JavaScript from compiled output. When served in production,
+  they enable attackers to read application logic, identify vulnerable code paths,
+  discover internal API endpoints embedded in source, and reverse-engineer business
+  logic intended to be private. AWS WAF Best Practices (SRC-AWS-WAF-2024) and
+  general web application hardening guidance explicitly categorise unnecessary
+  information disclosure as a security risk. Removing or blocking .map files from
+  production serving eliminates this attack surface at zero functional cost to
+  end users.
+
+mapped_standards:
+  - source_id: SRC-AWS-WAF-2024
+    clause: "Protect against information disclosure"
+    mapping_note: >
+      AWS WAF Best Practices 2024 covers information disclosure as a risk vector
+      for web applications. SEC-010 addresses source map exposure as a specific
+      form of unintended source-code disclosure.
+  - source_id: SRC-CIS-CONTROLS-V8
+    clause: "CIS Control 3 — Data Protection: Safeguard 3.3 — Configure Data Access Control Lists"
+    mapping_note: >
+      CIS Control 3 (Data Protection) covers protecting sensitive data from
+      unauthorised access. Application source code transmitted as .map files
+      constitutes sensitive data that must not be exposed through production
+      application serving.
+
+implementation_expectations: >
+  - Build pipelines must exclude *.map files from the production artefact or
+    configure the web server to deny access to *.map paths.
+  - Common build tool patterns: Webpack `devtool: false` for production;
+    Vite `build.sourcemap: false`; esbuild `--sourcemap` omitted.
+  - Collector evidence is gathered via collect-frontend-info.sh which inspects
+    the production build output directory for any .map files.
+
+evidence_required:
+  - type: frontend-security
+    description: >
+      Output of collect-frontend-info.sh confirming that no .map files are present
+      in the production build output directory.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-commit
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+  - release_gate
+  - deployment_gate
+  - continuous_audit
+
+lifecycle_status: active
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+adr_ids:
+  - ADR-0016

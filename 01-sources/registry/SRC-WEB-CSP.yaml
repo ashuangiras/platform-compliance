@@ -1,0 +1,26 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+
+id: SRC-WEB-CSP
+name: W3C Content Security Policy Level 3
+version: "Level 3"
+publisher: W3C
+source_url: "https://www.w3.org/TR/CSP3/"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - SEC
+
+status: active
+
+notes: >
+  The W3C specification defining the Content-Security-Policy HTTP response header mechanism.
+  CSP Level 3 adds hash-based and nonce-based source allowlisting over Level 2, enabling
+  strict CSP configurations that prevent cross-site scripting (XSS) without requiring
+  keyword-based allowlists.
+
+  Platform control mappings:
+  - SEC-009 (CSP header required): every frontend application must serve a non-empty
+    Content-Security-Policy header on all HTML responses.

@@ -1,0 +1,16 @@
+# Fixture: SEC-009 — PASS
+# Scenario: Frontend project with CSP header present (meta-tag)
+# Expected policy result: { "result": "pass" }
+has_frontend_project: true
+context: frontend
+security:
+  csp_header_present: true
+  csp_source: "meta-tag"
+  prod_source_maps_found: false
+  source_map_count: 0
+bundle:
+  max_bundle_size_kb_gzipped: 150
+  largest_bundle_file: "main.abc123.js"
+  raw_size_kb: 420
+repository:
+  name: my-frontend-app

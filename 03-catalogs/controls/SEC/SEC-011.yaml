@@ -1,0 +1,67 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-011
+title: JavaScript bundle size must not exceed budget
+domain: SEC
+type: directive
+priority: P3
+severity: medium
+
+statement: >
+  The largest single JavaScript bundle (gzipped) in the production build output
+  MUST NOT exceed 2 MB (hard block). A warning gate fires when any bundle exceeds
+  500 KB (gzipped) to prompt optimisation before the hard block threshold is reached.
+
+rationale: >
+  Excessively large JavaScript bundles are a dual risk. From a security perspective,
+  bundles significantly above typical application size can indicate unintentional
+  inclusion of development dependencies, vendored secrets, debug tooling, or
+  supply-chain bloat that has not been reviewed. From an accessibility perspective,
+  WCAG 2.2 (SRC-WCAG-2-2) establishes expectations for perceivable and understandable
+  interfaces: large bundles degrade interactivity on low-bandwidth connections and
+  high-latency devices commonly used with assistive technology, impairing
+  accessibility. The dual threshold (warn at 500 KB, block at 2 MB) creates an
+  early-warning feedback loop before teams reach the hard limit.
+
+mapped_standards:
+  - source_id: SRC-WCAG-2-2
+    clause: "Principle 1 — Perceivable and Principle 3 — Understandable"
+    mapping_note: >
+      WCAG 2.2 Principles 1 and 3 establish that web content must be perceivable
+      and understandable for all users. Excessively large JavaScript bundles
+      degrade Time-to-Interactive on low-bandwidth connections and assistive
+      technology environments, undermining WCAG compliance at a foundational level.
+      SEC-011 sets a size budget to keep frontend applications within acceptable
+      performance bounds for all users.
+
+implementation_expectations: >
+  - Build pipelines must report per-bundle gzipped sizes as part of the build output.
+  - Warn gate: any single bundle > 500 KB gzipped triggers a warning in CI.
+  - Block gate: any single bundle > 2048 KB (2 MB) gzipped blocks the merge/release.
+  - Common causes of large bundles include: missing tree-shaking configuration,
+    importing full lodash/moment instead of individual functions, bundling node_modules
+    that should be external, or accidental inclusion of test fixtures.
+  - Collector evidence is gathered via collect-frontend-info.sh which scans the
+    production build output directory and reports the maximum gzipped bundle size.
+
+evidence_required:
+  - type: frontend-performance
+    description: >
+      Output of collect-frontend-info.sh reporting the maximum gzipped JavaScript
+      bundle size (in KB) across all bundle files in the production build output.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-commit
+failure_behavior: warn
+failure_applies_to:
+  - merge_gate
+  - release_gate
+  - deployment_gate
+  - continuous_audit
+
+lifecycle_status: active
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+adr_ids:
+  - ADR-0016
