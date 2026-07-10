@@ -443,16 +443,18 @@ def main():
         and bool(re.search(r"\[x\]", readiness_section_text or pr_body, re.IGNORECASE))
     )
 
-    # AGT-014 retro: the retrospective section must contain at least one non-placeholder
-    # bullet point (a line starting with "- " that is not the comment placeholder "-\n"
-    # and has more than a single dash/whitespace).
+    # AGT-014 retro: the "**Retrospective**" subsection (not just any "retro" heading)
+    # must contain at least one non-checkbox substantive bullet point.
+    # Match the Retrospective subsection specifically — it follows "**Retrospective**"
+    # and ends at the next ## heading or end of string.
     retro_section_match = re.search(
-        r"(?:retrospective|retro)[^\n]*\n(.*?)(?=\n##|\Z)",
+        r"\*\*Retrospective\b[^*]*\*\*[^\n]*\n(.*?)(?=\n##|\Z)",
         pr_body, re.IGNORECASE | re.DOTALL
     )
     retro_section_text = retro_section_match.group(1) if retro_section_match else ""
-    retro_bullets = re.findall(r"^[-*]\s+\S.+", retro_section_text, re.MULTILINE)
-    pr_has_retro = bool(retro_bullets)  # at least one substantive bullet after the retro header
+    # A valid bullet: starts with "- " or "* ", is NOT a checkbox ([ ] or [x]), has content.
+    retro_bullets = re.findall(r"^[-*]\s+(?!\[[ xX]\])(\S.+)", retro_section_text, re.MULTILINE)
+    pr_has_retro = bool(retro_bullets)  # at least one substantive non-checkbox bullet
 
     result = {
         "repository": {"name": repo_name},
