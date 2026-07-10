@@ -29,6 +29,12 @@ Two aspects of that decision require revision:
 
 ## Decision
 
+The full architecture — command taxonomy, Go package structure, data flows, configuration
+model, integration points, and implementation phases — is documented in
+[docs/forge-architecture.md](../docs/forge-architecture.md).
+
+### Summary of key decisions
+
 ### 1. Name: `forge`
 
 The `forge` CLI forges new repositories into the compliance ecosystem. The name is:

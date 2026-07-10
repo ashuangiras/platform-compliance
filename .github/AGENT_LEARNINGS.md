@@ -10,6 +10,18 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — forge full architecture documented (pre-implementation design)
+
+- forge architecture covers the complete command taxonomy (50+ subcommands), Go package
+  structure (16 packages), all 6 implementation phases (B.1–B.6), integration points
+  (GitHub API, OPA, compliance ref cache), and testing strategy.
+- Phase B.2 (forge new repo) is the unlock for Phase C — once it works, forge creates
+  platform-modules, platform-infra, platform-services in one command.
+- Architecture-first discipline: designing the full package structure before writing any
+  code prevents pkg/ coupling problems that are expensive to fix later.
+
+---
+
 ## 2026-07-10 — ADR-0018: forge CLI supersedes plt (name + location change)
 
 - The CLI is renamed from `plt` to `forge` — a strong verb that implies creating a
