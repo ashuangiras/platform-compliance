@@ -151,7 +151,16 @@ PROF-PLATFORM-V1 passes profile schema validation.
 
 ## [Unreleased]
 
-*No unreleased changes at this time.*
+### Added
+
+- **Agent operating layer** (`.github/`, `.vscode/`): repo-wide `copilot-instructions.md` with
+  universal pre-flight/post-flight checklists; a 7-member specialist agent team under
+  `.github/agents/` (compliance-router, control-author, policy-engineer, collector-engineer,
+  ci-workflow-engineer, release-manager, compliance-reviewer) with role-scoped tools and
+  routing; five file-scoped instruction sets under `.github/instructions/`; a GitHub MCP server
+  config (`.vscode/mcp.json`); and a `PreToolUse` safety hook
+  (`.github/hooks/guard-destructive-ops.json`) that prompts before irreversible git/filesystem
+  operations. Change Record: CHG-20260710-006.
 
 ---
 
