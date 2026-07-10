@@ -1,0 +1,48 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-007
+title: Repository instructions must define pre-flight and post-flight checklists
+domain: AGT
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  The repository instruction file must define both a pre-flight checklist (what an agent verifies
+  before starting work) and a post-flight checklist (what an agent validates before handing off).
+  Both must be present and explicit.
+
+rationale: >
+  Agents are non-deterministic; disciplined bookends make their work reliable. A pre-flight
+  checklist ensures the agent loads the right context, picks the right branch, and understands the
+  constraints before acting. A post-flight checklist ensures changes are validated, tested, and
+  documented before they leave the agent's hands. Without them, agents skip verification and ship
+  incomplete or unsafe changes.
+
+mapped_standards:
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "Universal pre-flight / post-flight checklists in repository instructions"
+    mapping_note: >
+      House convention codified in the platform's own copilot-instructions.md. AGT-007 requires
+      every governed repository to carry both checklists.
+
+implementation_expectations: >
+  The root instruction file contains both a pre-flight and a post-flight checklist. Collected by
+  collect-agent-info.py as instructions.has_preflight and instructions.has_postflight (both true).
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing instructions.has_preflight == true and
+      instructions.has_postflight == true.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

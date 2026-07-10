@@ -1,0 +1,11 @@
+id: POL-AGT-010-AGENT-001
+title: "AGT-010 (agent): agent role clarity and constraints"
+binding_ids: [BIND-AGT-010-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-010-AGENT-001.rego"
+pass_criteria: "Every agent states a role/persona and a constraints/boundaries section."
+fail_criteria: "An agent lacks a role statement or a constraints section."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

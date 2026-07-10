@@ -1,0 +1,49 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-006
+title: File instructions must be scoped, never universally attached
+domain: AGT
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  Every file instruction (.instructions.md) must be discoverable either by a specific `applyTo`
+  glob or by a keyword-rich `description`, and must not use a bare `applyTo: "**"`. A universal
+  glob attaches the instruction to every request regardless of relevance, burning context and
+  diluting guidance.
+
+rationale: >
+  `applyTo: "**"` loads an instruction into every interaction, even when irrelevant — it wastes
+  the context window and drowns out the instructions that matter. Scoped globs (or on-demand
+  discovery via description) ensure each instruction is present exactly when it applies. This
+  keeps agent context lean and the guidance signal high.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "applyTo scoping; '**' burns context and is discouraged"
+    mapping_note: >
+      The customization guidance flags overly broad applyTo as an anti-pattern. AGT-006 forbids
+      bare "**" and requires a scoping signal (applyTo or description) on every instruction file.
+
+implementation_expectations: >
+  Every .instructions.md declares a specific applyTo or a description, and none use bare "**".
+  Collected by collect-agent-info.py as instruction_files.broad_applyto_files and
+  instruction_files.missing_description_files (both must be empty).
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing empty instruction_files.broad_applyto_files and
+      instruction_files.missing_description_files lists.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

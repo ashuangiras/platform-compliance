@@ -155,6 +155,46 @@ PROF-PLATFORM-V1 passes profile schema validation.
 
 ---
 
+## [v1.5.0] — 2026-07-10
+
+### Summary
+
+Raises the agent-configuration bar from a secure baseline to a **stringent, blocking quality
+standard** (ADR-0017 A2, amended). The AGT suite grows from 3 to **14 controls — all blocking** —
+covering setup, security, effectiveness, and continuous self-improvement. Agents must now record a
+learning on every change and pass a readiness check + retro before merge. platform-compliance
+self-enforces the entire suite and passes it.
+
+Change Record: CHG-20260710-008.
+
+### Added
+
+**Effectiveness controls (block):**
+- AGT-004 discoverable descriptions · AGT-005 least-privilege tools · AGT-006 instruction scoping
+- AGT-007 pre/post-flight discipline · AGT-008 safety-hook integrity (scripts exist + executable)
+- AGT-009 multi-agent routing · AGT-010 per-agent role + constraints
+- AGT-011 MCP server trust & version pinning · AGT-012 repository-instruction completeness
+
+**Continuous-improvement controls (block):**
+- AGT-013 — every pull request records a meaningful entry in `.github/agents/LEARNINGS.md`
+- AGT-014 — every pull request completes a readiness check + retrospective before merge
+
+**Tooling & artifacts:**
+- `tools/check-agents.sh` — offline "fail loudly" runner for the whole AGT suite
+- `.github/agents/LEARNINGS.md` — the agent learnings/improvement ledger
+- `.github/pull_request_template.md` — Agent Readiness & Retro section
+- `collect-agent-info.py` extended with quality signals + PR context (changed files, PR body via env)
+
+### Changed
+
+- `PROF-AGENTIC-V1` → v2.0.0: all 14 AGT controls mandatory and blocking at the merge gate
+- `run-all-policies.py` POLICY_MAP: +11 AGT entries (context-gated on `agent`)
+- `copilot-instructions.md`: post-flight now requires a ledger entry, `tools/check-agents.sh`, and
+  a completed readiness/retro
+- ADR-0017 amended: A2 promoted from warn to block and expanded
+
+---
+
 ## [v1.4.0] — 2026-07-10
 
 ### Summary

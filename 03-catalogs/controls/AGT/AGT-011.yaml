@@ -1,0 +1,54 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-011
+title: MCP servers must declare a type and be version-pinned
+domain: AGT
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Every Model Context Protocol server in .vscode/mcp.json must declare an explicit `type`, and its
+  endpoint must be pinned: http/sse servers reference a fixed URL; stdio servers launched via a
+  package runner (npx, uvx, pnpm dlx, pipx, …) must pin an explicit `@version`; container servers
+  must reference a specific image tag (never `latest`).
+
+rationale: >
+  MCP servers are executable dependencies of the agent — part of the software supply chain. An
+  unpinned server (`npx some-server@latest`, `docker … :latest`) can silently change behaviour or
+  pull a compromised version between runs, giving an attacker a path into the developer's
+  environment and the agent's tool calls. Pinning and an explicit type make the agent supply chain
+  reproducible and reviewable, consistent with the platform's supply-chain controls (SUP).
+
+mapped_standards:
+  - source_id: SRC-MCP-SPEC
+    clause: "Server configuration — explicit transport type; reproducible server references"
+    mapping_note: >
+      The MCP specification distinguishes transport types and expects well-formed server
+      declarations. AGT-011 requires an explicit type and a pinned endpoint.
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "MCP configuration via .vscode/mcp.json"
+    mapping_note: >
+      VS Code MCP server entries carry type + url/command. AGT-011 forbids unpinned launchers and
+      floating image tags.
+
+implementation_expectations: >
+  Every server in .vscode/mcp.json declares a `type` and is pinned. Collected by
+  collect-agent-info.py as mcp.servers_missing_type and mcp.unpinned_servers (both must be empty).
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing empty mcp.servers_missing_type and mcp.unpinned_servers
+      lists.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-AGT-004-AGENT
+control_id: AGT-004
+technology_context: agent
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Every agent/instruction/prompt description must be >= 40 characters and keyword-rich.
+observable_artifact: "collect-agent-info.py output field: descriptions.weak_files (empty)"
+policy_check_ids:
+  - POL-AGT-004-AGENT-001

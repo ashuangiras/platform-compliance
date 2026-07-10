@@ -1,0 +1,53 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-004
+title: Agent and instruction descriptions must be discoverable
+domain: AGT
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  The `description` field on every agent, instruction, and prompt file must be keyword-rich and
+  at least 40 characters. The description is the surface the model uses to decide when to load a
+  customization; a terse or vague description ("helpful agent", "notes") makes the file
+  effectively undiscoverable. Descriptions should follow the "Use when…" pattern and name the
+  concrete tasks, files, or triggers they apply to.
+
+rationale: >
+  Custom agents and instructions are selected by matching the request against their descriptions.
+  A weak description silently defeats routing: the right agent is never chosen and the right
+  instruction is never attached, so the customization delivers no value. Requiring a substantive,
+  keyword-rich description guarantees the platform's agent surface is actually reachable.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "Description is the discovery surface; use the 'Use when…' pattern"
+    mapping_note: >
+      The customization guidance states the description determines discovery. AGT-004 enforces a
+      minimum-quality description on every customization file.
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "Keyword-rich descriptions on every agent and instruction"
+    mapping_note: >
+      House convention: descriptions must name concrete triggers so the router and model can
+      select the correct specialist.
+
+implementation_expectations: >
+  Every .agent.md / .instructions.md / .prompt.md description is >= 40 characters and names its
+  triggers. Collected by collect-agent-info.py as descriptions.weak_files (must be empty).
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing an empty descriptions.weak_files list.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

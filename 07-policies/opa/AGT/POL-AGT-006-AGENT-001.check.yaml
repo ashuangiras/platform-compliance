@@ -1,0 +1,11 @@
+id: POL-AGT-006-AGENT-001
+title: "AGT-006 (agent): instruction scoping hygiene"
+binding_ids: [BIND-AGT-006-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-006-AGENT-001.rego"
+pass_criteria: "Every .instructions.md is scoped via applyTo or description; no bare '**'."
+fail_criteria: "An instruction uses bare applyTo '**' or has neither applyTo nor description."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

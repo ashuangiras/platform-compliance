@@ -1,0 +1,47 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-009
+title: A router agent must coordinate when multiple agents exist
+domain: AGT
+type: preventive
+priority: P3
+severity: medium
+
+statement: >
+  When a repository defines more than one custom agent, it must also provide a coordinator/router
+  agent that selects and delegates to the appropriate specialist. A team of specialists with no
+  router has no defined entry point and no routing logic.
+
+rationale: >
+  Multi-agent setups only deliver value when the right specialist is chosen for each task. Without
+  a router, selection is ad hoc: users guess which agent to invoke and the model has no delegation
+  logic to follow. A coordinator gives the team a single, well-described entry point and encodes
+  the routing rules, so the best agent is chosen for its most appropriate task.
+
+mapped_standards:
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "A coordinator/router selects the appropriate specialist when multiple agents exist"
+    mapping_note: >
+      House convention from the platform's compliance-router. AGT-009 requires a router whenever a
+      repository declares more than one agent.
+
+implementation_expectations: >
+  If .github/agents/ contains more than one .agent.md, at least one is a router/coordinator
+  (declares the `agent` tool or is named/described as a router). Collected by collect-agent-info.py
+  as agents.count and agents.router_present.
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing agents.router_present == true when agents.count > 1.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

@@ -1,0 +1,51 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-013
+title: Every change must record a meaningful agent improvement
+domain: AGT
+type: directive
+priority: P2
+severity: medium
+
+statement: >
+  The repository must maintain an agent learnings/improvement ledger (e.g.
+  .github/agents/LEARNINGS.md), and every pull request must add or update an entry in it. Each
+  entry records how the agents' profiles, instructions, configuration, or knowledge improved as a
+  result of the change — keeping the agent team continuously and verifiably better.
+
+rationale: >
+  Agents that never update their own configuration stagnate: the same gaps recur and hard-won
+  knowledge is lost. Requiring a ledger entry on every change turns each pull request into a small
+  investment in the agent team's effectiveness — capturing what was learned, what convention
+  changed, and how the setup was tuned. Over time this compounds into an ever-improving,
+  self-documenting agent operating layer, and makes the improvement auditable rather than
+  aspirational.
+
+mapped_standards:
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "Continuous improvement — every change records an agent learning/improvement"
+    mapping_note: >
+      House convention: agents must evolve their own configuration and knowledge with each change,
+      recorded in the learnings ledger. AGT-013 enforces a ledger entry per pull request.
+
+implementation_expectations: >
+  A learnings ledger exists, and each PR's changed files include it. Collected by
+  collect-agent-info.py as improvement.ledger_present and improvement.ledger_updated_in_pr (on a
+  pull request). Evaluated only when PR context is available; on non-PR events the control checks
+  ledger presence only.
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing improvement.ledger_present == true and, on a pull
+      request, improvement.ledger_updated_in_pr == true.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate

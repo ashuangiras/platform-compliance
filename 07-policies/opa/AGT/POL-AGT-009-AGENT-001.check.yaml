@@ -1,0 +1,11 @@
+id: POL-AGT-009-AGENT-001
+title: "AGT-009 (agent): router present when multiple agents exist"
+binding_ids: [BIND-AGT-009-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-009-AGENT-001.rego"
+pass_criteria: "With more than one agent, a router/coordinator agent is present."
+fail_criteria: "More than one agent but no router/coordinator."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

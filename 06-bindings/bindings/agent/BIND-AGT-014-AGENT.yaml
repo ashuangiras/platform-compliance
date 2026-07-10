@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-AGT-014-AGENT
+control_id: AGT-014
+technology_context: agent
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  The pull request body contains a completed readiness check (ticked) and a retrospective.
+observable_artifact: "collect-agent-info.py fields: improvement.pr_has_readiness, improvement.pr_has_retro"
+policy_check_ids:
+  - POL-AGT-014-AGENT-001

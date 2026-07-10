@@ -131,3 +131,32 @@ Three phases, each independently shippable and self-governing, tracked in
 This ADR is sequenced **before** ADR-0016 Phase 2 (Go service tier): the agent operating layer
 was just built, so governing it while it is fresh — and self-dogfooding — hardens the reference
 implementation immediately.
+
+---
+
+## Amendment 2026-07-10 — A2 made stringent and expanded (v1.5.0)
+
+Per a stakeholder directive to hold agent configuration to a very high, loudly-enforced bar,
+Phase A2 is amended:
+
+- **Enforcement promoted from `warn` to `block`.** All A2 controls fail the merge and release
+  gates immediately; there is no grace period. (Decision 5 is superseded for the A2 controls.)
+- **Control set expanded from six to eleven.** In addition to AGT-004 (description quality),
+  AGT-005 (least-privilege tools), AGT-006 (scoping), AGT-007 (pre/post-flight), AGT-008 (safety
+  hook), and AGT-009 (routing), three quality controls are added — **AGT-010** (per-agent role +
+  constraints), **AGT-011** (MCP server trust & version pinning), **AGT-012** (repository-
+  instruction completeness) — plus two continuous-improvement controls:
+  - **AGT-013** — every pull request must record a meaningful improvement in an agent learnings
+    ledger (`.github/agents/LEARNINGS.md`), keeping the agents ever-improving.
+  - **AGT-014** — every pull request must contain a completed readiness check and a retrospective
+    before it may merge.
+- **AGT-008 strengthened** to verify the guard's hook scripts exist and are executable.
+- **`PROF-AGENTIC-V1` bumped to v2.0.0**: all twelve setup/effectiveness controls plus the two
+  improvement controls are mandatory and block at the merge gate.
+- **New artifacts**: `tools/check-agents.sh` (offline "fail loudly" runner for the whole AGT
+  suite), `.github/agents/LEARNINGS.md` (the ledger), and `.github/pull_request_template.md`
+  (readiness + retro section). The collector gains PR context (changed files + PR body) via
+  environment variables so it stays offline and stdlib-only.
+
+A3 remains: fold the structural controls into `PROF-BASE` at v2.0.0. The promotion of A2 to block
+is already complete, so A3's promotion step now applies only to the eventual `PROF-BASE` merge.

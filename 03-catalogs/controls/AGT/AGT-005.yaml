@@ -1,0 +1,53 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-005
+title: Agents must declare least-privilege tool sets
+domain: AGT
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Every custom agent must declare an explicit `tools` set in its frontmatter — no agent may rely
+  on the unrestricted default. Read-only or review/verification agents must not hold the file-
+  mutation tool `edit`. Agents are granted only the tools their role requires.
+
+rationale: >
+  An agent with unrestricted or excessive tools is a blast-radius and prompt-injection risk: a
+  reviewer that can edit files, or an agent that can run arbitrary commands it never needs, can
+  cause or be coerced into damage. Explicit, minimal tool sets enforce least privilege, keep each
+  agent focused on its role, and make the security posture of the agent team auditable.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "Custom agents — minimal tools; role-based tool restrictions"
+    mapping_note: >
+      The customization guidance calls excessive tools an anti-pattern ("Swiss-army agents").
+      AGT-005 enforces explicit, least-privilege tool declarations.
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "Read-only reviewer agents must not hold edit/execute; explicit minimal tool set"
+    mapping_note: >
+      House convention derived from the platform's own agent team (compliance-reviewer is
+      read-only). AGT-005 enforces it for all governed repositories.
+
+implementation_expectations: >
+  Every .agent.md declares a non-empty explicit `tools` list; review/read-only agents exclude
+  `edit`. Collected by collect-agent-info.py as agents.agents_missing_tools and
+  agents.readonly_agents_with_write_tools (both must be empty).
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing empty agents.agents_missing_tools and
+      agents.readonly_agents_with_write_tools lists.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

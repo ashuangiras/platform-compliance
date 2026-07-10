@@ -1,0 +1,11 @@
+id: POL-AGT-013-AGENT-001
+title: "AGT-013 (agent): every change records an improvement in the learnings ledger"
+binding_ids: [BIND-AGT-013-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-013-AGENT-001.rego"
+pass_criteria: "Learnings ledger present; on a PR, the ledger is updated in the change set."
+fail_criteria: "No learnings ledger, or a pull request that does not update it."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

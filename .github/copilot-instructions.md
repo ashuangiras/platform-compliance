@@ -70,7 +70,18 @@ Never invent a domain or context — add it to `02-taxonomy/` (and the relevant 
 4. Re-validate `.compliance-manifest.yaml` if taxonomy/schema/contexts changed.
 5. Update `CHANGELOG.md` (add to the version entry, not a stale `Unreleased`) and cite the Change Record.
 6. Update the relevant task tracker under `docs/implementation/tasks/`.
-7. Open a PR; let `self-compliance.yml` run; only then bootstrap-merge.
+7. **Record an agent improvement** in [.github/agents/LEARNINGS.md](agents/LEARNINGS.md) — what
+   the change taught the team and how the agent config/knowledge improved (required by AGT-013).
+8. **Run `tools/check-agents.sh`** — the full AGT suite must pass locally before you push.
+9. Open a PR and **complete the Agent Readiness & Retro section** in its body (required by
+   AGT-014); let `self-compliance.yml` run; only then bootstrap-merge.
+
+## Continuous agent improvement
+
+The agent operating layer is governed and self-improving. Every change must leave the agents a
+little better: record the learning in the ledger (AGT-013) and complete the pre-merge readiness
+check + retro (AGT-014). Run [tools/check-agents.sh](../tools/check-agents.sh) to check the whole
+AGT suite locally — it fails loudly if the setup is below standard.
 
 ## Safety
 

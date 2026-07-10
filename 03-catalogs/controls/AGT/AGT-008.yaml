@@ -1,0 +1,54 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-008
+title: A PreToolUse safety hook must guard irreversible operations
+domain: AGT
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  The repository must configure a `PreToolUse` lifecycle hook that intercepts irreversible or
+  destructive operations (force-push, hard reset, rm -rf, --no-verify, branch/tag deletion) and
+  requires confirmation before they run. Every hook command must reference a script that exists in
+  the repository and, for shell scripts, is executable.
+
+rationale: >
+  Instructions only *guide* an agent; a hook *enforces*. Agents can be prompt-injected or make
+  mistakes, and a single destructive command can lose work irrecoverably. A PreToolUse guard is a
+  deterministic backstop that pauses on dangerous operations regardless of the agent's reasoning.
+  A guard whose script is missing or non-executable is a false sense of safety, so the control
+  verifies the referenced scripts are present and runnable.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "Hooks enforce behavior deterministically at lifecycle points (PreToolUse)"
+    mapping_note: >
+      The customization guidance positions hooks as the deterministic enforcement primitive.
+      AGT-008 requires a PreToolUse guard and verifies its scripts resolve.
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "PreToolUse guard for irreversible operations"
+    mapping_note: >
+      House convention from the platform's own guard-destructive-ops hook. AGT-008 requires it in
+      every governed repository.
+
+implementation_expectations: >
+  A .github/hooks/*.json configures a PreToolUse hook; each command's script exists and shell
+  scripts are executable. Collected by collect-agent-info.py as hooks.guard_ok (must be true),
+  with hooks.missing_command_scripts and hooks.non_executable_scripts empty.
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing hooks.guard_ok == true.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

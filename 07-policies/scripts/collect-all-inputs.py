@@ -159,9 +159,15 @@ def main():
 
     # ── Agent context (AGT) ──────────────────────────────────────────────────
     if "agent" in contexts:
+        agent_env = {
+            **os.environ,
+            "AGENT_PR_NUMBER": str(args.pr_number or ""),
+            "AGENT_PR_BODY": pr_body or "",
+            "AGENT_CHANGED_FILES": "\n".join(changed_files or []),
+        }
         result = subprocess.run(
             [sys.executable, "07-policies/scripts/collect-agent-info.py", "."],
-            capture_output=True, text=True
+            capture_output=True, text=True, env=agent_env
         )
         try:
             data = json.loads(result.stdout)
@@ -171,15 +177,26 @@ def main():
                     "instructions": {"copilot_instructions_present": False, "agents_md_present": False,
                                      "instruction_source_count": 0, "single_source": False,
                                      "root_instructions_file": None,
-                                     "has_preflight": False, "has_postflight": False},
+                                     "has_preflight": False, "has_postflight": False,
+                                     "has_build_test": False, "has_conventions": False,
+                                     "has_safety": False, "complete": False},
                     "frontmatter": {"total_files": 0, "valid_count": 0, "all_valid": True, "invalid_files": []},
+                    "descriptions": {"weak_min": 40, "weak_files": []},
                     "customization_files": [],
                     "agents": {"count": 0, "names": [], "router_present": False,
-                               "agents_missing_tools": [], "readonly_agents_with_write_tools": []},
+                               "agents_missing_tools": [], "readonly_agents_with_write_tools": [],
+                               "agents_missing_role": [], "agents_missing_constraints": []},
                     "instruction_files": {"count": 0, "broad_applyto_files": [], "missing_description_files": []},
                     "mcp": {"config_present": False, "config_valid": False, "servers": [],
-                            "server_count": 0, "hardcoded_secret_suspected": False, "secret_findings": []},
-                    "hooks": {"config_present": False, "files": [], "events": [], "has_destructive_guard": False}}
+                            "server_count": 0, "server_details": [], "servers_missing_type": [],
+                            "unpinned_servers": [], "hardcoded_secret_suspected": False, "secret_findings": []},
+                    "hooks": {"config_present": False, "files": [], "events": [], "has_destructive_guard": False,
+                              "commands": [], "missing_command_scripts": [], "non_executable_scripts": [],
+                              "guard_ok": False},
+                    "improvement": {"ledger_present": False, "ledger_path": None, "ledger_entry_count": 0,
+                                    "is_pull_request": False, "ledger_updated_in_pr": False,
+                                    "agent_config_updated_in_pr": False, "pr_has_readiness": False,
+                                    "pr_has_retro": False}}
         (out / "agent-info.json").write_text(json.dumps(data))
 
     # ── ACC-001: Account MFA / security settings (GitHub context) ────────────
