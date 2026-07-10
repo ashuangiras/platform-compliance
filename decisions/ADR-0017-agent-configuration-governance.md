@@ -158,5 +158,14 @@ Phase A2 is amended:
   (readiness + retro section). The collector gains PR context (changed files + PR body) via
   environment variables so it stays offline and stdlib-only.
 
+### Follow-up 2026-07-10 — Downstream setup control (v1.6.0)
+
+- **AGT-015** added (block): a repository with custom agents must commit `.vscode/settings.json`
+  enabling `chat.agentFilesLocations` for `.github/agents`, so the agent team is discoverable on
+  every clone and for every new downstream repository that adopts the pattern — not just where a
+  user's editor defaults happen to scan it.
+- A ready-to-copy starter (`templates/agent-vscode-settings.template.json`) lets a downstream repo
+  enable discovery immediately. The AGT suite is now **15 controls**, all blocking.
+
 A3 remains: fold the structural controls into `PROF-BASE` at v2.0.0. The promotion of A2 to block
 is already complete, so A3's promotion step now applies only to the eventual `PROF-BASE` merge.

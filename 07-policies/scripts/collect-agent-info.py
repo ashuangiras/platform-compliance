@@ -280,6 +280,30 @@ def collect_hooks(root):
     return info
 
 
+# ── Discovery settings (AGT-015) ─────────────────────────────────────────────
+
+def collect_discovery(root):
+    """Whether the workspace explicitly enables agent discovery for the whole team.
+
+    `.github/agents` is a default location, but a committed `.vscode/settings.json` that enables
+    `chat.agentFilesLocations` guarantees discovery for every clone (and every downstream repo
+    that adopts the pattern), independent of a user's personal defaults.
+    """
+    cfg = root / ".vscode" / "settings.json"
+    info = {"settings_file_present": cfg.exists(), "agent_location_enabled": False}
+    if not cfg.exists():
+        return info
+    try:
+        raw = cfg.read_text(encoding="utf-8", errors="replace")
+    except Exception:
+        return info
+    # Regex check (tolerant of JSONC comments / trailing commas / other settings).
+    has_key = re.search(r'"chat\.agentFilesLocations"', raw)
+    agents_on = re.search(r'"\.github/agents"\s*:\s*true', raw)
+    info["agent_location_enabled"] = bool(has_key and agents_on)
+    return info
+
+
 # ── Agents / instructions rosters ────────────────────────────────────────────
 
 ROUTER_RE = re.compile(r"rout|coordinat|orchestrat|dispatch", re.IGNORECASE)
@@ -455,6 +479,7 @@ def main():
         },
         "mcp": collect_mcp(root),
         "hooks": collect_hooks(root),
+        "discovery": collect_discovery(root),
         "improvement": {
             "ledger_present": ledger_present,
             "ledger_path": ledger_path,

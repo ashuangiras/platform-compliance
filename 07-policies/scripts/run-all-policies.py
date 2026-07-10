@@ -65,6 +65,8 @@ POLICY_MAP = {
     # ── ADR-0017 A2: continuous improvement + pre-merge readiness ───────────
     "AGT-013":   ("AGT/POL-AGT-013-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_013_agent.result",             ["agent"]),
     "AGT-014":   ("AGT/POL-AGT-014-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_014_agent.result",             ["agent"]),
+    # ── ADR-0017 A2: downstream discovery/setup ─────────────────────────────
+    "AGT-015":   ("AGT/POL-AGT-015-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_015_agent.result",             ["agent"]),
 
     # ── Tier 2 ──────────────────────────────────────────────────────────────
     "SUP-004":   ("SUP/POL-SUP-004-GITHUB-ACTIONS-001.rego",  "actions-info.json",   "data.platform.sup.sup_004_github_actions.result",   ["github-actions"]),

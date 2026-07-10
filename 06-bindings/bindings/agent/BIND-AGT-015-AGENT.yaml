@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-AGT-015-AGENT
+control_id: AGT-015
+technology_context: agent
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  A repository with custom agents commits .vscode/settings.json enabling chat.agentFilesLocations
+  for .github/agents (starter: templates/agent-vscode-settings.template.json).
+observable_artifact: "collect-agent-info.py field: discovery.agent_location_enabled"
+policy_check_ids:
+  - POL-AGT-015-AGENT-001

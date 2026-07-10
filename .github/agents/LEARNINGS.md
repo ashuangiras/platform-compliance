@@ -10,6 +10,18 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — Downstream agent adoptability (AGT-015)
+
+- Turned the team-discovery settings into a **proper governed control (AGT-015)**: any repository
+  with custom agents must commit `.vscode/settings.json` enabling `chat.agentFilesLocations`, so
+  new downstream repos get a discoverable agent team on first clone. Added a copy-paste template
+  (`templates/agent-vscode-settings.template.json`) so adoption is immediate.
+- Learned: enforcing setup (a control) and enabling setup (a template) are complementary — a
+  blocking control without a one-step remediation just frustrates adopters, so the two ship
+  together. The control is context-gated and `not_applicable` when a repo has no agents.
+- Efficiency gain: onboarding a new downstream repository to the agent operating layer is now a
+  template copy plus a gate that confirms it, rather than tribal knowledge.
+
 ## 2026-07-10 — Team-wide agent discoverability (workspace settings)
 
 - Committed `.vscode/settings.json` with `chat.agentFilesLocations: { ".github/agents": true }`

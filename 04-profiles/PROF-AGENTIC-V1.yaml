@@ -44,6 +44,7 @@ categories:
     - id: AGT-012
     - id: AGT-013
     - id: AGT-014
+    - id: AGT-015
   manual_initially:
     description: 'No manually-attested agent controls; all AGT controls are automated.
 
@@ -88,6 +89,8 @@ gates:
       enforcement: block
     - id: AGT-014
       enforcement: block
+    - id: AGT-015
+      enforcement: block
   release_gate:
     description: 'Agent-configuration controls evaluated before a version tag is published. All block.
 
@@ -116,6 +119,8 @@ gates:
     - id: AGT-011
       enforcement: block
     - id: AGT-012
+      enforcement: block
+    - id: AGT-015
       enforcement: block
   deployment_gate:
     description: 'Agent configuration is not a deployed artifact; no controls evaluated at
@@ -155,6 +160,8 @@ gates:
     - id: AGT-013
       enforcement: notify
     - id: AGT-014
+      enforcement: notify
+    - id: AGT-015
       enforcement: notify
 notes: >
   Opt-in overlay. Enforcement is driven by the 'agent' technology context: a repository that

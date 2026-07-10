@@ -1,0 +1,58 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-015
+title: Repositories with agents must commit team-wide agent discovery settings
+domain: AGT
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  A repository that defines custom agents (.github/agents/*.agent.md) must commit a
+  .vscode/settings.json that enables agent discovery for the whole team by setting
+  `chat.agentFilesLocations` to include `.github/agents`. This guarantees the agent team is
+  discoverable on every clone — and for every new downstream repository that adopts the
+  pattern — independent of any individual's editor defaults.
+
+rationale: >
+  `.github/agents` is a default scan location in current editors, but that default is a
+  per-user, version-dependent behavior: a teammate with a customized configuration, an older
+  build, or a fresh downstream repository can end up with the agent team invisible. Committing
+  the discovery setting makes the agent operating layer work immediately and identically for
+  everyone who checks out the repository, which is exactly what onboarding a new downstream repo
+  requires. It also documents, in-repo, that this repository ships a governed agent team.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "chat.agentFilesLocations configures where custom agents are discovered"
+    mapping_note: >
+      The customization docs define chat.agentFilesLocations for agent discovery. AGT-015
+      requires it to be committed so discovery is explicit and shared.
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "Agent discovery settings committed for the whole team and downstream repos"
+    mapping_note: >
+      House convention: an agent team is not 'set up' until every teammate and every downstream
+      adopter can see it on clone. AGT-015 enforces the committed setting.
+
+implementation_expectations: >
+  A repository containing custom agents must commit .vscode/settings.json with
+  `chat.agentFilesLocations` enabling `.github/agents`. A ready-to-copy starter is provided at
+  templates/agent-vscode-settings.template.json. Collected by collect-agent-info.py as
+  discovery.agent_location_enabled. Not applicable to repositories with no custom agents.
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing discovery.agent_location_enabled == true when
+      agents.count > 0.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate
