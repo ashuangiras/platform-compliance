@@ -120,7 +120,7 @@ phases:
     status: done
 - id: phase-P4-frontend
   title: 'P4 — Frontend: CSP, bundle budget, a11y, PROF-FRONTEND-V1'
-  horizon: v1.9.0
+  horizon: v2.0.0
   tasks:
   - id: PC-0248
     title: 'Register standards: SRC-WEB-CSP, SRC-WCAG-2-2'
@@ -138,15 +138,15 @@ phases:
     title: Create PROF-FRONTEND-V1
     status: not_started
   - id: PC-0253
-    title: Full CI validation of P4; merge; cut v1.8.0
+    title: Full CI validation of P4; merge; cut v2.0.0
     status: not_started
 - id: phase-P5-library
   title: 'P5 — Library: reuse QUA/TST, relax RUN/NET/OBS, PROF-LIBRARY-V1'
-  horizon: v2.0.0
+  horizon: v2.1.0
   tasks:
   - id: PC-0254
     title: Create PROF-LIBRARY-V1 (inherits PROF-BASE; QUA/TST; no RUN/NET/OBS)
     status: not_started
   - id: PC-0255
-    title: Full CI validation of P5; merge; cut v2.0.0 (coverage TST-002 -> block)
+    title: Full CI validation of P5; merge; cut v2.1.0 (coverage TST-002 -> block)
     status: not_started
