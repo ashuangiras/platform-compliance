@@ -1,7 +1,7 @@
 <!--
   Pull request template for platform-compliance.
   The "Agent Readiness & Retro" section is required by AGT-014 — complete it (tick the boxes and
-  fill the retro) before merge. AGT-013 requires an entry in .github/agents/LEARNINGS.md in this PR.
+  fill the retro) before merge. AGT-013 requires an entry in .github/AGENT_LEARNINGS.md in this PR.
 -->
 
 ## Summary
@@ -28,7 +28,7 @@
 <!--
   Briefly: what worked, what was harder than expected, and what understanding or configuration
   was updated as a result. A corresponding entry has been added to
-  .github/agents/LEARNINGS.md (required — AGT-013).
+  .github/AGENT_LEARNINGS.md (required — AGT-013).
 -->
 
 -

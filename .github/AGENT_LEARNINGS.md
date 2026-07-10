@@ -10,6 +10,19 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — Relocated the learnings ledger out of .github/agents/
+
+- Moved this ledger from `.github/agents/LEARNINGS.md` to `.github/AGENT_LEARNINGS.md`. VS Code
+  registers *any* `.md` file in `.github/agents/` as a custom agent, so the ledger was surfacing
+  as a bogus "LEARNINGS" entry in the agent picker — noise that made the real specialist team
+  harder to navigate. The ledger now lives one level up, outside the agent-scan folder.
+- Updated `collect-agent-info.py` so `LEDGER_CANDIDATES` no longer recommends any
+  `.github/agents/*` path; it now points only at `.github/AGENT_LEARNINGS.md` and
+  `docs/agent-learnings.md`. Downstream repos that copy this pattern won't reintroduce the
+  stray-agent problem.
+- Efficiency gain: the agent picker shows only genuine agents, and the AGT-013 ledger stays
+  discoverable at a clean, conventional location without polluting the agent roster.
+
 ## 2026-07-10 — Downstream agent adoptability (AGT-015)
 
 - Turned the team-discovery settings into a **proper governed control (AGT-015)**: any repository

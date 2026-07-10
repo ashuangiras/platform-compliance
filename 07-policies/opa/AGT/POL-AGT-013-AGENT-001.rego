@@ -30,7 +30,7 @@ result := {
 	"details": {
 		"checked": sprintf("Agent improvement ledger in '%v'", [input.repository.name]),
 		"found": "no learnings ledger present",
-		"expected": "an agent learnings ledger (e.g. .github/agents/LEARNINGS.md)",
+		"expected": "an agent learnings ledger (e.g. .github/AGENT_LEARNINGS.md)",
 		"message": "AGT-013: create an agent learnings ledger and record improvements per change.",
 	},
 } if {

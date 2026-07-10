@@ -155,6 +155,29 @@ PROF-PLATFORM-V1 passes profile schema validation.
 
 ---
 
+## [v1.6.1] — 2026-07-10
+
+### Summary
+
+Housekeeping fix. Relocates the AGT-013 agent learnings ledger from `.github/agents/LEARNINGS.md`
+to `.github/AGENT_LEARNINGS.md` so it is no longer mis-registered as a VS Code custom agent, and
+trims the collector so it stops recommending agent-folder ledger paths.
+
+Change Record: CHG-20260710-010.
+
+### Changed
+
+- Moved the AGT-013 learnings ledger from `.github/agents/LEARNINGS.md` to
+  `.github/AGENT_LEARNINGS.md` — keeping it out of `.github/agents/` so it is no longer picked up
+  as a stray VS Code custom agent.
+- `collect-agent-info.py` `LEDGER_CANDIDATES` no longer recommends agent-folder ledger paths
+  (`.github/agents/LEARNINGS.md`, `.github/agents/IMPROVEMENTS.md`).
+- Updated AGT-013 references to the new ledger path across the control statement
+  (`AGT-013.yaml`), the OPA policy (`POL-AGT-013-AGENT-001.rego`), `copilot-instructions.md`, and
+  `pull_request_template.md`.
+
+---
+
 ## [v1.6.0] — 2026-07-10
 
 ### Summary
