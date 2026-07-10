@@ -1,0 +1,11 @@
+id: POL-API-003-GO-001
+title: "API-003 (go): OpenAPI spec changes must be accompanied by breaking-change analysis"
+binding_ids: [BIND-API-003-GO]
+engine: opa
+file_path: "07-policies/opa/API/POL-API-003-GO-001.rego"
+pass_criteria: "OpenAPI spec not changed, OR spec changed and breaking_change_analysed == true."
+fail_criteria: "OpenAPI spec changed and no breaking-change analysis annotation or artifact present."
+evidence_type: go-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

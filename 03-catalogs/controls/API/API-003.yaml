@@ -1,0 +1,48 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: API-003
+title: PRs modifying the OpenAPI spec must include a breaking-change analysis
+domain: API
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Any pull request that modifies the committed OpenAPI specification must include
+  either: (a) an oasdiff breaking-change analysis attached as a CI artifact
+  showing zero breaking changes, or (b) a no-breaking-change: true annotation in
+  the PR body where the author has confirmed the changes are safe.
+
+rationale: >
+  Breaking API changes (removing fields, changing types, removing endpoints) can
+  silently break downstream consumers without either party being immediately aware.
+  Requiring a breaking-change analysis at the PR stage forces authors to consciously
+  evaluate the impact of their API changes before merge, giving consumers lead time
+  to adapt. oasdiff is the Go-native tooling for this analysis.
+
+mapped_standards:
+  - source_id: SRC-OPENAPI-3-1
+    clause: "Backwards compatibility — changes to the OpenAPI spec must not break existing consumers without a version increment"
+    mapping_note: >
+      The OpenAPI specification does not define a breaking change process, but the
+      principle of consumer-driven contracts is implicit. API-003 operationalises
+      this as a CI gate using oasdiff tooling.
+
+implementation_expectations: >
+  When the openapi.yaml/json file is modified in a PR:
+  1. Either a CI step runs oasdiff and attaches the result as an artifact, OR
+  2. The PR body contains the string "no-breaking-change: true"
+
+  The platform CI detects spec changes (openapi_spec_changed) and checks the PR
+  body for the annotation via the GitHub PR context collector.
+
+evidence_required:
+  - type: go-quality
+    description: "PR body annotation or CI oasdiff artifact for OpenAPI spec changes"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"

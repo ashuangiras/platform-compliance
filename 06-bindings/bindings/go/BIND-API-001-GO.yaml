@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-API-001-GO
+control_id: API-001
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Repository must contain an openapi.yaml or openapi.json file at root, docs/, or
+  api/ directory. The file must be a valid OpenAPI 3.x document committed to source control.
+observable_artifact: "collect-go-info.sh output field: api.openapi_spec_present"
+policy_check_ids:
+  - POL-API-001-GO-001

@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-API-002-GO
+control_id: API-002
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  The openapi spec info.version must be set to a non-empty semver string and all
+  API paths must be prefixed with /vN/ matching the major version.
+observable_artifact: "collect-go-info.sh output field: api.api_version_declared"
+policy_check_ids:
+  - POL-API-002-GO-001

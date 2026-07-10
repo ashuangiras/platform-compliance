@@ -1,0 +1,59 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: DOC-003
+title: Service repositories must include a runbook
+domain: DOC
+type: directive
+priority: P2
+severity: medium
+
+statement: >
+  Service repositories must include a runbook (docs/runbook.md or RUNBOOK.md at
+  the repository root) covering at minimum: startup procedure, shutdown procedure,
+  on-call escalation path, and common failure modes with remediation steps.
+
+rationale: >
+  A runbook is the primary operational reference for on-call engineers. Without
+  one, incident response relies on tribal knowledge, which increases mean-time-to-
+  resolve (MTTR) and creates single points of failure in the team. A runbook that
+  covers startup, shutdown, escalation, and common failures ensures any on-call
+  engineer can manage the service without requiring the original author to be
+  available. This is a foundational operational maturity requirement.
+
+mapped_standards:
+  - source_id: SRC-GOOGLE-SRE
+    clause: "Chapter 28 — Accelerating SREs to On-Call and Beyond: runbooks are required for on-call handoff; must cover failure modes and escalation paths"
+    mapping_note: >
+      Google SRE Chapter 28 explicitly requires runbooks as a prerequisite for
+      on-call readiness. DOC-003 formalises this as a platform requirement with
+      minimum content expectations.
+  - source_id: SRC-ITIL-ADAPTED
+    clause: "Service Operation — Incident Management: documented procedures reduce MTTR"
+    mapping_note: >
+      ITIL Incident Management requires documented procedures. DOC-003's runbook
+      requirement is the concrete delivery mechanism.
+
+implementation_expectations: >
+  Service repositories must have either:
+  - docs/runbook.md containing sections for: startup, shutdown, escalation, and
+    at least one common failure mode
+  - RUNBOOK.md at the repository root with the same minimum sections
+
+  Minimum required sections (case-insensitive headings):
+  - Startup (or "Starting the service")
+  - Shutdown (or "Stopping the service")
+  - Escalation (or "On-call escalation" or "Who to call")
+  - Common failures (or "Troubleshooting" or "Known issues")
+
+  The platform CI detects runbook_present via collect-go-info.sh.
+
+evidence_required:
+  - type: go-quality
+    description: "docs/runbook.md or RUNBOOK.md present in repository"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"

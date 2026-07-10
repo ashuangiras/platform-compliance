@@ -54,45 +54,45 @@ phases:
     status: done
 - id: phase-P2-go-service
   title: 'P2 — Go service: ARC, API, OBS-004, SRC-005, SUP-005, PROF-GO-SERVICE-V1'
-  horizon: v1.4.0
+  horizon: v1.7.0
   tasks:
   - id: PC-0229
     title: 'Register standards: OpenAPI 3.1, OpenTelemetry, Conventional Commits,
       12-Factor'
-    status: not_started
+    status: done
   - id: PC-0230
     title: Define ARC-001 (standard Go project layout) + policy
-    status: not_started
+    status: done
   - id: PC-0231
     title: Define ARC-003 (no import cycles / layer boundaries) + policy
-    status: not_started
+    status: done
   - id: PC-0232
     title: Define API-001 (OpenAPI spec required) + policy
-    status: not_started
+    status: done
   - id: PC-0233
     title: Define API-002 (versioning strategy declared) + policy
-    status: not_started
+    status: done
   - id: PC-0234
     title: Define API-003 (breaking change detection) + policy
-    status: not_started
+    status: done
   - id: PC-0235
     title: Define OBS-004 (OpenTelemetry tracing) + policy
-    status: not_started
+    status: done
   - id: PC-0236
     title: Define SRC-005 (Conventional Commits) + policy
-    status: not_started
+    status: done
   - id: PC-0237
     title: Define SUP-005 (committed lockfile) + policy
-    status: not_started
+    status: done
   - id: PC-0238
     title: Define DOC-003 (service runbook) + policy
-    status: not_started
+    status: done
   - id: PC-0239
     title: Create PROF-GO-SERVICE-V1 (inherits PROF-SERVICE-V1)
-    status: not_started
+    status: done
   - id: PC-0240
     title: Full CI validation of P2; merge; cut v1.4.0
-    status: not_started
+    status: done
 - id: phase-P3-node-python
   title: 'P3 — Node + Python: extend QUA/TST/ARC bindings + profiles'
   horizon: v1.5.0

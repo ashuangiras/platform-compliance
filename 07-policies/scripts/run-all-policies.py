@@ -47,6 +47,16 @@ POLICY_MAP = {
     "TST-001":   ("TST/POL-TST-001-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_001_go.result",                ["go"]),
     "TST-002":   ("TST/POL-TST-002-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_002_go.result",                ["go"]),
     "TST-003":   ("TST/POL-TST-003-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_003_go.result",                ["go"]),
+    # ── ADR-0016 P2: Go service controls (ARC, API, OBS, SRC, SUP, DOC) ────────
+    "ARC-001":   ("ARC/POL-ARC-001-GO-001.rego",              "go-info.json",         "data.platform.arc.arc_001_go.result",                ["go"]),
+    "ARC-003":   ("ARC/POL-ARC-003-GO-001.rego",              "go-info.json",         "data.platform.arc.arc_003_go.result",                ["go"]),
+    "API-001":   ("API/POL-API-001-GO-001.rego",              "go-info.json",         "data.platform.api.api_001_go.result",                ["go"]),
+    "API-002":   ("API/POL-API-002-GO-001.rego",              "go-info.json",         "data.platform.api.api_002_go.result",                ["go"]),
+    "API-003":   ("API/POL-API-003-GO-001.rego",              "go-info.json",         "data.platform.api.api_003_go.result",                ["go"]),
+    "OBS-004":   ("OBS/POL-OBS-004-GO-001.rego",              "go-info.json",         "data.platform.obs.obs_004_go.result",                ["go"]),
+    "SRC-005":   ("SRC/POL-SRC-005-GITHUB-001.rego",          "go-info.json",         "data.platform.src.src_005_github.result",            ["go"]),
+    "SUP-005":   ("SUP/POL-SUP-005-GO-001.rego",              "go-info.json",         "data.platform.sup.sup_005_go.result",                ["go"]),
+    "DOC-003":   ("DOC/POL-DOC-003-GO-001.rego",              "go-info.json",         "data.platform.doc.doc_003_go.result",                ["go"]),
 
     # ── ADR-0017 A1: Agent configuration governance (AGT) ───────────────────
     "AGT-001":   ("AGT/POL-AGT-001-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_001_agent.result",             ["agent"]),

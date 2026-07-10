@@ -1,0 +1,11 @@
+id: POL-SUP-005-GO-001
+title: "SUP-005 (go): go.sum must be committed and tidy"
+binding_ids: [BIND-SUP-005-GO]
+engine: opa
+file_path: "07-policies/opa/SUP/POL-SUP-005-GO-001.rego"
+pass_criteria: "Go module present, Go toolchain available, go.sum committed and tidy."
+fail_criteria: "go.sum not committed, or go mod tidy produces changes."
+evidence_type: go-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

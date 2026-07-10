@@ -1,0 +1,53 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SRC-005
+title: All commits on the default branch must follow Conventional Commits format
+domain: SRC
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  All commits merged to the default branch must follow the Conventional Commits
+  v1.0.0 format: <type>(<scope>): <subject>. The CI workflow must run a
+  commit-lint check on every pull request.
+
+rationale: >
+  Conventional Commits enable automated changelog generation, semantic version
+  calculation (breaking!/feat/fix maps to major/minor/patch), and improved
+  commit history navigation. By enforcing the format in CI, the platform ensures
+  the changelog and release tooling can operate deterministically. The format is
+  widely adopted (Angular, Vue, Electron, and many others) and has excellent
+  tooling support.
+
+mapped_standards:
+  - source_id: SRC-CONVENTIONAL-COMMITS
+    clause: "Conventional Commits v1.0.0 — commit message format specification"
+    mapping_note: >
+      SRC-005 directly enforces the Conventional Commits v1.0.0 specification.
+      The commit message format <type>(<scope>): <subject> is defined in that spec.
+  - source_id: SRC-OPENGITOPS-V1
+    clause: "GitOps Principle 2 — Desired state is versioned and immutable: meaningful commit messages are required for audit traceability"
+    mapping_note: >
+      GitOps requires traceable, meaningful change records. Conventional Commits
+      provides a machine-parseable format that supports this requirement.
+
+implementation_expectations: >
+  Repositories must:
+  - Have a commitlint or equivalent configuration committed (.commitlintrc.yaml,
+    .commitlintrc.json, or equivalent in commitlint.config.js)
+  - Run commitlint in CI on every PR (via GitHub Actions commitlint action or equivalent)
+
+  The platform CI checks conventional_commits_enforced by detecting the presence of
+  a commitlint workflow step in the repository's GitHub Actions workflows.
+
+evidence_required:
+  - type: github-branch-protection
+    description: "CI workflow containing a commitlint step for every PR"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"

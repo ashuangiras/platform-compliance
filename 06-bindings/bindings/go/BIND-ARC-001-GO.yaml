@@ -1,0 +1,14 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-ARC-001-GO
+control_id: ARC-001
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Repository must have a cmd/ directory containing application entry points, and
+  internal/ and/or pkg/ directories for library packages. No Go source files
+  should exist at the repository root except main.go for single-binary repos.
+observable_artifact: "collect-go-info.sh output field: architecture.project_layout"
+policy_check_ids:
+  - POL-ARC-001-GO-001

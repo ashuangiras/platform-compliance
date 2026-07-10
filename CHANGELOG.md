@@ -7,6 +7,71 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v1.7.0] — 2026-07-10
+
+### Summary
+
+ADR-0016 Phase P2: Go service controls. Adds 9 new controls (ARC-001, ARC-003, API-001/002/003,
+OBS-004, SRC-005, SUP-005, DOC-003) with bindings, OPA policies, and a new Go-service profile
+(PROF-GO-SERVICE-V1) that inherits from PROF-SERVICE-V1. Change record: CHG-20260710-011.
+
+### Added
+
+**Standards (01-sources/registry/):**
+- `SRC-OPENAPI-3-1` — OpenAPI Specification 3.1 (OpenAPI Initiative)
+- `SRC-CNCF-OTEL` — OpenTelemetry observability framework (CNCF)
+- `SRC-CONVENTIONAL-COMMITS` — Conventional Commits v1.0.0
+- `SRC-12-FACTOR` — The Twelve-Factor App (12factor.net)
+
+**Controls (03-catalogs/controls/):**
+- `ARC-001` — Go repositories must follow standard project layout (cmd/internal/pkg) [warn]
+- `ARC-003` — Zero import cycles and layer boundaries (go vet) [block]
+- `API-001` — Services must include a machine-readable OpenAPI spec [block]
+- `API-002` — OpenAPI spec must declare explicit version and versioned path prefix [block]
+- `API-003` — PRs modifying OpenAPI spec must include breaking-change analysis [warn]
+- `OBS-004` — Services must instrument distributed tracing using OpenTelemetry [warn]
+- `SRC-005` — All commits must follow Conventional Commits format [warn]
+- `SUP-005` — Go repositories must commit go.sum and keep it tidy [block]
+- `DOC-003` — Service repositories must include a runbook [warn]
+
+**Bindings (06-bindings/bindings/):**
+- `BIND-ARC-001-GO`, `BIND-ARC-003-GO` — ARC controls for go context
+- `BIND-API-001-GO`, `BIND-API-002-GO`, `BIND-API-003-GO` — API controls for go context
+- `BIND-OBS-004-GO` — OBS-004 for go context
+- `BIND-SRC-005-GITHUB` — SRC-005 for github context
+- `BIND-SUP-005-GO` — SUP-005 for go context
+- `BIND-DOC-003-GO` — DOC-003 for go context
+
+**OPA policies (07-policies/opa/):**
+- `ARC/POL-ARC-001-GO-001`, `ARC/POL-ARC-003-GO-001`
+- `API/POL-API-001-GO-001`, `API/POL-API-002-GO-001`, `API/POL-API-003-GO-001`
+- `OBS/POL-OBS-004-GO-001`
+- `SRC/POL-SRC-005-GITHUB-001`
+- `SUP/POL-SUP-005-GO-001`
+- `DOC/POL-DOC-003-GO-001`
+- All 9 policies compile clean (`/tmp/opa check`) and validate against `policy-check.schema.json`
+
+**Profile:**
+- `PROF-GO-SERVICE-V1` — Go service compliance profile inheriting PROF-SERVICE-V1;
+  4 new blocking controls (ARC-003, API-001, API-002, SUP-005) + 5 warn controls
+
+**Collector updates (07-policies/scripts/):**
+- `collect-go-info.sh` — extended with architecture, api, observability, supply_chain,
+  documentation, and source_hygiene sections
+- `run-all-policies.py` — 9 new POLICY_MAP entries for all P2 controls
+
+### Validation results
+- 4/4 standard-source files: `check-jsonschema` PASS
+- 9/9 control files: `check-jsonschema` PASS
+- 9/9 binding files: `check-jsonschema` PASS
+- 1/1 profile file: `check-jsonschema` PASS
+- 9/9 policy `.check.yaml` files: `check-jsonschema` PASS
+- OPA compile: `/tmp/opa check 07-policies/opa/` PASS (exit 0)
+- `bash -n collect-go-info.sh` PASS
+- `py_compile run-all-policies.py` PASS
+
+---
+
 ## [v1.0.0] — 2026-07-09
 
 ### Summary

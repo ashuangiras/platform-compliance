@@ -1,0 +1,11 @@
+id: POL-API-001-GO-001
+title: "API-001 (go): OpenAPI specification must be present"
+binding_ids: [BIND-API-001-GO]
+engine: opa
+file_path: "07-policies/opa/API/POL-API-001-GO-001.rego"
+pass_criteria: "Go module present and openapi.yaml/openapi.json exists at root, docs/, or api/."
+fail_criteria: "Go module present and no OpenAPI spec file found."
+evidence_type: go-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

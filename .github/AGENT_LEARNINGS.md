@@ -74,3 +74,29 @@ agents more effective* — not just what files changed.
   configuration, and a PreToolUse safety hook, with universal pre-flight/post-flight checklists.
 - Efficiency gain: work is routed to the right specialist with least-privilege tools and a
   deterministic safety backstop.
+
+---
+
+## AGT-LEARNING-001 — ADR-0016 P2: Schema ID pattern constraints affect standard source naming
+
+**Date:** 2026-07-10  
+**Phase:** ADR-0016 P2 (Go service controls)  
+**Change Record:** CHG-20260710-011
+
+### What happened
+When registering the OpenTelemetry standard source as `SRC-OPENTELEMETRY`, the schema
+validation failed because the `standard-source.schema.json` ID pattern `^SRC-[A-Z0-9]+-[A-Z0-9-]+$`
+requires at least two hyphen-delimited segments after `SRC-`. A single word like `OPENTELEMETRY`
+only produces one segment. The ID was corrected to `SRC-CNCF-OTEL` (vendor prefix + short name).
+
+### Learning
+Before naming a new standard source, verify the ID satisfies the pattern
+`^SRC-[A-Z0-9]+-[A-Z0-9-]+$` — it requires at minimum `SRC-{WORD1}-{WORD2}`.
+Single-word issuer names like `OPENTELEMETRY`, `DOCKER`, `GOLANG` must be prefixed with
+an issuer/org abbreviation or split: `SRC-CNCF-OTEL`, `SRC-DOCKER-CIS`, `SRC-GO-STYLE`.
+
+### Agent config improvement
+Added this rule to the control-author mental checklist. Before registering a standard source:
+1. Check the schema ID pattern
+2. Use format `SRC-{ORG/ISSUER}-{STANDARD}` — at least two hyphen-separated components after `SRC-`
+3. For well-known single-name standards, prefix with the owning org (CNCF, NIST, OWASP, etc.)

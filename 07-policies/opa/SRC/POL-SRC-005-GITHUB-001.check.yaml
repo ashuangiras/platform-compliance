@@ -1,0 +1,11 @@
+id: POL-SRC-005-GITHUB-001
+title: "SRC-005 (github/go): Conventional Commits CI enforcement must be present"
+binding_ids: [BIND-SRC-005-GITHUB]
+engine: opa
+file_path: "07-policies/opa/SRC/POL-SRC-005-GITHUB-001.rego"
+pass_criteria: "Go module present and commitlint CI step found in .github/workflows/."
+fail_criteria: "Go module present and no commitlint CI enforcement found."
+evidence_type: go-quality
+severity: medium
+introduced_date: "2026-07-10"
+status: active

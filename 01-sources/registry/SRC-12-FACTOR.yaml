@@ -1,0 +1,21 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+id: SRC-12-FACTOR
+name: The Twelve-Factor App
+version: "2017"
+publisher: Heroku / Adam Wiggins
+source_url: "https://12factor.net/"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+applies_to:
+  - ARC
+  - RUN
+  - SUP
+status: active
+notes: >
+  The Twelve-Factor App is a methodology for building software-as-a-service apps
+  emphasising declarative configuration, stateless processes, explicit dependency
+  declarations, and disposability. Factor II (Dependencies) underpins SUP-005
+  (committed lockfile). Factor I (Codebase) and Factor X (Dev/prod parity)
+  underpin ARC-001 (standard project layout).

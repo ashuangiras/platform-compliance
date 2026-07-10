@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-ARC-003-GO
+control_id: ARC-003
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  go vet ./... must pass with zero issues; no internal/ package may import from
+  cmd/. A passing go vet is the primary evidence of zero import cycles.
+observable_artifact: "collect-go-info.sh output field: quality.vet.result"
+policy_check_ids:
+  - POL-ARC-003-GO-001

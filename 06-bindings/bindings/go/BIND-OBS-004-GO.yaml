@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-OBS-004-GO
+control_id: OBS-004
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  go.sum must contain an entry for go.opentelemetry.io/otel indicating the
+  OpenTelemetry Go SDK is a dependency of the service.
+observable_artifact: "collect-go-info.sh output field: observability.otel_dependency_present"
+policy_check_ids:
+  - POL-OBS-004-GO-001

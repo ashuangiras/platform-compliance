@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-API-003-GO
+control_id: API-003
+technology_context: go
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  When openapi.yaml/json is modified in a PR, the PR body must contain
+  "no-breaking-change: true" or a CI oasdiff artifact must be attached.
+observable_artifact: "collect-go-info.sh output field: api.openapi_spec_changed + PR body annotation"
+policy_check_ids:
+  - POL-API-003-GO-001

@@ -1,0 +1,11 @@
+id: POL-ARC-003-GO-001
+title: "ARC-003 (go): zero import cycles — go vet must pass"
+binding_ids: [BIND-ARC-003-GO]
+engine: opa
+file_path: "07-policies/opa/ARC/POL-ARC-003-GO-001.rego"
+pass_criteria: "Go module present and go vet passes — no import cycles detected."
+fail_criteria: "Go module present and go vet fails — import cycles or layer violations present."
+evidence_type: go-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

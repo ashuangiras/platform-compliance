@@ -1,0 +1,18 @@
+$schema: "../../schemas/standard-source.schema.yaml"
+id: SRC-OPENAPI-3-1
+name: OpenAPI Specification 3.1
+version: "3.1.0"
+publisher: OpenAPI Initiative (Linux Foundation)
+source_url: "https://spec.openapis.org/oas/v3.1.0"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+applies_to:
+  - API
+status: active
+notes: >
+  The OpenAPI Specification (OAS) defines a standard, language-agnostic interface
+  to HTTP APIs. Version 3.1.0 aligns with JSON Schema 2020-12 and is the current
+  stable version. Platform controls API-001 (spec required), API-002 (versioning),
+  and API-003 (breaking change detection) are all derived from this standard.

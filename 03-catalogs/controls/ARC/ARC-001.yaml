@@ -1,0 +1,58 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: ARC-001
+title: Go repositories must follow the standard project layout
+domain: ARC
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  Go repositories must follow the standard Go project layout: application entry
+  points under cmd/, library packages under internal/ and/or pkg/, and no flat
+  root-level Go source files except main.go for single-command repositories.
+  Vendored dependencies, if present, must be confined to vendor/.
+
+rationale: >
+  A consistent project layout makes it immediately clear where to find entry points,
+  shared packages, and private implementation details. The cmd/internal/pkg layout
+  is the de-facto Go community standard and is enforced by many open-source Go
+  projects and the Go team's own toolchain layout guidance. Deviating from it
+  increases onboarding time and makes static analysis tooling harder to configure.
+  The internal/ directory additionally provides compiler-enforced package visibility
+  boundaries.
+
+mapped_standards:
+  - source_id: SRC-GO-STYLE
+    clause: "Project layout conventions: cmd/ for application entry points, internal/ for private packages, pkg/ for importable libraries"
+    mapping_note: >
+      The Uber Go Style Guide and Effective Go both recommend separating cmd/ entry
+      points from library code. ARC-001 formalises this as a platform requirement.
+  - source_id: SRC-12-FACTOR
+    clause: "Factor I — Codebase: one codebase tracked in revision control, many deploys"
+    mapping_note: >
+      The 12-factor codebase principle implies a well-structured, predictable layout
+      that makes it clear what the deployable unit is (cmd/) versus shared library
+      code (internal/, pkg/).
+
+implementation_expectations: >
+  Go repositories must have:
+  - A cmd/ directory containing one or more application entry points (cmd/myapp/main.go)
+  - OR a single cmd-equivalent main.go at root for single-binary repos
+  - internal/ for packages that must not be imported by external modules
+  - pkg/ for packages intended for external import (optional but recommended)
+  - No Go source files at the repository root other than main.go (for single-binary repos)
+
+  The platform CI collects project layout presence via collect-go-info.sh. Single-file
+  repositories (scripts, CLIs) may request a waiver citing their scope.
+
+evidence_required:
+  - type: go-quality
+    description: "Repository directory structure showing cmd/, internal/, pkg/ layout"
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: warn
+lifecycle_status: active
+introduced_date: "2026-07-10"
