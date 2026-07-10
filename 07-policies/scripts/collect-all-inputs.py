@@ -9,6 +9,10 @@ Usage: python3 collect-all-inputs.py [--repo OWNER/REPO] [--branch BRANCH] [--co
 import argparse, json, os, re, subprocess, sys
 from pathlib import Path
 
+# Directory containing this script — used to locate sibling collector scripts
+# regardless of the process working directory (self-compliance vs downstream repo).
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+
 def run_gh(endpoint, default=None):
     """Call gh API and return parsed JSON or default on error."""
     try:
@@ -102,7 +106,7 @@ def main():
     # ── Terraform context ────────────────────────────────────────────────────
     if "terraform" in contexts:
         result = subprocess.run(
-            ["bash", "07-policies/scripts/collect-terraform-info.sh", "."],
+            ["bash", str(_SCRIPTS_DIR / "collect-terraform-info.sh"), "."],
             capture_output=True, text=True
         )
         try:
@@ -117,7 +121,7 @@ def main():
     # ── Docker context ───────────────────────────────────────────────────────
     if "docker" in contexts:
         result = subprocess.run(
-            ["bash", "07-policies/scripts/collect-dockerfile-info.sh", "."],
+            ["bash", str(_SCRIPTS_DIR / "collect-dockerfile-info.sh"), "."],
             capture_output=True, text=True
         )
         try:
@@ -129,7 +133,7 @@ def main():
     # ── GitHub Actions context ───────────────────────────────────────────────
     if "github-actions" in contexts:
         result = subprocess.run(
-            ["bash", "07-policies/scripts/collect-workflow-actions.sh", "."],
+            ["bash", str(_SCRIPTS_DIR / "collect-workflow-actions.sh"), "."],
             capture_output=True, text=True
         )
         try:
@@ -141,7 +145,7 @@ def main():
     # ── Node context (QUA, TST) ─────────────────────────────────────────────
     if "node" in contexts:
         result = subprocess.run(
-            ["bash", "07-policies/scripts/collect-node-info.sh", "."],
+            ["bash", str(_SCRIPTS_DIR / "collect-node-info.sh"), "."],
             capture_output=True, text=True
         )
         try:
@@ -164,7 +168,7 @@ def main():
     # ── Python context (QUA, TST) ────────────────────────────────────────────
     if "python" in contexts:
         result = subprocess.run(
-            ["bash", "07-policies/scripts/collect-python-info.sh", "."],
+            ["bash", str(_SCRIPTS_DIR / "collect-python-info.sh"), "."],
             capture_output=True, text=True
         )
         try:
@@ -184,7 +188,7 @@ def main():
     # ── Go context (QUA, TST) ────────────────────────────────────────────────
     if "go" in contexts:
         result = subprocess.run(
-            ["bash", "07-policies/scripts/collect-go-info.sh", "."],
+            ["bash", str(_SCRIPTS_DIR / "collect-go-info.sh"), "."],
             capture_output=True, text=True
         )
         try:
@@ -203,7 +207,7 @@ def main():
     # ── Frontend context (SEC-009, SEC-010, SEC-011) ──────────────────────────
     if "frontend" in contexts:
         result = subprocess.run(
-            ["bash", "07-policies/scripts/collect-frontend-info.sh", "."],
+            ["bash", str(_SCRIPTS_DIR / "collect-frontend-info.sh"), "."],
             capture_output=True, text=True
         )
         try:
@@ -228,7 +232,7 @@ def main():
             "AGENT_CHANGED_FILES": "\n".join(changed_files or []),
         }
         result = subprocess.run(
-            [sys.executable, "07-policies/scripts/collect-agent-info.py", "."],
+            [sys.executable, str(_SCRIPTS_DIR / "collect-agent-info.py"), "."],
             capture_output=True, text=True, env=agent_env
         )
         try:

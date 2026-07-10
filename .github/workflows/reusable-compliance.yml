@@ -232,6 +232,31 @@ jobs:
           fi
           echo "Policy bundle ready: $(find /tmp/platform-compliance-policies -name '*.rego' | wc -l) rego files"
 
+          # Extract collector scripts so they are available at a stable absolute
+          # path when this workflow is called from a downstream repository whose
+          # working directory does not contain 07-policies/scripts/.
+          mkdir -p /tmp/platform-compliance-scripts
+          if ls /tmp/pc-extract/*/07-policies/scripts/ >/dev/null 2>&1; then
+            # Archive fallback already extracted the full source tree
+            cp -r /tmp/pc-extract/*/07-policies/scripts/. /tmp/platform-compliance-scripts/
+          else
+            # Release-asset path: fetch the full source archive for scripts only
+            mkdir -p /tmp/pc-scripts-extract
+            if curl -sSfL \
+                "https://github.com/${OWNER}/platform-compliance/archive/refs/tags/${REF}.tar.gz" \
+                -o /tmp/pc-scripts.tar.gz 2>/dev/null || \
+               curl -sSfL \
+                "https://github.com/${OWNER}/platform-compliance/archive/refs/heads/${REF}.tar.gz" \
+                -o /tmp/pc-scripts.tar.gz 2>/dev/null; then
+              tar -xz -f /tmp/pc-scripts.tar.gz -C /tmp/pc-scripts-extract
+              cp -r /tmp/pc-scripts-extract/*/07-policies/scripts/. /tmp/platform-compliance-scripts/
+            else
+              echo "::warning::Could not fetch platform-compliance scripts archive for ${REF}"
+            fi
+          fi
+          chmod +x /tmp/platform-compliance-scripts/*.sh 2>/dev/null || true
+          echo "Scripts ready: $(ls /tmp/platform-compliance-scripts/ | wc -l) files"
+
 
       - name: Run all applicable policy checks
         id: run-policies
@@ -244,8 +269,10 @@ jobs:
         run: |
           mkdir -p /tmp/inputs /tmp/results
 
-          # Collect all inputs via the helper script
-          python3 07-policies/scripts/collect-all-inputs.py \
+          # Collect all inputs via the helper script.
+          # Use absolute path — the working directory is the calling repo's
+          # checkout, which does not contain 07-policies/scripts/ for downstream repos.
+          python3 /tmp/platform-compliance-scripts/collect-all-inputs.py \
             --repo "$REPO" \
             --branch main \
             --repo-name "${{ github.event.repository.name }}" \
@@ -258,7 +285,7 @@ jobs:
           [ -f /tmp/inputs/sec-secrets.json ] || echo '{"repository":{"name":"${{ github.event.repository.name }}"},"scan_tool":"none","scan_tool_version":"unavailable","findings":[],"github_alerts_open":0}' > /tmp/inputs/sec-secrets.json
 
           # Run all policies via the helper script
-          python3 07-policies/scripts/run-all-policies.py \
+          python3 /tmp/platform-compliance-scripts/run-all-policies.py \
             --bundle /tmp/platform-compliance-policies \
             --inputs /tmp/inputs \
             --results /tmp/results \
