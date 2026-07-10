@@ -1,0 +1,11 @@
+id: POL-QUA-002-PYTHON-001
+title: "QUA-002 (python): ruff format must pass"
+binding_ids: [BIND-QUA-002-PYTHON]
+engine: opa
+file_path: "07-policies/opa/QUA/POL-QUA-002-PYTHON-001.rego"
+pass_criteria: "ruff format must pass — Python project present and format check passes."
+fail_criteria: "Python project present and ruff format check fails."
+evidence_type: python-quality
+severity: medium
+introduced_date: "2026-07-10"
+status: active

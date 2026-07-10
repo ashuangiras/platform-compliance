@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-001-PYTHON
+control_id: QUA-001
+technology_context: python
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  ruff check must exit 0 in CI; a ruff.toml or pyproject.toml with ruff configuration
+  must be committed to the repository.
+observable_artifact: "collect-python-info.sh output field: quality.lint.result"
+policy_check_ids:
+  - POL-QUA-001-PYTHON-001

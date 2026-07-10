@@ -1,0 +1,233 @@
+$schema: ../schemas/profile.schema.json
+id: PROF-PYTHON-SERVICE-V1
+name: Python Service Profile v1
+description: >
+  Compliance profile for Python application services. Inherits all controls from
+  PROF-SERVICE-V1 and adds Python-specific controls for code quality and testing
+  (ADR-0016 Phase P3). QUA-003 (build/compile) is intentionally omitted as Python
+  has no compile step. All language-specific controls are blocking merge gates from v1.
+
+version: "1.0.0"
+inherits: PROF-SERVICE-V1
+applicable_to:
+  - service
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+categories:
+  mandatory:
+    description: >
+      All controls inherited from PROF-SERVICE-V1 plus Python-specific controls for
+      linting (ruff), formatting (ruff format), type-checking (mypy), and test
+      coverage. QUA-003 is not applicable (Python has no compile step).
+    controls:
+      - id: SRC-001
+      - id: SRC-002
+      - id: SEC-001
+      - id: SEC-002
+      - id: DOC-001
+      - id: CHG-002
+      - id: RUN-001
+      - id: RUN-002
+      - id: SUP-002
+      - id: SUP-001
+      - id: SEC-003
+      - id: OBS-001
+      - id: BAK-001
+        scope_condition: service.type == 'stateful'
+      - id: NET-001
+        scope_condition: service.externally_exposed == true
+      - id: RUN-004
+      - id: RUN-005
+      - id: SEC-006
+      - id: RUN-006
+      - id: RUN-007
+      - id: QUA-001
+      - id: QUA-002
+      - id: QUA-004
+      - id: TST-001
+      - id: TST-002
+  manual_initially:
+    description: >
+      Controls accepted via human attestation until automated tooling is available.
+    controls:
+      - id: SRC-003
+      - id: RUN-003
+      - id: OBS-002
+      - id: INC-001
+        scope_condition: service.type is defined
+      - id: OBS-003
+  deferred:
+    description: >
+      Planned controls not yet enforced.
+    controls: []
+  not_applicable:
+    description: >
+      Controls that do not apply to Python services.
+    controls:
+      - id: QUA-003
+        rationale: Python has no compile step; QUA-003 (build must succeed) is not applicable to Python services.
+gates:
+  merge_gate:
+    description: >
+      Evaluated before any Python service change PR is merged. Container controls,
+      Python code quality gates (ruff, mypy), and test gates are enforced on every
+      commit.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: RUN-001
+        enforcement: block
+      - id: RUN-002
+        enforcement: block
+      - id: SUP-002
+        enforcement: block
+      - id: SUP-001
+        enforcement: block
+      - id: OBS-001
+        enforcement: warn
+      - id: SRC-003
+        enforcement: warn
+      - id: DOC-001
+        enforcement: warn
+      - id: RUN-003
+        enforcement: warn
+      - id: NET-001
+        enforcement: warn
+        scope_condition: service.externally_exposed == true
+      - id: RUN-004
+        enforcement: block
+      - id: RUN-005
+        enforcement: block
+      - id: SEC-006
+        enforcement: block
+      - id: RUN-006
+        enforcement: block
+      - id: RUN-007
+        enforcement: block
+      - id: QUA-001
+        enforcement: block
+      - id: QUA-002
+        enforcement: block
+      - id: QUA-004
+        enforcement: block
+      - id: TST-001
+        enforcement: block
+      - id: TST-002
+        enforcement: block
+  release_gate:
+    description: >
+      Evaluated before a Python service version tag is published. All mandatory
+      blocking controls must pass.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: RUN-001
+        enforcement: block
+      - id: RUN-002
+        enforcement: block
+      - id: SUP-002
+        enforcement: block
+      - id: SUP-001
+        enforcement: block
+      - id: SEC-003
+        enforcement: block
+      - id: OBS-001
+        enforcement: block
+      - id: SRC-003
+        enforcement: block
+      - id: DOC-001
+        enforcement: block
+      - id: CHG-002
+        enforcement: block
+      - id: RUN-003
+        enforcement: block
+      - id: OBS-002
+        enforcement: warn
+      - id: BAK-001
+        enforcement: block
+        scope_condition: service.type == 'stateful'
+      - id: NET-001
+        enforcement: block
+        scope_condition: service.externally_exposed == true
+      - id: RUN-004
+        enforcement: block
+      - id: RUN-005
+        enforcement: block
+      - id: SEC-006
+        enforcement: block
+      - id: RUN-006
+        enforcement: block
+      - id: RUN-007
+        enforcement: block
+      - id: OBS-003
+        enforcement: warn
+      - id: QUA-001
+        enforcement: block
+      - id: QUA-002
+        enforcement: block
+      - id: QUA-004
+        enforcement: block
+      - id: TST-001
+        enforcement: block
+      - id: TST-002
+        enforcement: block
+  deployment_gate:
+    description: >
+      Evaluated before a Python service deployment proceeds to any environment.
+      Container integrity, health declarations, and code quality are mandatory.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: RUN-001
+        enforcement: block
+      - id: RUN-002
+        enforcement: block
+      - id: SUP-002
+        enforcement: block
+      - id: OBS-001
+        enforcement: block
+      - id: BAK-001
+        enforcement: block
+        scope_condition: service.type == 'stateful'
+      - id: NET-001
+        enforcement: block
+        scope_condition: service.externally_exposed == true
+      - id: RUN-004
+        enforcement: block
+      - id: RUN-005
+        enforcement: block
+      - id: RUN-006
+        enforcement: block
+      - id: RUN-007
+        enforcement: block
+      - id: QUA-001
+        enforcement: block
+  continuous_audit:
+    description: >
+      Scheduled scanning for secrets, vulnerabilities, and dependency drift.
+    required_controls:
+      - id: SEC-001
+        enforcement: notify
+      - id: SEC-002
+        enforcement: notify
+      - id: SEC-003
+        enforcement: notify
+      - id: SUP-002
+        enforcement: notify
+      - id: SEC-006
+        enforcement: notify

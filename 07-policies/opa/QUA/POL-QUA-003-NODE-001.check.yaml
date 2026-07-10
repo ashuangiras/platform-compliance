@@ -1,0 +1,11 @@
+id: POL-QUA-003-NODE-001
+title: "QUA-003 (node): Node.js build must succeed"
+binding_ids: [BIND-QUA-003-NODE]
+engine: opa
+file_path: "07-policies/opa/QUA/POL-QUA-003-NODE-001.rego"
+pass_criteria: "Node.js build must succeed — Node.js module present and build check passes."
+fail_criteria: "Node.js module present and build fails."
+evidence_type: node-quality
+severity: high
+introduced_date: "2026-07-10"
+status: active

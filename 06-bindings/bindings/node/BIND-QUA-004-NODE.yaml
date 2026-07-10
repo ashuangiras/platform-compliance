@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-004-NODE
+control_id: QUA-004
+technology_context: node
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  TypeScript strict-mode type checking must pass; tsconfig.json must enable strict
+  or equivalent flags and tsc must exit 0 with no type errors.
+observable_artifact: "collect-node-info.sh output field: quality.typecheck.result"
+policy_check_ids:
+  - POL-QUA-004-NODE-001

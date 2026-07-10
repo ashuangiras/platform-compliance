@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-QUA-002-NODE
+control_id: QUA-002
+technology_context: node
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Prettier or ESLint formatting rules must pass; formatting check must be run in CI
+  and the formatter configuration must be committed to the repository.
+observable_artifact: "collect-node-info.sh output field: quality.format.result"
+policy_check_ids:
+  - POL-QUA-002-NODE-001

@@ -10,6 +10,20 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — Evidence types must be registered before compliance-reviewer will pass (ADR-0016 P3)
+
+- **Lesson:** `evidence_type` values in `*.check.yaml` files must be registered in
+  `08-evidence/evidence-types.yaml` before `compliance-reviewer` will pass the validation
+  sweep. The Go (P1) policies set the precedent, but `go-quality` and `go-testing` were never
+  registered at the time — this gap went undetected until P3 added `node-quality`,
+  `node-testing`, `python-quality`, and `python-testing`, which triggered the reviewer check
+  and blocked the chain until evidence types were back-filled for all four contexts.
+- **Action:** `control-author` must register all new `evidence_type` values in
+  `08-evidence/evidence-types.yaml` as part of every new policy phase — not deferred to review.
+  The registration step is now a required pre-flight item in the control-author handoff.
+
+---
+
 ## 2026-07-10 — Relocated the learnings ledger out of .github/agents/
 
 - Moved this ledger from `.github/agents/LEARNINGS.md` to `.github/AGENT_LEARNINGS.md`. VS Code

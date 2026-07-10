@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-TST-001-NODE
+control_id: TST-001
+technology_context: node
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Repository must contain jest or vitest test files; tests must exist and pass in CI.
+observable_artifact: "collect-node-info.sh output field: testing.test_result"
+policy_check_ids:
+  - POL-TST-001-NODE-001
