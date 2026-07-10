@@ -193,6 +193,7 @@ def main():
                     "hooks": {"config_present": False, "files": [], "events": [], "has_destructive_guard": False,
                               "commands": [], "missing_command_scripts": [], "non_executable_scripts": [],
                               "guard_ok": False},
+                    "discovery": {"settings_file_present": False, "agent_location_enabled": False},
                     "improvement": {"ledger_present": False, "ledger_path": None, "ledger_entry_count": 0,
                                     "is_pull_request": False, "ledger_updated_in_pr": False,
                                     "agent_config_updated_in_pr": False, "pr_has_readiness": False,

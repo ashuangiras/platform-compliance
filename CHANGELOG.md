@@ -155,6 +155,35 @@ PROF-PLATFORM-V1 passes profile schema validation.
 
 ---
 
+## [v1.6.0] — 2026-07-10
+
+### Summary
+
+Makes the agent operating layer adoptable by downstream repositories out of the box. Adds
+**AGT-015** (blocking): a repository with custom agents must commit the workspace discovery
+settings so the agent team is visible on every clone and for every new downstream repo — plus a
+copy-paste template. The AGT suite is now **15 controls, all blocking**, and ships in the release
+bundle downstream repos consume.
+
+Change Record: CHG-20260710-009.
+
+### Added
+
+- **AGT-015** (block) — repositories with custom agents must commit `.vscode/settings.json`
+  enabling `chat.agentFilesLocations` for `.github/agents`; `not_applicable` when no agents exist.
+- `templates/agent-vscode-settings.template.json` — ready-to-copy discovery settings for
+  downstream repositories to enable the agent team immediately.
+- `collect-agent-info.py` gains a `discovery` signal (settings present + agent location enabled).
+
+### Changed
+
+- `PROF-AGENTIC-V1`: AGT-015 added to the mandatory set and the merge, release, and
+  continuous-audit gates.
+- `run-all-policies.py` POLICY_MAP: +1 (AGT-015, context-gated on `agent`).
+- ADR-0017 follow-up recorded; rollout tracker updated.
+
+---
+
 ## [v1.5.0] — 2026-07-10
 
 ### Summary

@@ -72,6 +72,9 @@ phases:
     status: done
   - id: PC-0276
     title: Full CI validation of A2; merge; cut v1.5.0
+    status: done
+  - id: PC-0279
+    title: Define AGT-015 (team-wide agent discovery settings) + downstream settings template + policy (block); cut v1.6.0
     status: not_started
 - id: phase-A3-baseline
   title: 'A3 — Baseline: fold into PROF-BASE'

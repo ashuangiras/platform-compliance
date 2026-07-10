@@ -1,0 +1,11 @@
+id: POL-AGT-015-AGENT-001
+title: "AGT-015 (agent): team-wide agent discovery settings committed"
+binding_ids: [BIND-AGT-015-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-015-AGENT-001.rego"
+pass_criteria: "With custom agents present, .vscode/settings.json enables chat.agentFilesLocations for .github/agents."
+fail_criteria: "Custom agents present but discovery settings are missing."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active
