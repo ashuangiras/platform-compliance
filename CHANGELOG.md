@@ -7,6 +7,34 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.9.0] — 2026-07-10 (CHG-20260710-024)
+
+### forge v1.0.0 complete — Phases B.3–B.6
+
+**Phase B.3 — `forge check` and `forge gate`:**
+- `pkg/opa/`: POLICY_MAP parser, embedded OPA evaluation, collector subprocess invocation
+- `pkg/gate/`: gate criteria loading, gate evaluation against policy runs
+- `forge check all|policy <id>`: run OPA policies locally
+- `forge gate merge|deploy|release`: evaluate compliance gates
+
+**Phase B.4 — `forge evidence` and `forge assess`:**
+- `forge evidence submit|list`: manage evidence records
+- `forge assess run|show`: generate and view assessment reports
+
+**Phase B.5 — authoring scaffolds:**
+- `forge new control|adr|waiver|change-record`: scaffold governance objects
+- ID allocators: NextControlID, NextADRID, NextChangeRecord, NextWaiverID
+
+**Phase B.6 — `forge registry` and `forge report`:**
+- `forge registry list controls|profiles|standards|contexts|domains`: browse governance objects
+- `forge registry show <id>`: display any governance object
+- `forge report coverage|drift|profile <id>`: compliance reporting
+
+All 50+ forge subcommands are now implemented. 19 tests passing.
+Phase C (downstream repo bootstrapping) is fully unlocked.
+
+---
+
 ## [v2.8.0] — 2026-07-10 (CHG-20260710-023)
 
 ### forge Phase B.2 — `forge new repo` (governed repository bootstrapping)
