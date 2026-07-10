@@ -10,6 +10,20 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — forge collector-map: data-driven collector dispatch (no code changes for new collectors)
+
+- Moved the input-file → collector-script mapping out of forge's Go code
+  (hardcoded `collectorMap`) into `07-policies/scripts/collector-map.yaml`.
+  forge reads this file at runtime from the compliance directory.
+- Now when a new collector is added (e.g. collect-rust-info.sh → rust-info.json),
+  the Collector Engineer updates collector-map.yaml — no forge recompile or release needed.
+- The YAML also documents placeholder entries for collectors not yet implemented,
+  making the governance gap explicit and discoverable.
+- Pattern: any configuration that governance specialists own should live in the compliance
+  repo as YAML, not in forge's Go code. forge is a reader/executor, not a registry.
+
+---
+
 ## 2026-07-10 — forge v1.0.0: Phases B.3–B.6 complete — full command set
 
 - forge is now feature-complete for v1.0.0: validate, new repo, new control/adr/waiver,

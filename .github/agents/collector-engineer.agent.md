@@ -26,6 +26,8 @@ Follow [.github/instructions/collectors.instructions.md](../instructions/collect
 3. **Always** wire the new collector into `collect-all-inputs.py` under the matching context,
    even if the context dispatch block already partially exists.
 4. Add the policy→input mapping to `run-all-policies.py` `POLICY_MAP`, context-gated.
+5. Add the input file → script mapping to `07-policies/scripts/collector-map.yaml`
+   so forge can invoke the collector without a code change.
 
 ## Post-flight
 - Run against a real repo of that context (correct facts) **and** a repo lacking it

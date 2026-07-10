@@ -9,24 +9,30 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
-// collectorMap maps input file names to the collector scripts that produce them.
-var collectorMap = map[string]string{
-	"github-branch-protection.json": "collect-github-branch-protection.sh",
-	"github-security.json":          "collect-github-security-settings.sh",
-	"dockerfile-info.json":          "collect-dockerfile-info.sh",
-	"go-info.json":                  "collect-go-info.sh",
-	"node-info.json":                "collect-node-info.sh",
-	"python-info.json":              "collect-python-info.sh",
-	"frontend-info.json":            "collect-frontend-info.sh",
-	"terraform-info.json":           "collect-terraform-info.sh",
-	"actions-info.json":             "collect-workflow-actions.sh",
-	"agent-info.json":               "collect-agent-info.py",
-	// Additional mappings for tier-2 collectors
-	"acc-security.json":  "collect-github-security-settings.sh",
-	"aud-security.json":  "collect-github-security-settings.sh",
-	"sec-vuln-sla.json":  "collect-github-security-settings.sh",
+// collectorEntry is one entry in collector-map.yaml.
+type collectorEntry struct {
+	Script      string `yaml:"script"`
+	Interpreter string `yaml:"interpreter"`
+}
+
+// loadCollectorMap reads 07-policies/scripts/collector-map.yaml from the compliance dir.
+// Falls back to an empty map (not fatal) if the file is missing — policies will
+// return not_applicable for missing inputs.
+func loadCollectorMap(scriptsDir string) map[string]collectorEntry {
+	path := filepath.Join(scriptsDir, "collector-map.yaml")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return make(map[string]collectorEntry)
+	}
+	var m map[string]collectorEntry
+	if err := yaml.Unmarshal(data, &m); err != nil {
+		return make(map[string]collectorEntry)
+	}
+	return m
 }
 
 // CollectedInputs holds all collected JSON inputs keyed by input file name.
@@ -35,11 +41,11 @@ type CollectedInputs map[string]map[string]any
 // RunCollector executes a single collector script and returns its parsed JSON output.
 // repoDir is the target repository directory to run the collector against.
 // scriptsDir is the path to 07-policies/scripts/ in the compliance directory.
-func RunCollector(ctx context.Context, scriptsDir, scriptName, repoDir string, extraEnv []string) (map[string]any, error) {
+func RunCollector(ctx context.Context, scriptsDir, scriptName, interpreter, repoDir string, extraEnv []string) (map[string]any, error) {
 	scriptPath := filepath.Join(scriptsDir, scriptName)
 
 	var cmd *exec.Cmd
-	if strings.HasSuffix(scriptName, ".py") {
+	if interpreter == "python3" || strings.HasSuffix(scriptName, ".py") {
 		cmd = exec.CommandContext(ctx, "/tmp/penv/bin/python3", scriptPath)
 	} else {
 		cmd = exec.CommandContext(ctx, "bash", scriptPath)
@@ -64,10 +70,13 @@ func RunCollector(ctx context.Context, scriptsDir, scriptName, repoDir string, e
 }
 
 // CollectForEntries runs all unique collectors needed for the given policy entries.
-// Results are keyed by input file name (e.g. "go-info.json").
-// Collectors that fail are silently skipped — the policy will see missing input and
-// return not_applicable or error, which is the correct behaviour.
+// The collector-script mapping is read from collector-map.yaml in scriptsDir —
+// no Go code change is needed when new collectors are added to the compliance repo.
+// Collectors that fail or have no mapping are silently skipped.
 func CollectForEntries(ctx context.Context, scriptsDir, repoDir string, entries []PolicyMapEntry, extraEnv []string) CollectedInputs {
+	// Load the collector map from the compliance repo (data-driven, not hardcoded)
+	cmap := loadCollectorMap(scriptsDir)
+
 	// Collect unique input files needed
 	needed := make(map[string]bool)
 	for _, e := range entries {
@@ -76,15 +85,14 @@ func CollectForEntries(ctx context.Context, scriptsDir, repoDir string, entries 
 
 	results := make(CollectedInputs)
 	for inputFile := range needed {
-		scriptName, ok := collectorMap[inputFile]
-		if !ok {
-			continue // no known collector for this input file
+		entry, ok := cmap[inputFile]
+		if !ok || entry.Script == "" {
+			continue // no collector defined for this input file yet
 		}
 
-		data, err := RunCollector(ctx, scriptsDir, scriptName, repoDir, extraEnv)
+		data, err := RunCollector(ctx, scriptsDir, entry.Script, entry.Interpreter, repoDir, extraEnv)
 		if err != nil {
-			// Non-fatal: log to stderr and continue
-			fmt.Fprintf(os.Stderr, "⚠  collector %s failed: %v\n", scriptName, err)
+			fmt.Fprintf(os.Stderr, "⚠  collector %s failed: %v\n", entry.Script, err)
 			continue
 		}
 		results[inputFile] = data
