@@ -1,7 +1,7 @@
 # Current State — Honest Progress Snapshot
 
 **Date:** 2026-07-10  
-**Overall status:** Foundation complete. forge v1.0.0 deployed. Phase C (multi-repo) ready to start.
+**Overall status:** Foundation complete. forge v1.0.0 deployed. Phase C active — platform-modules fully governed (PC-0135 ✅). platform-infrastructure next.
 
 ---
 
@@ -62,7 +62,7 @@ Running `check-jsonschema` against all major artifacts:
 - 26 tagged releases shipped (v1.0.0 → v3.0.0); release bundles include `policies.tar.gz` + `.sha256` + `sbom.cdx.json`
 - Branch protection fully configured (1 required review + CODEOWNERS + `Compliance: Merge Gate`)
 - forge CLI v1.0.0 released with binary artifacts; `go test` green; CodeQL scanning active
-- Phase C (multi-repo downstream onboarding) is the next active phase
+- Phase C active: platform-modules (PC-0135) fully governed and passing compliance gate
 
 ---
 
@@ -70,7 +70,7 @@ Running `check-jsonschema` against all major artifacts:
 
 | Item | Notes |
 |---|---|
-| Platform downstream repos | Phase C not started: platform-modules, platform-infra, platform-services |
+| Platform downstream repos | Phase C active: platform-modules ✅ governed (v3.3.2); platform-infra and platform-services not started |
 | forge new-repo real mode | `--dry-run` tested only; real repo scaffold not yet executed against a downstream repo |
 | plt CLI dashboard | Phase D; not yet designed |
 | Real evidence records from downstream CI | Self-compliance only; no downstream repo CI evidence yet |
@@ -90,4 +90,4 @@ Some mapping files and source entries may still contain `[PLACEHOLDER: ...]` mar
 
 ## Summary judgment
 
-The compliance backbone is operational and self-governing. The data model, OPA policies, reusable workflow, forge CLI, and 26-release delivery train all work end-to-end against this repository. The remaining gap is Phase C: onboarding real downstream platform repositories so that the system governs more than itself.
+The compliance backbone is operational and self-governing. The data model, OPA policies, reusable workflow, forge CLI, and 33-release delivery train all work end-to-end against this repository and platform-modules. Phase C is underway: platform-modules is governed (PC-0135 ✅); platform-infrastructure is next.

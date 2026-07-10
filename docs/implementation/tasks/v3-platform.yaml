@@ -26,8 +26,9 @@ phases:
         note: "First downstream governed repository — ADR-0003 gate passed"
       - id: PC-0135
         title: "platform-modules passes merge gate on first PR"
-        status: not-started
+        status: done
         depends_on: [PC-0134]
+        note: "Both PRs merged; gate passes with v3.3.2 profile-aware enforcement"
       - id: PC-0136
         title: "Add initial Terraform modules to platform-modules"
         status: not-started
