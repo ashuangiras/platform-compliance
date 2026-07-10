@@ -41,6 +41,8 @@ and [docs/authoring-controls.md](../../docs/authoring-controls.md).
 - All `evidence_type` values used in `*.check.yaml` files are confirmed registered in
   `08-evidence/evidence-types.yaml` — include this confirmation in the HANDOFF block.
 - Note the follow-ups a full control needs: collector + policy + `POLICY_MAP` (hand back to router).
+- Do not re-declare in `mandatory` controls already mandated by `PROF-BASE`. Inherited controls
+  propagate automatically; re-declaring them is a style error the reviewer will flag.
 
 ## Output
 List of created/edited files, the schema-validation result for each, and a structured

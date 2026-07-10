@@ -14,7 +14,7 @@
 | JSON schemas | 16 | All pass meta-schema validation |
 | Standards source entries | 17 | All validate against `standard-source.schema.json` |
 | Control files | 37 | All validate against `control.schema.json` |
-| Compliance profiles | 10 (PROF-BASE, PROF-PLATFORM-V1, PROF-SERVICE-V1, PROF-AGENTIC-V1, PROF-GO-SERVICE-V1, PROF-TERRAFORM-MODULE-V1, PROF-TERRAFORM-ROOT-V1, PROF-NODE-SERVICE-V1, PROF-PYTHON-SERVICE-V1, PROF-FRONTEND-V1) | All validate against `profile.schema.json` |
+| Compliance profiles | 11 (PROF-BASE, PROF-PLATFORM-V1, PROF-SERVICE-V1, PROF-AGENTIC-V1, PROF-GO-SERVICE-V1, PROF-TERRAFORM-MODULE-V1, PROF-TERRAFORM-ROOT-V1, PROF-NODE-SERVICE-V1, PROF-PYTHON-SERVICE-V1, PROF-FRONTEND-V1, PROF-LIBRARY-V1) | All validate against `profile.schema.json` |
 | Mapping collection files | 11 | All validate against `mapping-collection.schema.json` |
 | Implementation bindings | 47 | Across GitHub, Terraform, Docker, GitHub Actions, Go, Node, Python, Frontend contexts |
 | OPA policy files | 37 Rego + 37 `.check.yaml` | All automated merge-gate controls covered |

@@ -1,0 +1,225 @@
+$schema: ../schemas/profile.schema.json
+id: PROF-LIBRARY-V1
+name: Library Profile v1
+description: >
+  Compliance profile for shared code libraries. Inherits all universal baseline
+  controls from PROF-BASE and adds mandatory code-quality and test-coverage
+  controls (QUA-001–004, TST-001, TST-002). Runtime, observability, backup, and
+  network controls are not applicable because libraries are consumed as
+  dependencies and are never deployed as services.
+
+version: 1.0.0
+inherits: PROF-BASE
+applicable_to:
+  - library
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+
+categories:
+  mandatory:
+    description: >
+      Controls inherited from PROF-BASE plus library-specific quality and test
+      controls. All are blocking — a library PR must not merge if any of these
+      controls fail.
+    controls:
+      # --- Inherited from PROF-BASE (mandatory) ---
+      - id: SRC-001
+      - id: SRC-002
+      - id: SEC-001
+      - id: SEC-002
+      - id: DOC-001
+      - id: CHG-002
+      - id: SEC-004
+      - id: SEC-007
+      # --- Library-specific: code quality ---
+      - id: QUA-001
+      - id: QUA-002
+      - id: QUA-003
+      - id: QUA-004
+      # --- Library-specific: test coverage ---
+      - id: TST-001
+      - id: TST-002
+
+  manual_initially:
+    description: >
+      Controls accepted via human attestation until automated tooling is
+      available. These warn at the merge gate and block at the release gate.
+    controls:
+      - id: SRC-003
+      - id: SEC-005
+      - id: SUP-004
+      - id: ACC-001
+      - id: AUD-001
+      - id: SEC-008
+      - id: LIC-001
+
+  deferred:
+    description: >
+      Controls declared as planned for a future profile version. Not checked now.
+    controls:
+      - id: SRC-004
+      - id: SUP-003
+
+  not_applicable:
+    description: >
+      Controls that require a deployed service, container, stateful runtime, or
+      network exposure. Libraries are consumed as dependencies and are not
+      deployed — these controls do not apply.
+    controls:
+      - id: SUP-001
+        rationale: >
+          Dependency pinning for language runtimes is service/container-specific.
+          Activated by PROF-SERVICE-V1 and language profiles.
+      - id: SUP-002
+        rationale: Container image pinning. Libraries do not produce container images.
+      - id: RUN-001
+        rationale: Container health-check. Libraries are not containerised.
+      - id: RUN-002
+        rationale: Container resource limits. Libraries are not containerised.
+      - id: RUN-003
+        rationale: Container security context. Libraries are not containerised.
+      - id: OBS-001
+        rationale: Service metrics endpoint. Libraries have no runtime.
+      - id: OBS-002
+        rationale: Structured logging. Libraries have no runtime.
+      - id: BAK-001
+        rationale: Stateful backup. Libraries hold no persistent state.
+      - id: NET-001
+        rationale: Externally-exposed TLS. Libraries do not expose network endpoints.
+      - id: INC-001
+        rationale: Incident postmortem. Libraries are not deployed services.
+      - id: TST-003
+        rationale: >
+          Integration/end-to-end tests are the responsibility of the consuming
+          service. Library packages are tested by their unit and contract suites
+          (TST-001, TST-002); broad integration coverage belongs in the consumer.
+      - id: IAC-001
+        rationale: Terraform-specific. Libraries contain no Terraform code.
+      - id: IAC-002
+        rationale: Terraform root-specific. Libraries contain no Terraform code.
+      - id: IAC-003
+        rationale: Terraform-specific. Libraries contain no Terraform code.
+      - id: CHG-001
+        rationale: Platform-repo change record tracking. Not required for libraries.
+      - id: DOC-002
+        rationale: Architecture decision records. Activated by PROF-PLATFORM-V1.
+
+gates:
+  merge_gate:
+    description: >
+      Controls evaluated before any library PR is merged to the default branch.
+      Code quality and test-coverage checks are required on every commit.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: SEC-004
+        enforcement: block
+      - id: SEC-007
+        enforcement: warn
+      - id: SEC-005
+        enforcement: warn
+      - id: SEC-008
+        enforcement: warn
+      - id: SRC-003
+        enforcement: warn
+      - id: DOC-001
+        enforcement: warn
+      - id: QUA-001
+        enforcement: block
+      - id: QUA-002
+        enforcement: block
+      - id: QUA-003
+        enforcement: block
+      - id: QUA-004
+        enforcement: block
+      - id: TST-001
+        enforcement: block
+      - id: TST-002
+        enforcement: block
+
+  release_gate:
+    description: >
+      Controls evaluated before a version tag may be published. All merge-gate
+      controls escalate to block; attestation controls are also required.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: SEC-004
+        enforcement: block
+      - id: SEC-007
+        enforcement: block
+      - id: SEC-005
+        enforcement: block
+      - id: SEC-008
+        enforcement: block
+      - id: SRC-003
+        enforcement: block
+      - id: DOC-001
+        enforcement: block
+      - id: CHG-002
+        enforcement: block
+      - id: QUA-001
+        enforcement: block
+      - id: QUA-002
+        enforcement: block
+      - id: QUA-003
+        enforcement: block
+      - id: QUA-004
+        enforcement: block
+      - id: TST-001
+        enforcement: block
+      - id: TST-002
+        enforcement: block
+      - id: SUP-004
+        enforcement: warn
+      - id: ACC-001
+        enforcement: warn
+      - id: LIC-001
+        enforcement: warn
+
+  deployment_gate:
+    description: >
+      Libraries are not deployed as services. This gate is intentionally minimal
+      and applies only if a consuming workflow explicitly triggers it.
+    required_controls:
+      - id: SRC-001
+        enforcement: block
+      - id: SRC-002
+        enforcement: block
+      - id: SEC-001
+        enforcement: block
+      - id: SEC-002
+        enforcement: block
+      - id: SEC-004
+        enforcement: block
+      - id: CHG-002
+        enforcement: block
+
+  continuous_audit:
+    description: >
+      Scheduled scans to detect drift in secret exposure and dependency
+      vulnerabilities independent of any release cycle.
+    required_controls:
+      - id: SEC-001
+        enforcement: notify
+      - id: SEC-002
+        enforcement: notify
+      - id: SEC-004
+        enforcement: notify
+      - id: SEC-007
+        enforcement: notify
+      - id: AUD-001
+        enforcement: notify
