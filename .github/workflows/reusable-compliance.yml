@@ -257,15 +257,6 @@ jobs:
           chmod +x /tmp/platform-compliance-scripts/*.sh 2>/dev/null || true
           echo "Scripts ready: $(ls /tmp/platform-compliance-scripts/ | wc -l) files"
 
-          # Extract compliance profiles so job 6 can evaluate gate enforcement levels.
-          mkdir -p /tmp/platform-compliance-profiles
-          if ls /tmp/pc-extract/*/04-profiles/ >/dev/null 2>&1; then
-            cp -r /tmp/pc-extract/*/04-profiles/. /tmp/platform-compliance-profiles/
-          elif ls /tmp/pc-scripts-extract/*/04-profiles/ >/dev/null 2>&1; then
-            cp -r /tmp/pc-scripts-extract/*/04-profiles/. /tmp/platform-compliance-profiles/
-          fi
-          echo "Profiles ready: $(ls /tmp/platform-compliance-profiles/*.yaml 2>/dev/null | wc -l) files"
-
 
       - name: Run all applicable policy checks
         id: run-policies
@@ -415,6 +406,35 @@ jobs:
         with:
           name: "evidence-${{ github.run_id }}"
           path: /tmp/evidence/
+
+      - name: Fetch compliance profiles for gate evaluation
+        env:
+          PLATFORM_COMPLIANCE_REF: ${{ env.PLATFORM_COMPLIANCE_REF }}
+        run: |
+          mkdir -p /tmp/pc-profiles-extract /tmp/platform-compliance-profiles
+          OWNER="${{ github.repository_owner }}"
+          REF="${PLATFORM_COMPLIANCE_REF}"
+          # Try release asset archive, then tag archive, then branch archive
+          FETCHED=false
+          for ARCHIVE_URL in \
+            "https://github.com/${OWNER}/platform-compliance/archive/refs/tags/${REF}.tar.gz" \
+            "https://github.com/${OWNER}/platform-compliance/archive/refs/heads/${REF}.tar.gz"; do
+            if curl -sSfL "${ARCHIVE_URL}" -o /tmp/pc-profiles.tar.gz 2>/dev/null; then
+              FETCHED=true
+              break
+            fi
+          done
+          if [ "$FETCHED" = "true" ]; then
+            tar -xz -f /tmp/pc-profiles.tar.gz -C /tmp/pc-profiles-extract
+            if ls /tmp/pc-profiles-extract/*/04-profiles/ >/dev/null 2>&1; then
+              cp -r /tmp/pc-profiles-extract/*/04-profiles/. /tmp/platform-compliance-profiles/
+              echo "Profiles ready: $(ls /tmp/platform-compliance-profiles/*.yaml | wc -l) files"
+            else
+              echo "::warning::04-profiles/ not found in archive"
+            fi
+          else
+            echo "::warning::Could not fetch platform-compliance archive for profiles"
+          fi
 
       - name: Generate assessment report
         id: generate
