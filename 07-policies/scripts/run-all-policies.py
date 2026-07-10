@@ -246,11 +246,17 @@ def main():
             continue
 
         if not os.path.exists(input_path):
+            # Treat missing input as not_applicable rather than error.
+            # The policy is context-gated but the collector did not generate
+            # the input file (e.g. IAC-002 plan-review on a module repo).
+            # Job 7 (gate evaluation) will apply profile enforcement levels;
+            # an error here would block the upload and prevent gate evaluation.
+            skipped += 1
             (results / f"{control_id}.json").write_text(json.dumps({
-                "result": "error",
-                "details": {"message": f"Input file not found: {input_path}"}
+                "result": "not_applicable",
+                "details": {"message": f"{control_id}: input file not found ({input_file}). Context may not generate this input for this repo type."}
             }))
-            failed += 1
+            print(f"  ○ {control_id}: not_applicable (input file absent — {input_file})")
             continue
 
         result = run_opa(rego_path, input_path, query)
@@ -277,7 +283,10 @@ def main():
 
     print(f"\nResults: {passed} pass, {failed} fail/error, {waived} waived, {skipped} not_applicable")
     print(f"Written to: {results}/")
-    return 1 if failed > 0 else 0
+    # Always exit 0 — gate enforcement (BLOCK vs WARN vs DEFERRED) is evaluated
+    # by job 7 using the profile gate criteria, not by this script.
+    # Exiting 1 here would prevent jobs 5-7 from running, bypassing proper gate evaluation.
+    return 0
 
 
 if __name__ == "__main__":

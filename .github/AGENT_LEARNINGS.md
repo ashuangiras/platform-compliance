@@ -10,6 +10,32 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — fix: profile-aware gate evaluation for downstream repos
+
+**Date:** 2026-07-10
+**Change Record:** CHG-20260710-033
+
+- Gate evaluation (job 6) now loads the compliance profile YAML to determine
+  which controls are BLOCK vs WARN vs DEFERRED in the active gate. Only BLOCK
+  failures cause `overall_result = "fail"`. WARN/DEFERRED failures produce
+  `pass-with-warnings` — the gate passes, but issues are recorded.
+- `run-all-policies.py` now exits 0 always. Gate enforcement is the
+  responsibility of job 7 (evaluate-gate), not the policy runner. Previously,
+  any failing policy (even WARN-level) prevented jobs 5-7 from running, making
+  it impossible to distinguish BLOCK from WARN at the gate level.
+- Missing input files now produce `not_applicable` instead of `error`. This
+  covers cases like `iac-plan-review.json` for terraform module repos where the
+  collector doesn't generate that input.
+- Profiles are now extracted to `/tmp/platform-compliance-profiles/` alongside
+  scripts and OPA policies, making them available to the assessment generator.
+- Jobs 5, 6, 7 now use `if: always()` conditions so they run regardless of
+  whether earlier jobs had failures. The overall gate decision is always made.
+- Rule learned: **gate enforcement levels in the profile must be honoured at the
+  workflow level**. The profile's BLOCK vs WARN distinction only has meaning if
+  the workflow pipeline runs to completion.
+
+---
+
 ## 2026-07-10 — fix: reusable-compliance.yml now works from downstream repos
 
 **Date:** 2026-07-10
