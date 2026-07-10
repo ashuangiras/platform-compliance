@@ -32,6 +32,9 @@ categories:
     - id: CHG-002
     - id: SEC-004
     - id: SEC-007
+    - id: AGT-001
+    - id: AGT-002
+    - id: AGT-003
   manual_initially:
     description: 'Controls accepted via human attestation until automated tooling
       is available. These controls warn at the merge gate and block at the release
@@ -123,6 +126,12 @@ gates:
       enforcement: warn
     - id: SEC-008
       enforcement: warn
+    - id: AGT-001
+      enforcement: block
+    - id: AGT-002
+      enforcement: block
+    - id: AGT-003
+      enforcement: block
   release_gate:
     description: 'Controls evaluated before a version tag may be published. Includes
       all merge gate controls plus release-specific checks.
@@ -157,6 +166,12 @@ gates:
       enforcement: warn
     - id: LIC-001
       enforcement: warn
+    - id: AGT-001
+      enforcement: block
+    - id: AGT-002
+      enforcement: block
+    - id: AGT-003
+      enforcement: block
   deployment_gate:
     description: 'Controls evaluated before a deployment may proceed. Inherits all
       release gate requirements.

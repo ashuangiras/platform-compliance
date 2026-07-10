@@ -7,6 +7,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.2.0] — 2026-07-10 (CHG-20260710-017)
+
+### ADR-0017 A3 — Agent baseline promotion (PC-0277, PC-0278)
+
+- AGT-001, AGT-002, AGT-003 added to `PROF-BASE` (mandatory, enforcement: block at merge
+  and release gates). These controls are now universal for all platform repositories.
+- OPA policies gate on `has_agent_config` — repositories without agent configuration
+  receive `not_applicable`, not a failure.
+- `PROF-AGENTIC-V1` unchanged: remains the full 15-control AGT overlay profile.
+
+---
+
 ## [v2.1.0] — 2026-07-10 (CHG-20260710-016)
 
 ### ADR-0016 Phase P5 — Library Profile (PC-0254, PC-0255)
