@@ -26,7 +26,7 @@ func Default() *Config {
 	return &Config{
 		DefaultOrg:     "ashuangiras",
 		DefaultProfile: "PROF-SERVICE-V1",
-		ComplianceRef:  "v2.6.0",
+		ComplianceRef:  "v3.3.3",
 		CacheDir:       filepath.Join(homeDir, ".forge", "cache"),
 	}
 }
