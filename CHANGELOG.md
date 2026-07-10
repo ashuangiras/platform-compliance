@@ -7,6 +7,19 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.9.1] — 2026-07-10 (CHG-20260710-025)
+
+### forge: data-driven collector dispatch (no code change for new collectors)
+
+- `07-policies/scripts/collector-map.yaml` — new file: maps every OPA input
+  file to its collector script and interpreter; read by forge at runtime
+- `tools/forge/pkg/opa/runner.go` — CollectForEntries reads collector-map.yaml
+  instead of a hardcoded Go map; adding a new collector now requires only a
+  YAML entry, not a forge recompile
+- collector-engineer instructions updated: step 5 now includes the YAML entry
+
+---
+
 ## [v2.9.0] — 2026-07-10 (CHG-20260710-024)
 
 ### forge v1.0.0 complete — Phases B.3–B.6

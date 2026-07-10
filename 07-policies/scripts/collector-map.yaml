@@ -1,0 +1,95 @@
+# collector-map.yaml — Maps OPA input file names to the collector scripts that produce them.
+#
+# forge reads this file at runtime to determine which script to invoke for each input file.
+# When you add a new collector (e.g. collect-rust-info.sh → rust-info.json), add an entry
+# here. No changes to forge's Go code are required.
+#
+# Format:
+#   <input-file-name>:
+#     script: <script filename in 07-policies/scripts/>
+#     interpreter: bash | python3   (default: bash)
+#
+# The script is invoked with the target repository directory as the working directory.
+
+src-branch-protection.json:
+  script: collect-github-branch-protection.sh
+  interpreter: bash
+
+sec-security-settings.json:
+  script: collect-github-security-settings.sh
+  interpreter: bash
+
+# Aliases: some policies use alternate names for the same collector output
+acc-security.json:
+  script: collect-github-security-settings.sh
+  interpreter: bash
+
+aud-security.json:
+  script: collect-github-security-settings.sh
+  interpreter: bash
+
+sec-vuln-sla.json:
+  script: collect-github-security-settings.sh
+  interpreter: bash
+
+dockerfile-info.json:
+  script: collect-dockerfile-info.sh
+  interpreter: bash
+
+docker-info.json:
+  script: collect-dockerfile-info.sh
+  interpreter: bash
+
+go-info.json:
+  script: collect-go-info.sh
+  interpreter: bash
+
+node-info.json:
+  script: collect-node-info.sh
+  interpreter: bash
+
+python-info.json:
+  script: collect-python-info.sh
+  interpreter: bash
+
+frontend-info.json:
+  script: collect-frontend-info.sh
+  interpreter: bash
+
+iac-terraform.json:
+  script: collect-terraform-info.sh
+  interpreter: bash
+
+actions-info.json:
+  script: collect-workflow-actions.sh
+  interpreter: bash
+
+agent-info.json:
+  script: collect-agent-info.py
+  interpreter: python3
+
+# Placeholders — these collectors are not yet implemented.
+# When implemented, add the script name and interpreter.
+chg-pr-context.json:
+  script: ""
+  interpreter: bash
+
+chg-release.json:
+  script: ""
+  interpreter: bash
+
+doc-files.json:
+  script: ""
+  interpreter: bash
+
+lic-info.json:
+  script: ""
+  interpreter: bash
+
+src-codeowners.json:
+  script: ""
+  interpreter: bash
+
+sec-secrets.json:
+  script: ""
+  interpreter: bash
