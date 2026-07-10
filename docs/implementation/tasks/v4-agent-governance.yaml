@@ -1,0 +1,82 @@
+title: Agent Configuration Governance (ADR-0017)
+adr: ADR-0017
+note: Three-phase rollout. Setup+security first (block), effectiveness next (warn), baseline at v2.0.0. platform-compliance self-governs from A1.
+phases:
+- id: phase-A1-foundations
+  title: 'A1 — Foundations: AGT domain, agent context, standards, AGT-001/002/003 (block)'
+  horizon: v1.4.0
+  tasks:
+  - id: PC-0256
+    title: Register AGT domain + agent context (taxonomy + control/mapping/binding/manifest schemas)
+    status: done
+  - id: PC-0257
+    title: 'Register standards: VS Code customization, AGENTS.md, MCP spec, platform conventions'
+    status: done
+  - id: PC-0258
+    title: Write collect-agent-info.py collector (instructions, frontmatter, MCP secret scan, hooks, roster)
+    status: done
+  - id: PC-0259
+    title: Wire agent context into collect-all-inputs.py (agent-info.json)
+    status: done
+  - id: PC-0260
+    title: Define AGT-001 (single-sourced instructions) + binding + OPA policy + check
+    status: done
+  - id: PC-0261
+    title: Define AGT-002 (valid frontmatter + description) + binding + OPA policy + check
+    status: done
+  - id: PC-0262
+    title: Define AGT-003 (MCP valid + secret-free) + binding + OPA policy + check
+    status: done
+  - id: PC-0263
+    title: Add AGT-001/002/003 to POLICY_MAP (context-gated on agent)
+    status: done
+  - id: PC-0264
+    title: Author PROF-AGENTIC-V1 opt-in overlay profile
+    status: done
+  - id: PC-0265
+    title: Self-govern — declare agent context + PROF-AGENTIC-V1 in manifest and self-compliance.yml
+    status: done
+  - id: PC-0266
+    title: Ratify ADR-0017 + create this rollout tracker
+    status: done
+  - id: PC-0267
+    title: Full CI validation of A1; merge; cut v1.4.0
+    status: not_started
+- id: phase-A2-effectiveness
+  title: 'A2 — Effectiveness: AGT-004..009 (warn)'
+  horizon: v1.5.0
+  tasks:
+  - id: PC-0268
+    title: Define AGT-004 (keyword-rich descriptions) + binding + policy (warn)
+    status: not_started
+  - id: PC-0269
+    title: Define AGT-005 (least-privilege agent tools) + binding + policy (warn)
+    status: not_started
+  - id: PC-0270
+    title: Define AGT-006 (instruction scoping hygiene; applyTo not "**") + binding + policy (warn)
+    status: not_started
+  - id: PC-0271
+    title: Define AGT-007 (pre/post-flight discipline) + binding + policy (warn)
+    status: not_started
+  - id: PC-0272
+    title: Define AGT-008 (safety hook present) + binding + policy (warn)
+    status: not_started
+  - id: PC-0273
+    title: Define AGT-009 (router present when multiple agents) + binding + policy (warn)
+    status: not_started
+  - id: PC-0274
+    title: Add A2 controls to PROF-AGENTIC-V1 (warn) + POLICY_MAP; CI; merge; cut v1.5.0
+    status: not_started
+- id: phase-A3-baseline
+  title: 'A3 — Baseline: promote to block; fold into PROF-BASE'
+  horizon: v2.0.0
+  tasks:
+  - id: PC-0275
+    title: Promote AGT-004/005/006 from warn to block
+    status: not_started
+  - id: PC-0276
+    title: Fold AGT-001/002/003 into PROF-BASE (universal for all repositories)
+    status: not_started
+  - id: PC-0277
+    title: CI; merge; roll into v2.0.0 with ADR-0016 P5
+    status: not_started

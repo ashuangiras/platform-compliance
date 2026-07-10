@@ -8,14 +8,16 @@ repository:
 
 declared_profiles:
   - PROF-PLATFORM-V1
+  - PROF-AGENTIC-V1
 
 technology_contexts:
   - github
   - github-actions
+  - agent
 
 waiver_ids:
   - WAV-SRC-002-202607-001   # Single-developer bootstrap: GitHub prohibits self-approval (expires 2026-10-07)
 
 compliance_contact: platform-team
 
-last_updated: "2026-07-08"
+last_updated: "2026-07-10"

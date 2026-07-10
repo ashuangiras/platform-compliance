@@ -82,3 +82,16 @@ contexts:
       absence of production source maps, and accessibility (WCAG) checks. Layered
       on top of the node context for build/lint/test.
     applies_when: "repository.type == 'frontend-app'"
+
+  agent:
+    code: agent
+    description: >
+      The repository ships AI coding-agent configuration: repository instructions
+      (copilot-instructions.md or AGENTS.md), custom agents (.github/agents/),
+      file instructions (.github/instructions/), prompts (.github/prompts/), MCP
+      server configuration (.vscode/mcp.json), and/or lifecycle hooks
+      (.github/hooks/). Bindings in this context cover: single-sourced
+      instructions, valid frontmatter, secure MCP configuration, description
+      quality, least-privilege agent tools, instruction scoping, pre/post-flight
+      discipline, safety hooks, and multi-agent routing.
+    applies_when: "repository declares the 'agent' context (any agent configuration present)"

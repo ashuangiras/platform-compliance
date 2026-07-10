@@ -1,0 +1,35 @@
+$schema: "../../schemas/standard-source.schema.json"
+
+id: SRC-PLATFORM-AGENT-CONVENTIONS
+name: Platform Agent Configuration Conventions
+version: "1.0"
+publisher: platform-team
+source_url: "https://github.com/ashuangiras/platform-compliance/blob/main/.github/copilot-instructions.md"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - AGT  # Internal house conventions for effective agent usage
+
+status: active
+
+notes: >
+  The platform's own conventions for effective, consistent agent configuration — the house
+  style that turns the external standards (VS Code customization, AGENTS.md, MCP) into concrete,
+  enforceable expectations. Codified from the agent operating layer built for platform-compliance
+  itself (ADR-0016 tooling PR).
+
+  Conventions (basis for the AGT effectiveness controls):
+  - Single-sourced repository instructions carrying universal pre-flight and post-flight
+    checklists (AGT-001, AGT-007).
+  - Every agent and instruction file has a keyword-rich, "Use when…" description — the
+    discovery surface (AGT-004).
+  - Least-privilege tools per agent: read-only reviewer agents must not hold edit/execute;
+    each agent declares an explicit minimal tool set (AGT-005).
+  - Instruction scoping via specific applyTo globs; avoid applyTo "**" unless truly universal
+    (AGT-006).
+  - A PreToolUse safety hook guards irreversible operations (AGT-008).
+  - A coordinator/router agent selects the appropriate specialist when multiple agents exist
+    (AGT-009).

@@ -1,0 +1,53 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-002
+title: Agent customization files must have valid frontmatter and a description
+domain: AGT
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  Every agent customization file — .github/agents/*.agent.md,
+  .github/instructions/*.instructions.md, and .github/prompts/*.prompt.md — must begin with a
+  valid YAML frontmatter block that parses without error and contains a non-empty `description`
+  field. The description is the discovery surface an agent uses to decide when to load the file;
+  a missing or malformed one makes the customization silently undiscoverable.
+
+rationale: >
+  VS Code customization primitives are discovered and applied through their frontmatter. A
+  malformed block (unescaped colons, tabs, missing delimiters) fails silently — the agent, or
+  the file, is simply never loaded, with no error surfaced. A missing `description` removes the
+  signal the model uses to route to the right agent or instruction. Validating frontmatter and
+  requiring a description guarantees every customization file is actually usable and discoverable.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "Frontmatter — required `description`; YAML syntax between --- markers"
+    mapping_note: >
+      The customization docs require a meaningful `description` on agents and instructions and
+      warn that YAML frontmatter errors fail silently. AGT-002 enforces both a valid block and
+      a present description across all customization files.
+
+implementation_expectations: >
+  Repositories declaring the 'agent' context must ensure every .agent.md, .instructions.md, and
+  .prompt.md file has a parseable frontmatter block with a non-empty `description`.
+
+  Collected by collect-agent-info.py as frontmatter.all_valid and frontmatter.invalid_files.
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing frontmatter.all_valid == true and an empty
+      frontmatter.invalid_files list.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

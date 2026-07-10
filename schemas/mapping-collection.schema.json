@@ -41,7 +41,8 @@
         "QUA",
         "TST",
         "API",
-        "ARC"
+        "ARC",
+        "AGT"
       ],
       "description": "Primary control domain this collection covers. Informational."
     },

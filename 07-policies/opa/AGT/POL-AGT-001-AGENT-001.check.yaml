@@ -1,0 +1,11 @@
+id: POL-AGT-001-AGENT-001
+title: "AGT-001 (agent): repository instructions must be single-sourced"
+binding_ids: [BIND-AGT-001-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-001-AGENT-001.rego"
+pass_criteria: "Exactly one root instruction source present (copilot-instructions.md XOR AGENTS.md)."
+fail_criteria: "Zero or two root instruction sources present."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

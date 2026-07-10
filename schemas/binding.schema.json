@@ -44,7 +44,8 @@
         "go",
         "node",
         "python",
-        "frontend"
+        "frontend",
+        "agent"
       ],
       "description": "Technology context from 02-taxonomy/technology-contexts.yaml."
     },

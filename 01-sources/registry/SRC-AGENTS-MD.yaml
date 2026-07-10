@@ -1,0 +1,27 @@
+$schema: "../../schemas/standard-source.schema.json"
+
+id: SRC-AGENTS-MD
+name: AGENTS.md — Open format for guiding coding agents
+version: "2025"
+publisher: AGENTS.md community (OpenAI, and contributors)
+source_url: "https://agents.md/"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: adopted
+
+applies_to:
+  - AGT  # Repository agent instructions (open, editor-agnostic)
+
+status: active
+
+notes: >
+  AGENTS.md is an open, editor-agnostic standard for a single Markdown file that gives coding
+  agents repository-level guidance (setup commands, conventions, testing, boundaries). It is the
+  cross-tool alternative to VS Code's copilot-instructions.md and supports monorepo hierarchy
+  (nested AGENTS.md files).
+
+  Platform position: a repository must have exactly ONE root instruction source. Per
+  SRC-VSCODE-AGENT-CUSTOMIZATION, having BOTH copilot-instructions.md and AGENTS.md is an
+  anti-pattern (conflicting guidance, drift). AGT-001 enforces single-sourcing: either file is
+  acceptable, but not both at the repository root.

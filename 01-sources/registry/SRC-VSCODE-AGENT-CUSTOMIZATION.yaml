@@ -1,0 +1,39 @@
+$schema: "../../schemas/standard-source.schema.json"
+
+id: SRC-VSCODE-AGENT-CUSTOMIZATION
+name: Visual Studio Code — Copilot Customization (custom instructions, agents, prompts, hooks, MCP)
+version: "2025"
+publisher: Microsoft
+source_url: "https://code.visualstudio.com/docs/copilot/customization/overview"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - AGT  # Agent configuration structure, discovery, tools, scoping
+
+status: active
+
+notes: >
+  The canonical reference for configuring AI coding agents in VS Code / GitHub Copilot.
+  Defines the customization primitives that platform AGT controls govern:
+
+  - Custom instructions: copilot-instructions.md (project-wide) — recommended single source
+    (https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
+  - File instructions: *.instructions.md with applyTo globs and keyword-rich descriptions
+  - Custom agents: *.agent.md with description, minimal tools, and role boundaries
+    (https://code.visualstudio.com/docs/copilot/customization/custom-agents)
+  - Prompts: *.prompt.md for parameterized tasks
+  - Hooks: lifecycle automation (PreToolUse/PostToolUse/…) for deterministic enforcement
+    (https://code.visualstudio.com/docs/copilot/customization/hooks)
+  - MCP: Model Context Protocol server configuration (.vscode/mcp.json)
+
+  Platform control mappings:
+  - AGT-001 (single-sourced instructions): "use only one" of copilot-instructions.md / AGENTS.md
+  - AGT-002 (valid frontmatter): every agent/instruction file needs valid YAML frontmatter with
+    a required `description`
+  - AGT-004 (rich descriptions): the description is the discovery surface; use the "Use when…" pattern
+  - AGT-005 (least-privilege tools): agents declare a minimal explicit tool set
+  - AGT-006 (scoping): applyTo should be specific; "**" burns context and is discouraged
+  - AGT-008 (safety hooks): hooks enforce behavior deterministically at lifecycle points

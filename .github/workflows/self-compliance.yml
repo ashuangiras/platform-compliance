@@ -26,7 +26,7 @@ jobs:
       gate: merge_gate
       profile-id: PROF-PLATFORM-V1
       repository-type: platform-repo
-      technology-contexts: "github,github-actions"
+      technology-contexts: "github,github-actions,agent"
       has-container-images: false
       # For PRs: use the branch being tested (so new policies in the PR are exercised)
       # For pushes to main: use "main" (the merged result)
@@ -45,6 +45,6 @@ jobs:
       gate: release_gate
       profile-id: PROF-PLATFORM-V1
       repository-type: platform-repo
-      technology-contexts: "github,github-actions"
+      technology-contexts: "github,github-actions,agent"
       has-container-images: false
       platform-compliance-ref: ${{ github.ref_name }}

@@ -48,6 +48,11 @@ POLICY_MAP = {
     "TST-002":   ("TST/POL-TST-002-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_002_go.result",                ["go"]),
     "TST-003":   ("TST/POL-TST-003-GO-001.rego",              "go-info.json",         "data.platform.tst.tst_003_go.result",                ["go"]),
 
+    # ── ADR-0017 A1: Agent configuration governance (AGT) ───────────────────
+    "AGT-001":   ("AGT/POL-AGT-001-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_001_agent.result",             ["agent"]),
+    "AGT-002":   ("AGT/POL-AGT-002-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_002_agent.result",             ["agent"]),
+    "AGT-003":   ("AGT/POL-AGT-003-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_003_agent.result",             ["agent"]),
+
     # ── Tier 2 ──────────────────────────────────────────────────────────────
     "SUP-004":   ("SUP/POL-SUP-004-GITHUB-ACTIONS-001.rego",  "actions-info.json",   "data.platform.sup.sup_004_github_actions.result",   ["github-actions"]),
     "ACC-001":   ("ACC/POL-ACC-001-GITHUB-001.rego",           "acc-security.json",   "data.platform.acc.acc_001_github.result",            ["github"]),

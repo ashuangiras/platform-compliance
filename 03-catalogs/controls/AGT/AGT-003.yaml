@@ -1,0 +1,59 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-003
+title: MCP server configuration must be valid and free of hardcoded secrets
+domain: AGT
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  If a repository declares Model Context Protocol servers (.vscode/mcp.json), the file must be
+  valid JSON and must not embed credentials. Tokens, API keys, passwords, private keys, and
+  Authorization/Bearer values must be supplied via input or environment references
+  (VS Code `${input:…}` / `${env:…}`), never as literal values committed to the repository.
+
+rationale: >
+  MCP servers connect agents to external systems and often require credentials. A literal token
+  checked into .vscode/mcp.json is a plaintext secret in version control — exactly the exposure
+  SEC-001/SEC-002 exist to prevent — and it is trivially leaked through forks, clones, and CI
+  logs. An invalid config silently disables the server, breaking agent capabilities without
+  warning. AGT-003 guarantees the MCP surface is both functional (valid JSON) and safe (no
+  embedded secrets), keeping the agent supply chain secure by construction.
+
+mapped_standards:
+  - source_id: SRC-MCP-SPEC
+    clause: "Authorization & configuration — credentials supplied out-of-band, not embedded"
+    mapping_note: >
+      The MCP specification's authorization model expects credentials to be provided securely at
+      runtime. AGT-003 forbids literal secrets in the committed server configuration.
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "MCP configuration via .vscode/mcp.json with input/env references"
+    mapping_note: >
+      VS Code supports `${input:…}` / `${env:…}` references precisely so secrets are not
+      hardcoded. AGT-003 requires their use in place of literal credentials.
+
+implementation_expectations: >
+  Repositories declaring the 'agent' context with an .vscode/mcp.json must:
+  - Keep the file valid JSON
+  - Reference all credentials via ${input:…} / ${env:…}, never literals
+
+  Collected by collect-agent-info.py as mcp.config_valid and mcp.hardcoded_secret_suspected
+  (with mcp.secret_findings listing the detected pattern classes).
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing mcp.config_valid == true and
+      mcp.hardcoded_secret_suspected == false.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

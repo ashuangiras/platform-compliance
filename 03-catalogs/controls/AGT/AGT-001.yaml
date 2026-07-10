@@ -1,0 +1,59 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-001
+title: Repository agent instructions must exist and be single-sourced
+domain: AGT
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  Every repository that ships AI coding-agent configuration must provide exactly one
+  repository-level instruction source at the root: either .github/copilot-instructions.md
+  or AGENTS.md — never both. The chosen file must be present and non-empty. Having zero
+  sources leaves agents unguided; having both creates conflicting, drifting guidance.
+
+rationale: >
+  The repository instruction file is the always-on context every agent loads. It is where
+  project conventions, architecture, build/test commands, and safety expectations live.
+  Without it, agents operate blind and produce inconsistent results. With two competing
+  sources (copilot-instructions.md and AGENTS.md), guidance drifts apart and it becomes
+  ambiguous which one is authoritative. Enforcing a single, present source guarantees every
+  agent — regardless of who invokes it — starts from the same, current instructions.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "Custom instructions — 'Use only one' of copilot-instructions.md / AGENTS.md"
+    mapping_note: >
+      The VS Code customization guidance explicitly recommends a single instruction source
+      and flags using both file types as an anti-pattern. AGT-001 enforces exactly-one.
+  - source_id: SRC-AGENTS-MD
+    clause: "AGENTS.md as the editor-agnostic root instruction file"
+    mapping_note: >
+      AGENTS.md is an accepted alternative root source. Either file satisfies AGT-001, but
+      only one may be present at the repository root.
+
+implementation_expectations: >
+  Repositories declaring the 'agent' context must:
+  - Provide .github/copilot-instructions.md OR AGENTS.md at the root (exactly one)
+  - Ensure the file is present and non-empty
+
+  Collected by collect-agent-info.py as instructions.instruction_source_count and
+  instructions.single_source.
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing instructions.single_source == true and a
+      non-null instructions.root_instructions_file.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate
