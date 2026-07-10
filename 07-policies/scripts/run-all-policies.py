@@ -52,6 +52,19 @@ POLICY_MAP = {
     "AGT-001":   ("AGT/POL-AGT-001-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_001_agent.result",             ["agent"]),
     "AGT-002":   ("AGT/POL-AGT-002-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_002_agent.result",             ["agent"]),
     "AGT-003":   ("AGT/POL-AGT-003-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_003_agent.result",             ["agent"]),
+    # ── ADR-0017 A2: Agent effectiveness (stringent, block) ─────────────────
+    "AGT-004":   ("AGT/POL-AGT-004-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_004_agent.result",             ["agent"]),
+    "AGT-005":   ("AGT/POL-AGT-005-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_005_agent.result",             ["agent"]),
+    "AGT-006":   ("AGT/POL-AGT-006-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_006_agent.result",             ["agent"]),
+    "AGT-007":   ("AGT/POL-AGT-007-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_007_agent.result",             ["agent"]),
+    "AGT-008":   ("AGT/POL-AGT-008-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_008_agent.result",             ["agent"]),
+    "AGT-009":   ("AGT/POL-AGT-009-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_009_agent.result",             ["agent"]),
+    "AGT-010":   ("AGT/POL-AGT-010-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_010_agent.result",             ["agent"]),
+    "AGT-011":   ("AGT/POL-AGT-011-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_011_agent.result",             ["agent"]),
+    "AGT-012":   ("AGT/POL-AGT-012-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_012_agent.result",             ["agent"]),
+    # ── ADR-0017 A2: continuous improvement + pre-merge readiness ───────────
+    "AGT-013":   ("AGT/POL-AGT-013-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_013_agent.result",             ["agent"]),
+    "AGT-014":   ("AGT/POL-AGT-014-AGENT-001.rego",           "agent-info.json",      "data.platform.agt.agt_014_agent.result",             ["agent"]),
 
     # ── Tier 2 ──────────────────────────────────────────────────────────────
     "SUP-004":   ("SUP/POL-SUP-004-GITHUB-ACTIONS-001.rego",  "actions-info.json",   "data.platform.sup.sup_004_github_actions.result",   ["github-actions"]),

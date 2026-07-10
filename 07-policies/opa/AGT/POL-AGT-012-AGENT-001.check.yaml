@@ -1,0 +1,11 @@
+id: POL-AGT-012-AGENT-001
+title: "AGT-012 (agent): repository instruction completeness"
+binding_ids: [BIND-AGT-012-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-012-AGENT-001.rego"
+pass_criteria: "Root instructions cover build/test/validation, conventions/architecture, and safety."
+fail_criteria: "Root instructions omit build/test, conventions, or safety."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

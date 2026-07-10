@@ -2,15 +2,15 @@ $schema: ../schemas/profile.schema.json
 id: PROF-AGENTIC-V1
 name: Agentic Configuration Profile v1
 description: 'Opt-in overlay profile for repositories that ship AI coding-agent configuration
-  (the "agent" technology context). Governs the setup and secure baseline of agent
-  configuration: single-sourced repository instructions, valid customization-file frontmatter,
-  and secret-free MCP configuration. A repository declares this profile in addition to its
-  primary profile (e.g. PROF-PLATFORM-V1 or PROF-SERVICE-V1). Effectiveness controls
-  (description quality, least-privilege tools, instruction scoping, pre/post-flight, safety
-  hooks, routing) land in a later version as warn.
+  (the "agent" technology context). Governs both the secure setup AND the effective, high-quality
+  usage of agent configuration: single-sourced instructions, valid frontmatter, secret-free and
+  pinned MCP servers, discoverable descriptions, least-privilege tools, scoped instructions,
+  pre/post-flight discipline, a safety hook, multi-agent routing, per-agent role clarity, and
+  complete repository instructions. Every control blocks. A repository declares this profile in
+  addition to its primary profile (e.g. PROF-PLATFORM-V1 or PROF-SERVICE-V1).
 
   '
-version: 1.0.0
+version: 2.0.0
 applicable_to:
 - platform-repo
 - service
@@ -24,31 +24,39 @@ introduced_by: platform-team
 status: active
 categories:
   mandatory:
-    description: 'Structural and security controls for agent configuration. These block at the
-      merge and release gates for any repository declaring the agent context.
+    description: 'All agent-configuration controls. Every one blocks at the merge and release
+      gates for any repository declaring the agent context — setup, security, and effectiveness
+      alike. The bar is deliberately high.
 
       '
     controls:
     - id: AGT-001
     - id: AGT-002
     - id: AGT-003
+    - id: AGT-004
+    - id: AGT-005
+    - id: AGT-006
+    - id: AGT-007
+    - id: AGT-008
+    - id: AGT-009
+    - id: AGT-010
+    - id: AGT-011
+    - id: AGT-012
+    - id: AGT-013
+    - id: AGT-014
   manual_initially:
-    description: 'No manually-attested agent controls at this time; all A1 controls are
-      automated.
+    description: 'No manually-attested agent controls; all AGT controls are automated.
 
       '
     controls: []
   deferred:
-    description: 'Agent-effectiveness controls planned for the next version (ADR-0017 phase A2):
-      rich descriptions, least-privilege agent tools, instruction scoping hygiene, pre/post-flight
-      discipline, safety-hook presence, and multi-agent routing. They will land as warn and be
-      promoted to block at v2.0.0. Not enforced yet.
+    description: 'No deferred agent controls; the full AGT set is enforced.
 
       '
     controls: []
 gates:
   merge_gate:
-    description: 'Agent-configuration controls evaluated before a PR may merge.
+    description: 'Agent-configuration controls evaluated before a PR may merge. All block.
 
       '
     required_controls:
@@ -57,9 +65,31 @@ gates:
     - id: AGT-002
       enforcement: block
     - id: AGT-003
+      enforcement: block
+    - id: AGT-004
+      enforcement: block
+    - id: AGT-005
+      enforcement: block
+    - id: AGT-006
+      enforcement: block
+    - id: AGT-007
+      enforcement: block
+    - id: AGT-008
+      enforcement: block
+    - id: AGT-009
+      enforcement: block
+    - id: AGT-010
+      enforcement: block
+    - id: AGT-011
+      enforcement: block
+    - id: AGT-012
+      enforcement: block
+    - id: AGT-013
+      enforcement: block
+    - id: AGT-014
       enforcement: block
   release_gate:
-    description: 'Agent-configuration controls evaluated before a version tag is published.
+    description: 'Agent-configuration controls evaluated before a version tag is published. All block.
 
       '
     required_controls:
@@ -68,6 +98,24 @@ gates:
     - id: AGT-002
       enforcement: block
     - id: AGT-003
+      enforcement: block
+    - id: AGT-004
+      enforcement: block
+    - id: AGT-005
+      enforcement: block
+    - id: AGT-006
+      enforcement: block
+    - id: AGT-007
+      enforcement: block
+    - id: AGT-008
+      enforcement: block
+    - id: AGT-009
+      enforcement: block
+    - id: AGT-010
+      enforcement: block
+    - id: AGT-011
+      enforcement: block
+    - id: AGT-012
       enforcement: block
   deployment_gate:
     description: 'Agent configuration is not a deployed artifact; no controls evaluated at
@@ -86,7 +134,30 @@ gates:
       enforcement: notify
     - id: AGT-003
       enforcement: notify
+    - id: AGT-004
+      enforcement: notify
+    - id: AGT-005
+      enforcement: notify
+    - id: AGT-006
+      enforcement: notify
+    - id: AGT-007
+      enforcement: notify
+    - id: AGT-008
+      enforcement: notify
+    - id: AGT-009
+      enforcement: notify
+    - id: AGT-010
+      enforcement: notify
+    - id: AGT-011
+      enforcement: notify
+    - id: AGT-012
+      enforcement: notify
+    - id: AGT-013
+      enforcement: notify
+    - id: AGT-014
+      enforcement: notify
 notes: >
   Opt-in overlay. Enforcement is driven by the 'agent' technology context: a repository that
-  declares the context runs AGT-001/002/003 in CI. platform-compliance itself declares the
-  context and this profile, dogfooding the agent operating layer it defines.
+  declares the context runs the full AGT suite (AGT-001..012) in CI, all blocking.
+  platform-compliance itself declares the context and this profile, dogfooding the agent operating
+  layer it defines — and passes every control.

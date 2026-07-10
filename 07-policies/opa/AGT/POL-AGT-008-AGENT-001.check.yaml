@@ -1,0 +1,11 @@
+id: POL-AGT-008-AGENT-001
+title: "AGT-008 (agent): PreToolUse safety hook present and valid"
+binding_ids: [BIND-AGT-008-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-008-AGENT-001.rego"
+pass_criteria: "A PreToolUse guard is configured; command scripts exist and shell scripts are executable."
+fail_criteria: "No PreToolUse guard, or a hook script is missing or non-executable."
+evidence_type: agent-config
+severity: high
+introduced_date: "2026-07-10"
+status: active

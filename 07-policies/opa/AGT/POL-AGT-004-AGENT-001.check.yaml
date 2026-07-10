@@ -1,0 +1,11 @@
+id: POL-AGT-004-AGENT-001
+title: "AGT-004 (agent): descriptions must be discoverable (>= 40 chars)"
+binding_ids: [BIND-AGT-004-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-004-AGENT-001.rego"
+pass_criteria: "No customization file has a weak/short description."
+fail_criteria: "One or more descriptions are shorter than the minimum or missing."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

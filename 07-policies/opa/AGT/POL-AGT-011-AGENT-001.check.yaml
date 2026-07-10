@@ -1,0 +1,11 @@
+id: POL-AGT-011-AGENT-001
+title: "AGT-011 (agent): MCP servers declare a type and are version-pinned"
+binding_ids: [BIND-AGT-011-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-011-AGENT-001.rego"
+pass_criteria: "Every MCP server declares a type and is pinned (fixed URL, @version, or non-latest tag)."
+fail_criteria: "A server omits its type or is unpinned (npx/uvx without @version, docker :latest)."
+evidence_type: agent-config
+severity: high
+introduced_date: "2026-07-10"
+status: active

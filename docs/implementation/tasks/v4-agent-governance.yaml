@@ -43,40 +43,43 @@ phases:
     title: Full CI validation of A1; merge; cut v1.4.0
     status: not_started
 - id: phase-A2-effectiveness
-  title: 'A2 — Effectiveness: AGT-004..009 (warn)'
+  title: 'A2 — Effectiveness + continuous improvement (stringent, all block)'
   horizon: v1.5.0
   tasks:
   - id: PC-0268
-    title: Define AGT-004 (keyword-rich descriptions) + binding + policy (warn)
-    status: not_started
+    title: Extend collect-agent-info.py with quality signals (descriptions, tools, scoping, role/constraints, MCP pinning, hook integrity, completeness)
+    status: done
   - id: PC-0269
-    title: Define AGT-005 (least-privilege agent tools) + binding + policy (warn)
-    status: not_started
+    title: Define AGT-004 (descriptions) + AGT-005 (least-privilege tools) + AGT-006 (scoping) + policies (block)
+    status: done
   - id: PC-0270
-    title: Define AGT-006 (instruction scoping hygiene; applyTo not "**") + binding + policy (warn)
-    status: not_started
+    title: Define AGT-007 (pre/post-flight) + AGT-008 (safety hook integrity) + AGT-009 (routing) + policies (block)
+    status: done
   - id: PC-0271
-    title: Define AGT-007 (pre/post-flight discipline) + binding + policy (warn)
-    status: not_started
+    title: Define AGT-010 (role+constraints) + AGT-011 (MCP trust/pinning) + AGT-012 (instruction completeness) + policies (block)
+    status: done
   - id: PC-0272
-    title: Define AGT-008 (safety hook present) + binding + policy (warn)
-    status: not_started
+    title: Add tools/check-agents.sh local fail-loud runner
+    status: done
   - id: PC-0273
-    title: Define AGT-009 (router present when multiple agents) + binding + policy (warn)
-    status: not_started
+    title: Collector PR context (changed files + PR body) via env; learnings ledger + PR template
+    status: done
   - id: PC-0274
-    title: Add A2 controls to PROF-AGENTIC-V1 (warn) + POLICY_MAP; CI; merge; cut v1.5.0
+    title: Define AGT-013 (per-PR improvement ledger entry) + AGT-014 (pre-merge readiness+retro) + policies (block)
+    status: done
+  - id: PC-0275
+    title: Expand PROF-AGENTIC-V1 to v2.0.0 (all AGT block) + POLICY_MAP; amend ADR-0017
+    status: done
+  - id: PC-0276
+    title: Full CI validation of A2; merge; cut v1.5.0
     status: not_started
 - id: phase-A3-baseline
-  title: 'A3 — Baseline: promote to block; fold into PROF-BASE'
+  title: 'A3 — Baseline: fold into PROF-BASE'
   horizon: v2.0.0
   tasks:
-  - id: PC-0275
-    title: Promote AGT-004/005/006 from warn to block
-    status: not_started
-  - id: PC-0276
+  - id: PC-0277
     title: Fold AGT-001/002/003 into PROF-BASE (universal for all repositories)
     status: not_started
-  - id: PC-0277
+  - id: PC-0278
     title: CI; merge; roll into v2.0.0 with ADR-0016 P5
     status: not_started

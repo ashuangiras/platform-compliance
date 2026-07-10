@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-AGT-012-AGENT
+control_id: AGT-012
+technology_context: agent
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Repository instructions cover build/test/validation, conventions/architecture, and safety.
+observable_artifact: "collect-agent-info.py field: instructions.complete (true)"
+policy_check_ids:
+  - POL-AGT-012-AGENT-001

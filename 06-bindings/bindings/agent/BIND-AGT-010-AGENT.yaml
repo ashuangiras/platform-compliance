@@ -1,0 +1,12 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-AGT-010-AGENT
+control_id: AGT-010
+technology_context: agent
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Every .agent.md body states a role/persona and an explicit constraints/boundaries section.
+observable_artifact: "collect-agent-info.py fields: agents.agents_missing_role, agents.agents_missing_constraints (both empty)"
+policy_check_ids:
+  - POL-AGT-010-AGENT-001

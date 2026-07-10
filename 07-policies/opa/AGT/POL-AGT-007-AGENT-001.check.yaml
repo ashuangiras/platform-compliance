@@ -1,0 +1,11 @@
+id: POL-AGT-007-AGENT-001
+title: "AGT-007 (agent): pre-flight and post-flight checklists present"
+binding_ids: [BIND-AGT-007-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-007-AGENT-001.rego"
+pass_criteria: "Root instructions include both a pre-flight and a post-flight checklist."
+fail_criteria: "Root instructions are missing a pre-flight or post-flight checklist."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

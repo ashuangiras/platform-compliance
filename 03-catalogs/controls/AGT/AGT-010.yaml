@@ -1,0 +1,53 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-010
+title: Every agent must state a single role and explicit constraints
+domain: AGT
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  Every custom agent's body must state a single, clear role/persona and an explicit constraints or
+  boundaries section that says what the agent must NOT do. A router or specialist without a defined
+  role and boundaries is an unfocused "Swiss-army" agent.
+
+rationale: >
+  Focused agents outperform vague ones. A single-role persona keeps the agent on task, and an
+  explicit constraints section ("DO NOT …") prevents scope creep and role confusion — the reviewer
+  that starts editing, the author that starts merging. Encoding both makes each agent predictable
+  and safe to delegate to, and makes the team's division of labour auditable.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "Custom agents — single role; define what the agent should NOT do"
+    mapping_note: >
+      The customization guidance lists "single role" and "clear boundaries" as core principles and
+      "role confusion" as an anti-pattern. AGT-010 enforces both in every agent body.
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "Every agent: role/persona statement + Constraints/DO-NOT section"
+    mapping_note: >
+      House convention from the platform's specialist agents. AGT-010 requires the same structure
+      in every governed agent.
+
+implementation_expectations: >
+  Each .agent.md body contains a role/persona statement and a constraints/boundaries section.
+  Collected by collect-agent-info.py as agents.agents_missing_role and
+  agents.agents_missing_constraints (both must be empty).
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing empty agents.agents_missing_role and
+      agents.agents_missing_constraints lists.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate

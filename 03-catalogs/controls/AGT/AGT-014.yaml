@@ -1,0 +1,51 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-014
+title: Every PR must pass an agent readiness check and retrospective before merge
+domain: AGT
+type: directive
+priority: P2
+severity: medium
+
+statement: >
+  Before a pull request may merge to the default branch, its description must contain a completed
+  agent readiness check (a checklist confirming the agent configuration still meets the platform's
+  standards, with items ticked) and a retrospective capturing what the change taught the team and
+  how the agents' understanding or configuration improved.
+
+rationale: >
+  A readiness check is the pre-merge backstop that stops a change from silently degrading the
+  agent operating layer — it forces a conscious confirmation that instructions, tool scopes, and
+  safety mechanisms are still correct. The retrospective turns every merge into a learning moment,
+  feeding the continuous-improvement loop (AGT-013). Together they make merges deliberate and the
+  agent team reflective rather than static.
+
+mapped_standards:
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "Pre-merge readiness check + retrospective in the pull request"
+    mapping_note: >
+      House convention: no change merges without confirming agent readiness and recording a
+      retro. AGT-014 enforces both in the PR description.
+
+implementation_expectations: >
+  The pull request body contains a readiness section with at least one ticked checkbox and a
+  retrospective section. Collected by collect-agent-info.py as improvement.pr_has_readiness and
+  improvement.pr_has_retro. Applies only on pull-request events (merge gate); not_applicable
+  otherwise. A repository PR template (.github/pull_request_template.md) should provide the
+  section.
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing improvement.pr_has_readiness == true and
+      improvement.pr_has_retro == true on a pull request.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate

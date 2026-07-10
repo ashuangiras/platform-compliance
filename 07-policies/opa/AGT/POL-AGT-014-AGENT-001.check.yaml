@@ -1,0 +1,11 @@
+id: POL-AGT-014-AGENT-001
+title: "AGT-014 (agent): pre-merge readiness check and retrospective"
+binding_ids: [BIND-AGT-014-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-014-AGENT-001.rego"
+pass_criteria: "On a PR, the body contains a completed (ticked) readiness check and a retrospective."
+fail_criteria: "On a PR, the readiness check is not completed or the retro is missing."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active

@@ -1,0 +1,57 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: AGT-012
+title: Repository instructions must cover build/test, conventions, and safety
+domain: AGT
+type: preventive
+priority: P2
+severity: medium
+
+statement: >
+  The repository instruction file must be substantive: it must cover how to build/test/validate
+  the project, the project's conventions or architecture, and a safety section describing
+  destructive-operation boundaries and secret handling. A stub instruction file that omits these
+  leaves agents to guess.
+
+rationale: >
+  The repository instruction file is the always-on context for every agent. If it does not tell
+  agents how to validate their work, what conventions to follow, and where the safety boundaries
+  are, the agent operates on assumptions — running the wrong commands, violating conventions, or
+  taking unsafe actions. Requiring these sections guarantees a minimum operating manual that makes
+  agent output consistent and safe.
+
+mapped_standards:
+  - source_id: SRC-VSCODE-AGENT-CUSTOMIZATION
+    clause: "Custom instructions — Build and Test, Architecture, Conventions"
+    mapping_note: >
+      The customization template lists build/test, architecture, and conventions as the sections
+      that matter. AGT-012 requires them plus an explicit safety section.
+  - source_id: SRC-AGENTS-MD
+    clause: "AGENTS.md — setup/build/test commands and conventions"
+    mapping_note: >
+      AGENTS.md prescribes the same substantive content for the root instruction file.
+  - source_id: SRC-PLATFORM-AGENT-CONVENTIONS
+    clause: "Repository instructions carry validation commands, conventions, and a safety section"
+    mapping_note: >
+      House convention from the platform's own copilot-instructions.md.
+
+implementation_expectations: >
+  The root instruction file covers build/test/validation, conventions/architecture, and safety.
+  Collected by collect-agent-info.py as instructions.complete (must be true), backed by
+  instructions.has_build_test, has_conventions, and has_safety.
+
+evidence_required:
+  - type: agent-config
+    description: >
+      collect-agent-info.py output showing instructions.complete == true.
+    format: json
+
+automation_status: automated
+assessment_cadence: per-merge
+failure_behavior: block
+lifecycle_status: active
+introduced_date: "2026-07-10"
+
+failure_applies_to:
+  - merge_gate
+  - release_gate
