@@ -424,6 +424,27 @@ Added this rule to the control-author mental checklist. Before registering a sta
 
 ---
 
+## 2026-07-10 — Full repo audit: gaps closed (v3.1.0)
+
+**Date:** 2026-07-10
+**Change Record:** CHG-20260710-029
+
+- Systematic audit found: no .gitignore, 35 unregistered evidence_type values,
+  SRC-004 and SUP-003 without bindings, stale ADR drafts, stale current-state.md.
+- evidence-types.yaml is the source of truth for all evidence types used in *.check.yaml
+  files. All 85 check.yaml files must have a registered evidence_type or the compliance-
+  reviewer blocks. Running the completeness script (`grep evidence_type` across all
+  check.yaml + diff against evidence-types.yaml) should be standard pre-flight for
+  Control Author and Policy Engineer.
+- SRC-004 (commit signing) and SUP-003 (Dependabot alerts) were defined controls with no
+  implementation path — no binding, no collector field, no policy. Closing a control
+  requires all three. The audit made the drift visible; the full chain fixed it.
+- Stale ADR drafts in decisions-needed/ create confusion. When an ADR is ratified
+  (moved to decisions/), its draft must be git-removed from decisions-needed/ immediately.
+  Release Manager now owns this as a post-ratification housekeeping step.
+
+---
+
 ## 2026-07-10 — SRC-001/002 bootstrap race condition: waiver-aware policy runner + admin merge
 
 **Date:** 2026-07-10

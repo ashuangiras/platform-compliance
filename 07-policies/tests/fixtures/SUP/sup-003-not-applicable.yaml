@@ -1,0 +1,7 @@
+# Fixture: SUP-003 — NOT APPLICABLE
+# Scenario: vulnerability_alerts_enabled field is absent (non-GitHub repository context,
+# e.g. a Terraform module repo where the collector does not emit this field).
+# Expected policy result: { "result": "not_applicable" }
+repository:
+  name: my-terraform-module
+  type: terraform-module

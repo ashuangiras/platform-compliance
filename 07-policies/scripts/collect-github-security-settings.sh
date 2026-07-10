@@ -2,7 +2,7 @@
 # collect-github-security-settings.sh
 #
 # Collects GitHub repository security settings and secret scanning alerts.
-# Output feeds OPA policy checks: SEC-001, SEC-002, SEC-003.
+# Output feeds OPA policy checks: SEC-001, SEC-002, SEC-003, SUP-003.
 #
 # Usage: ./collect-github-security-settings.sh <owner/repo>
 # Output: YAML to stdout
@@ -26,6 +26,15 @@ alerts_json=$(gh api "repos/${REPO}/secret-scanning/alerts" 2>/dev/null || echo 
 # Dependabot alerts (for SEC-003 SLA check)
 dependabot_json=$(gh api "repos/${REPO}/dependabot/alerts?state=open&per_page=100" 2>/dev/null || echo "[]")
 
+# Vulnerability alerts enabled — HTTP 204 means enabled, 404 means not enabled (SUP-003)
+vulnerability_alerts_enabled="false"
+if gh api "repos/${REPO}/vulnerability-alerts" >/dev/null 2>&1; then
+    vulnerability_alerts_enabled="true"
+fi
+
+# Automated security fixes (SUP-003)
+automated_security_fixes_json=$(gh api "repos/${REPO}/automated-security-fixes" 2>/dev/null || echo '{"enabled":false}')
+
 # Gitleaks scan (requires gitleaks binary in PATH)
 gitleaks_findings="[]"
 if command -v gitleaks >/dev/null 2>&1; then
@@ -44,6 +53,7 @@ repo = json.loads('''${repo_json}'''.replace("'", '"').replace('\\n', ''))
 alerts = json.loads('''${alerts_json}'''.replace("'", '"'))
 dependabot = json.loads('''${dependabot_json}'''.replace("'", '"'))
 findings = json.loads('''${gitleaks_findings}'''.replace("'", '"'))
+automated_security_fixes = json.loads('${automated_security_fixes_json}')
 
 sec_analysis = repo.get('security_and_analysis', {})
 
@@ -52,6 +62,8 @@ output = {
         'name': '${REPO_NAME}',
         'security_and_analysis': sec_analysis
     },
+    'vulnerability_alerts_enabled': ('${vulnerability_alerts_enabled}' == 'true'),
+    'automated_security_fixes_enabled': automated_security_fixes.get('enabled', False),
     'scan_tool': 'gitleaks',
     'scan_tool_version': 'system',
     'findings': findings if isinstance(findings, list) else [],

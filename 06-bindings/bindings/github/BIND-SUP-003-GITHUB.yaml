@@ -1,0 +1,38 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SUP-003-GITHUB
+control_id: SUP-003
+technology_context: github
+introduced_date: "2026-07-10"
+status: active
+
+specification: >
+  Dependabot vulnerability alerts must be enabled for the repository so that
+  known vulnerabilities in dependencies are surfaced automatically. Automated
+  security updates (Dependabot pull requests) must also be enabled so that
+  remediation pull requests are opened without manual intervention.
+
+  Both settings are required:
+  1. Vulnerability alerts — the repository must be opted in to Dependabot alerts.
+  2. Automated security updates — Dependabot must be configured to open pull
+     requests automatically for vulnerable dependency versions.
+
+  Verification is performed by querying the GitHub REST API vulnerability-alerts
+  and automated-security-fixes endpoints.
+
+observable_artifact: >
+  GitHub REST API responses:
+
+  1. GET /repos/{owner}/{repo}/vulnerability-alerts
+     HTTP 204 confirms vulnerability alerts are enabled; HTTP 404 means disabled.
+
+  2. GET /repos/{owner}/{repo}/automated-security-fixes
+     Field evaluated: enabled == true
+
+  evidence_type: dependency-vulnerability-alert-status
+  Key fields:
+  - vulnerability_alerts_enabled must be true
+  - automated_security_fixes_enabled must be true
+
+policy_check_ids:
+  - POL-SUP-003-GITHUB-001

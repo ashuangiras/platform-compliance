@@ -8,7 +8,7 @@ evidence_types:
       Demonstrates branch protection settings including: required PR reviews, required
       status checks, push restriction, force-push and deletion disablement.
     format: json
-    controls: [SRC-001, SRC-002]
+    controls: [SRC-001, SRC-002, SRC-004]
     collection: automated
 
   github-pr-merge-audit:
@@ -127,9 +127,10 @@ evidence_types:
   dependency-vulnerability-alert-status:
     description: >
       List of open dependency vulnerability alerts at assessment time, including
-      severity, age (days since created), and remediation status.
+      severity, age (days since created), and remediation status. Also confirms
+      Dependabot vulnerability alerts and automated security updates are enabled.
     format: json
-    controls: [SEC-003]
+    controls: [SEC-003, SUP-003]
     collection: automated
 
   # ── Runtime / Docker ────────────────────────────────────────────────────────
@@ -343,4 +344,77 @@ evidence_types:
       Consumed by frontend bundle size policy SEC-011.
     format: json
     controls: [SEC-011]
+    collection: automated
+
+  # ── Runtime / Docker (Compose) ───────────────────────────────────────────────
+
+  docker-compose-security:
+    description: >
+      Static analysis of docker-compose.yml (and overrides) confirming no service
+      runs with privileged mode, that read-only root filesystems are declared where
+      applicable, and that other Docker Compose security controls are satisfied.
+    format: json
+    controls: [RUN-004, RUN-005, RUN-006, RUN-007, OBS-003]
+    collection: automated
+
+  # ── Access Control ───────────────────────────────────────────────────────────
+
+  github-account-security:
+    description: >
+      GitHub organisation security settings confirming two-factor authentication
+      enforcement and, where applicable, SAML/SSO enforcement for all members.
+    format: json
+    controls: [ACC-001]
+    collection: automated
+
+  # ── GitHub Actions ───────────────────────────────────────────────────────────
+
+  github-actions-workflow:
+    description: >
+      GitHub Actions workflow file content and configuration, including permissions
+      declarations, third-party action pinning, secret handling, and environment
+      gating. Consumed by security, supply-chain, and IaC workflow policies.
+    format: json
+    controls: [SEC-004, SEC-005, SEC-006, SEC-008, SUP-004, IAC-004, IAC-005]
+    collection: automated
+
+  # ── Audit ────────────────────────────────────────────────────────────────────
+
+  github-audit-log:
+    description: >
+      GitHub organisation audit log entries for the assessed period, confirming
+      administrator and privileged actions are recorded and retrievable.
+    format: json
+    controls: [AUD-001]
+    collection: automated
+
+  # ── Licensing ────────────────────────────────────────────────────────────────
+
+  github-license:
+    description: >
+      GitHub repository license file presence and type, confirmed via the
+      GET /repos/{owner}/{repo}/license API or repository file tree inspection.
+    format: json
+    controls: [LIC-001]
+    collection: automated
+
+  # ── Security (GitHub) ────────────────────────────────────────────────────────
+
+  github-security-alerts:
+    description: >
+      GitHub security vulnerability alerts and Dependabot alert summary for the
+      repository, including open alert count, severity breakdown, and auto-fix status.
+    format: json
+    controls: [SEC-007]
+    collection: automated
+
+  # ── Agent Configuration ──────────────────────────────────────────────────────
+
+  agent-config:
+    description: >
+      AI coding agent configuration facts extracted from agent definition files,
+      including frontmatter fields (model, tools, hooks), routing rules, and
+      specialist agent presence. Consumed by AGT-domain policies.
+    format: json
+    controls: [AGT-001, AGT-002, AGT-003, AGT-004, AGT-005, AGT-006, AGT-007, AGT-008, AGT-009, AGT-010, AGT-011, AGT-012, AGT-013, AGT-014, AGT-015]
     collection: automated

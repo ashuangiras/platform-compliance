@@ -7,6 +7,33 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.1.0] — 2026-07-10 (CHG-20260710-029)
+
+### Full repo audit — gap fixes
+
+**New controls implemented:**
+- `SRC-004` (commit signing) — binding, collector field (`required_signatures.enabled`),
+  OPA policy `POL-SRC-004-GITHUB-001` (block), 3 fixtures
+- `SUP-003` (Dependabot alerts) — binding, collector fields
+  (`vulnerability_alerts_enabled`, `automated_security_fixes_enabled`),
+  OPA policy `POL-SUP-003-GITHUB-001` (block for alerts, warn for auto-fixes), 4 fixtures
+
+**Evidence type completeness:**
+- `08-evidence/evidence-types.yaml`: 7 new types added; 2 existing types updated
+  (SRC-004 added to `github-branch-protection-api-response`;
+   SUP-003 added to `dependency-vulnerability-alert-status`)
+  Total: 44 registered evidence types — all `*.check.yaml` files now covered
+
+**Housekeeping:**
+- `.gitignore` — created at repo root with required SEC-001 patterns
+  (`*.pem`, `*.key`, `.env`, `*.tfvars` etc.); stops CI warnings on every PR
+- 3 stale ADR drafts removed from `decisions-needed/`:
+  ADR-0009 (policy-bundle), ADR-0010 (versioning-cadence), ADR-0011 (plt-cli)
+- `docs/implementation/current-state.md` — updated to v3.0.0 reality
+- `docs/implementation/decisions-needed/README.md` — ADR-0009/0010/0011 marked resolved
+
+---
+
 ## [v3.0.0] — 2026-07-10 (CHG-20260710-028)
 
 ### forge v3.0.0 — CI pipeline, CodeQL SAST, binary releases, user docs

@@ -101,6 +101,9 @@ POLICY_MAP = {
     "SEC-009-FRONTEND": ("SEC/POL-SEC-009-FRONTEND-001.rego", "frontend-info.json", "data.platform.sec.sec_009_frontend.result", ["frontend"]),
     "SEC-010-FRONTEND": ("SEC/POL-SEC-010-FRONTEND-001.rego", "frontend-info.json", "data.platform.sec.sec_010_frontend.result", ["frontend"]),
     "SEC-011-FRONTEND": ("SEC/POL-SEC-011-FRONTEND-001.rego", "frontend-info.json", "data.platform.sec.sec_011_frontend.result", ["frontend"]),
+    # ── Audit gap fixes ──────────────────────────────────────────────────────
+    "SRC-004":   ("SRC/POL-SRC-004-GITHUB-001.rego",   "src-branch-protection.json",  "data.platform.src.src_004_github.result",   ["github"]),
+    "SUP-003":   ("SUP/POL-SUP-003-GITHUB-001.rego",   "sec-security-settings.json",  "data.platform.sup.sup_003_github.result",   ["github"]),
 }
 
 

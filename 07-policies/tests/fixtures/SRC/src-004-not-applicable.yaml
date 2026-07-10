@@ -1,0 +1,9 @@
+# Fixture: SRC-004 — NOT APPLICABLE
+# Scenario: branch_protection is null (protection not configured or API returned 404).
+# SRC-001 governs whether protection is enabled; SRC-004 defers when data is absent.
+# Expected policy result: { "result": "not_applicable" }
+branch_protection: null
+repository:
+  name: my-ungoverned-repo
+  type: terraform-module
+default_branch: main

@@ -1,0 +1,33 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SRC-004-GITHUB
+control_id: SRC-004
+technology_context: github
+introduced_date: "2026-07-10"
+status: active
+
+specification: >
+  All commits to the default branch must have commit signing enabled. The
+  "Require signed commits" (`required_signatures`) branch protection setting
+  must be set to true on the repository's default branch.
+
+  This ensures every commit merged to the default branch carries a verified
+  cryptographic signature (GPG, SSH, or S/MIME), providing non-repudiation
+  and tamper-evidence for the commit history.
+
+  Verification is performed by querying the GitHub REST API branch protection
+  required-signatures endpoint.
+
+observable_artifact: >
+  GitHub REST API response:
+  GET /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
+
+  Field evaluated:
+  - enabled == true
+
+  The endpoint returns HTTP 200 with `{"enabled": true}` when commit signing
+  is required, and HTTP 404 when the setting has never been configured (treated
+  as disabled / fail).
+
+policy_check_ids:
+  - POL-SRC-004-GITHUB-001

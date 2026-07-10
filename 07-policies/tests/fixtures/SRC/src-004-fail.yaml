@@ -1,0 +1,15 @@
+# Fixture: SRC-004 — FAIL
+# Scenario: Branch protection exists but required_signatures is explicitly disabled.
+# Expected policy result: { "result": "fail" }
+branch_protection:
+  required_signatures:
+    enabled: false
+    url: https://api.github.com/repos/org/my-repo/branches/main/protection/required_signatures
+  allow_force_pushes:
+    enabled: false
+  allow_deletions:
+    enabled: false
+repository:
+  name: my-repo
+  type: platform-repo
+default_branch: main

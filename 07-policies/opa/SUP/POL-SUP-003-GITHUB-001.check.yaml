@@ -1,0 +1,19 @@
+id: POL-SUP-003-GITHUB-001
+title: "Dependabot vulnerability alerts and automated security fixes are enabled"
+binding_ids:
+  - BIND-SUP-003-GITHUB
+engine: opa
+file_path: "07-policies/opa/SUP/POL-SUP-003-GITHUB-001.rego"
+pass_criteria: >
+  input.vulnerability_alerts_enabled is true and
+  input.automated_security_fixes_enabled is true.
+fail_criteria: >
+  input.vulnerability_alerts_enabled is false. A warn result is produced
+  when alerts are enabled but automated_security_fixes_enabled is false or
+  absent; warn does not block the merge gate. A not_applicable result is
+  returned when vulnerability_alerts_enabled is absent or non-boolean
+  (non-GitHub context).
+evidence_type: dependency-vulnerability-alert-status
+severity: high
+introduced_date: "2026-07-10"
+status: active
