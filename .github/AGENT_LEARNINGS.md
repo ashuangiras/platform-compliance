@@ -404,6 +404,26 @@ Added this rule to the control-author mental checklist. Before registering a sta
 
 ---
 
+## 2026-07-10 — forge v3.0.0: CI pipeline, CodeQL Go SAST, binary releases, README
+
+**Date:** 2026-07-10
+**Change Record:** CHG-20260710-028
+
+- forge-ci.yml: uses paths filter (tools/forge/**) so it only triggers on forge code
+  changes — not on every governance YAML PR. This is the correct pattern for any workflow
+  that only analyses a subdirectory of a monorepo.
+- CodeQL Go: the codeql.yml paths filter must list ALL code directories the workflow
+  analyses, not just the new one. Adding paths:[tools/forge/**] without 07-policies/scripts/**
+  would have broken the Python scan. Reviewer caught this; paths filter now covers both.
+- release.yml: forge binaries depend on package-bundle completing (needs: package-bundle).
+  This ensures the policy bundle is always published before binaries — a consumer can pin
+  one release and get both governance artifacts and the tooling.
+- README-first discipline: the README should have been written when forge was created
+  (v2.6.0), not after it was fully implemented. Future CLI deliverables: write the README
+  before or alongside the first command, not after all commands are done.
+
+---
+
 ## 2026-07-10 — SRC-001/002 bootstrap race condition: waiver-aware policy runner + admin merge
 
 **Date:** 2026-07-10

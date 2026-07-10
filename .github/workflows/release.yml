@@ -85,3 +85,50 @@ jobs:
 
           echo "✓ Bundle uploaded to release ${TAG}"
           gh release view "${TAG}" --repo "${{ github.repository }}" --json assets --jq '.assets[].name'
+
+  build-forge:
+    name: "Build and publish forge binaries"
+    runs-on: ubuntu-latest
+    needs: package-bundle
+    permissions:
+      contents: write   # needed to upload release assets
+
+    steps:
+      - name: Checkout at tagged ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tools/forge/go.mod
+          cache-dependency-path: tools/forge/go.sum
+
+      - name: Build forge binaries
+        working-directory: tools/forge
+        env:
+          VERSION: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          LDFLAGS="-X main.Version=${VERSION} -X main.Commit=${COMMIT}"
+          mkdir -p dist
+          GOOS=linux  GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/forge_Linux_x86_64 .
+          GOOS=darwin GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/forge_Darwin_x86_64 .
+          GOOS=darwin GOARCH=arm64 go build -ldflags "${LDFLAGS}" -o dist/forge_Darwin_arm64 .
+          cd dist && sha256sum forge_* > forge_checksums.txt
+          echo "Binaries built:"
+          ls -lh
+
+      - name: Upload forge binaries to release
+        working-directory: tools/forge/dist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.ref_name }} \
+            forge_Linux_x86_64 \
+            forge_Darwin_x86_64 \
+            forge_Darwin_arm64 \
+            forge_checksums.txt \
+            --repo ${{ github.repository }} \
+            --clobber

@@ -7,6 +7,25 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.0.0] — 2026-07-10 (CHG-20260710-028)
+
+### forge v3.0.0 — CI pipeline, CodeQL SAST, binary releases, user docs
+
+**MAJOR** version bump: forge is now a first-class CI deliverable of platform-compliance.
+Every tag ships `forge` binaries alongside `policies.tar.gz`.
+
+- `.github/workflows/forge-ci.yml` (new) — build, vet, and test forge on PRs that touch
+  `tools/forge/**`; satisfies QUA-001/002/003/004 and TST-001 for the forge codebase itself
+- `.github/workflows/codeql.yml` — `codeql-go` job added for Go SAST on `tools/forge`;
+  `paths:` trigger filter added covering both Python (07-policies/scripts) and Go (tools/forge)
+- `.github/workflows/release.yml` — `build-forge` job: cross-compiles
+  `forge_Linux_x86_64`, `forge_Darwin_x86_64`, `forge_Darwin_arm64` + `forge_checksums.txt`
+  and uploads to every release
+- `tools/forge/README.md` (new) — install guide, quickstart, full command reference,
+  how downstream repos use forge, collector extension guide, development commands
+
+---
+
 ## [v2.9.3] — 2026-07-10 (CHG-20260710-027)
 
 ### fix: SRC-001/002 bootstrap CI race condition

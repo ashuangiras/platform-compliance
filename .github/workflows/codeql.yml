@@ -1,15 +1,22 @@
 name: "CodeQL Security Analysis"
 
-# Runs SAST on the Python collection scripts and any other code in the repo.
-# Satisfies SEC-005 — SAST must run in CI on every change.
-# CodeQL analyses Python scripts in 07-policies/scripts/ and any other
-# Python or JSON/YAML tooling code.
+# Runs SAST on the Python collection scripts and the forge Go CLI.
+# Satisfies SEC-005 — SAST must run in CI on every change to analysed code.
+# - Python: 07-policies/scripts/ (collectors + engine)
+# - Go: tools/forge/ (forge CLI)
+# Scheduled weekly to catch newly-published vulnerability signatures.
 
 on:
   pull_request:
     branches: [main]
+    paths:
+      - "07-policies/scripts/**"
+      - "tools/forge/**"
   push:
     branches: [main]
+    paths:
+      - "07-policies/scripts/**"
+      - "tools/forge/**"
   schedule:
     # Weekly scan to catch newly-published vulnerability signatures
     - cron: "0 6 * * 1"
@@ -47,3 +54,34 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:python"
+
+  codeql-go:
+    name: "SAST — CodeQL (Go — forge)"
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write   # required to upload SARIF results to GitHub
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tools/forge/go.mod
+          cache-dependency-path: tools/forge/go.sum
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: go
+          build-mode: autobuild
+          config: |
+            paths:
+              - tools/forge
+          category: "/language:go"
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:go"
