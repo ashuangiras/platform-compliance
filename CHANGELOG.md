@@ -7,6 +7,19 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.1.0] — 2026-07-10 (CHG-20260710-016)
+
+### ADR-0016 Phase P5 — Library Profile (PC-0254, PC-0255)
+
+- New profile `PROF-LIBRARY-V1` (inherits `PROF-BASE`; `applicable_to: [library]`)
+  - Mandatory (all `block`): QUA-001/002/003/004, TST-001, TST-002
+  - Explicitly not applicable: TST-003, RUN/OBS/BAK/NET controls
+  - Libraries mandate code quality and test coverage; runtime controls do not apply
+- `02-taxonomy/repository-types.yaml`: `library` type now points to `PROF-LIBRARY-V1`
+  with `implied_domains: [SUP, QUA, TST]`
+
+---
+
 ## [v2.0.0] — 2026-07-10 (CHG-20260710-015)
 
 ### ADR-0016 Phase P4 — Frontend Security Controls + TST-002 Block Promotion

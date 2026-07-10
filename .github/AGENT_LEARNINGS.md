@@ -10,6 +10,24 @@ agents more effective* — not just what files changed.
 
 ---
 
+## AGT-LEARNING-005 — ADR-0016 P5 Library profile (PROF-LIBRARY-V1) (2026-07-10)
+
+**Date:** 2026-07-10 | **Change Record:** CHG-20260710-016
+**Tag:** v2.1.0 (MINOR) | **Covers:** PROF-LIBRARY-V1, repository-types.yaml taxonomy update
+
+P5 was a minimal phase: one new profile, one taxonomy update, no new controls/collectors/policies.
+The compliance-reviewer correctly flagged a non-blocking style issue (SEC-004 and SEC-007
+re-listed in PROF-LIBRARY-V1 mandatory when they are already inherited from PROF-BASE and not
+repeated by any other child profile). This is a pattern to enforce: child profiles should only
+explicitly list controls that add to what PROF-BASE already mandates — not re-state inherited ones.
+
+**Agent improvement:** compliance-reviewer duplicate-free check now catches this pattern.
+Control-author instructions now note: do not re-declare in `mandatory[]` any control already
+in PROF-BASE's mandatory list. Inherited controls propagate automatically; re-declaring them
+is a style error the reviewer will flag.
+
+---
+
 ## AGT-LEARNING-004 — ADR-0016 P4 Frontend controls + TST-002 block promotion (2026-07-10)
 
 **Date:** 2026-07-10 | **Change Record:** CHG-20260710-015

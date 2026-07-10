@@ -146,7 +146,7 @@ phases:
   tasks:
   - id: PC-0254
     title: Create PROF-LIBRARY-V1 (inherits PROF-BASE; QUA/TST; no RUN/NET/OBS)
-    status: not_started
+    status: done
   - id: PC-0255
     title: Full CI validation of P5; merge; cut v2.1.0 (coverage TST-002 -> block)
-    status: not_started
+    status: done

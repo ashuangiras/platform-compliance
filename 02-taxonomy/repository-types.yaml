@@ -61,9 +61,11 @@ types:
       A shared code library consumed by other repositories.
       Does not deploy infrastructure or services directly.
     applicable_profiles:
-      - PROF-PLATFORM-V1
+      - PROF-LIBRARY-V1
     implied_domains:
       - SUP
+      - QUA
+      - TST
 
   frontend-app:
     code: frontend-app
