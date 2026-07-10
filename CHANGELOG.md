@@ -151,16 +151,53 @@ PROF-PLATFORM-V1 passes profile schema validation.
 
 ## [Unreleased]
 
+*No unreleased changes at this time.*
+
+---
+
+## [v1.4.0] — 2026-07-10
+
+### Summary
+
+Agent configuration becomes a governed, self-enforced part of the platform. This release pairs
+the **agent operating layer** (how the platform is built with AI agents) with **ADR-0017 phase
+A1** (governance for agent configuration in any repository). platform-compliance is the first
+repository governed by the new AGT controls — and passes them.
+
+Change Records: CHG-20260710-006 (agent operating layer), CHG-20260710-007 (ADR-0017 A1).
+
 ### Added
 
-- **Agent operating layer** (`.github/`, `.vscode/`): repo-wide `copilot-instructions.md` with
-  universal pre-flight/post-flight checklists; a 7-member specialist agent team under
-  `.github/agents/` (compliance-router, control-author, policy-engineer, collector-engineer,
-  ci-workflow-engineer, release-manager, compliance-reviewer) with role-scoped tools and
-  routing; five file-scoped instruction sets under `.github/instructions/`; a GitHub MCP server
-  config (`.vscode/mcp.json`); and a `PreToolUse` safety hook
-  (`.github/hooks/guard-destructive-ops.json`) that prompts before irreversible git/filesystem
-  operations. Change Record: CHG-20260710-006.
+**Agent operating layer** (`.github/`, `.vscode/`):
+- Repo-wide `copilot-instructions.md` with universal pre-flight / post-flight checklists
+- A 7-member specialist agent team under `.github/agents/` (compliance-router + control-author,
+  policy-engineer, collector-engineer, ci-workflow-engineer, release-manager, compliance-reviewer)
+  with role-scoped tools and routing
+- Five file-scoped instruction sets under `.github/instructions/`
+- A GitHub MCP server config (`.vscode/mcp.json`)
+- A `PreToolUse` safety hook (`.github/hooks/guard-destructive-ops.json`) that prompts before
+  irreversible git/filesystem operations
+
+**Agent configuration governance (ADR-0017 A1):**
+- New control domain **AGT** (Agent Governance) and technology context **agent** (opt-in)
+- Four standards: `SRC-VSCODE-AGENT-CUSTOMIZATION`, `SRC-AGENTS-MD`, `SRC-MCP-SPEC`,
+  `SRC-PLATFORM-AGENT-CONVENTIONS`
+- Three controls (all block): **AGT-001** single-sourced repository instructions,
+  **AGT-002** valid customization-file frontmatter + description,
+  **AGT-003** MCP configuration valid and free of hardcoded secrets
+- `collect-agent-info.py` collector (stdlib-only; scans instructions, frontmatter, MCP secret
+  scan, hooks, agent roster) wired into `collect-all-inputs.py`
+- 3 OPA policies + check metadata + 3 bindings; `POLICY_MAP` +3 (context-gated on `agent`)
+- `PROF-AGENTIC-V1` opt-in overlay profile
+- ADR-0017 ratified; rollout tracker `docs/implementation/tasks/v4-agent-governance.yaml`
+
+### Changed
+
+- Schema enums: `control` / `mapping-collection` domain += `AGT`; `binding` /
+  `repository-compliance` technology_context += `agent`
+- `.compliance-manifest.yaml`: declares the `agent` context and `PROF-AGENTIC-V1`
+- `self-compliance.yml`: both gates now run the `agent` context, so platform-compliance
+  self-enforces AGT-001/002/003
 
 ---
 

@@ -227,3 +227,19 @@ domains:
       - Standard project layout for the language
       - Module ownership boundaries declared
       - No import cycles; dependency direction enforced
+
+  AGT:
+    name: Agent Governance
+    description: >
+      Controls governing the configuration and effective use of AI coding agents
+      in a repository. Covers the presence and single-sourcing of agent
+      instructions, valid customization-file frontmatter, secure MCP server
+      configuration (no embedded secrets), keyword-rich descriptions, least-
+      privilege agent tools, instruction scoping, pre/post-flight discipline,
+      safety hooks, and multi-agent routing. Ensures every repository configures
+      its agents consistently, securely, and for best-practice usage.
+    examples:
+      - Single-sourced repository agent instructions (copilot-instructions.md XOR AGENTS.md)
+      - Valid frontmatter with a description on every agent/instruction file
+      - MCP configuration is valid and contains no hardcoded secrets
+      - Least-privilege tool sets per agent; a router coordinates specialists

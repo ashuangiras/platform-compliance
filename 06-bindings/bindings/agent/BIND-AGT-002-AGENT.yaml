@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-AGT-002-AGENT
+control_id: AGT-002
+technology_context: agent
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Every .agent.md / .instructions.md / .prompt.md file must have a valid YAML frontmatter
+  block containing a non-empty description.
+observable_artifact: "collect-agent-info.py output field: frontmatter.all_valid"
+policy_check_ids:
+  - POL-AGT-002-AGENT-001

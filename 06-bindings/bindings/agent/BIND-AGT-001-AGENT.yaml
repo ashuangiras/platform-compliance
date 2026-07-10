@@ -1,0 +1,13 @@
+$schema: "../../schemas/binding.schema.json"
+id: BIND-AGT-001-AGENT
+control_id: AGT-001
+technology_context: agent
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+specification: >
+  Exactly one root instruction source must be present: .github/copilot-instructions.md
+  XOR AGENTS.md (never both, never neither).
+observable_artifact: "collect-agent-info.py output field: instructions.single_source"
+policy_check_ids:
+  - POL-AGT-001-AGENT-001

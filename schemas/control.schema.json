@@ -63,7 +63,8 @@
         "QUA",
         "TST",
         "API",
-        "ARC"
+        "ARC",
+        "AGT"
       ],
       "description": "Control domain code from 02-taxonomy/control-domains.yaml. Must match the directory under 03-catalogs/controls/."
     },

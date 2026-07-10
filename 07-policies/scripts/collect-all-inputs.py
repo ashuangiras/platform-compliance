@@ -157,6 +157,31 @@ def main():
                                 "integration_test_present": False}}
         (out / "go-info.json").write_text(json.dumps(data))
 
+    # ── Agent context (AGT) ──────────────────────────────────────────────────
+    if "agent" in contexts:
+        result = subprocess.run(
+            [sys.executable, "07-policies/scripts/collect-agent-info.py", "."],
+            capture_output=True, text=True
+        )
+        try:
+            data = json.loads(result.stdout)
+        except Exception:
+            data = {"repository": {"name": repo_name}, "context": "agent",
+                    "has_agent_config": False,
+                    "instructions": {"copilot_instructions_present": False, "agents_md_present": False,
+                                     "instruction_source_count": 0, "single_source": False,
+                                     "root_instructions_file": None,
+                                     "has_preflight": False, "has_postflight": False},
+                    "frontmatter": {"total_files": 0, "valid_count": 0, "all_valid": True, "invalid_files": []},
+                    "customization_files": [],
+                    "agents": {"count": 0, "names": [], "router_present": False,
+                               "agents_missing_tools": [], "readonly_agents_with_write_tools": []},
+                    "instruction_files": {"count": 0, "broad_applyto_files": [], "missing_description_files": []},
+                    "mcp": {"config_present": False, "config_valid": False, "servers": [],
+                            "server_count": 0, "hardcoded_secret_suspected": False, "secret_findings": []},
+                    "hooks": {"config_present": False, "files": [], "events": [], "has_destructive_guard": False}}
+        (out / "agent-info.json").write_text(json.dumps(data))
+
     # ── ACC-001: Account MFA / security settings (GitHub context) ────────────
     # Fetch account or org 2FA status using the authenticated token
     user_data = run_gh("user") or {}

@@ -1,0 +1,11 @@
+id: POL-AGT-003-AGENT-001
+title: "AGT-003 (agent): MCP configuration must be valid and secret-free"
+binding_ids: [BIND-AGT-003-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-003-AGENT-001.rego"
+pass_criteria: "Present .vscode/mcp.json is valid JSON with no hardcoded credentials."
+fail_criteria: "MCP config is invalid JSON, or contains a hardcoded secret."
+evidence_type: agent-config
+severity: high
+introduced_date: "2026-07-10"
+status: active

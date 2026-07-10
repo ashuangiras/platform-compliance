@@ -1,0 +1,92 @@
+$schema: ../schemas/profile.schema.json
+id: PROF-AGENTIC-V1
+name: Agentic Configuration Profile v1
+description: 'Opt-in overlay profile for repositories that ship AI coding-agent configuration
+  (the "agent" technology context). Governs the setup and secure baseline of agent
+  configuration: single-sourced repository instructions, valid customization-file frontmatter,
+  and secret-free MCP configuration. A repository declares this profile in addition to its
+  primary profile (e.g. PROF-PLATFORM-V1 or PROF-SERVICE-V1). Effectiveness controls
+  (description quality, least-privilege tools, instruction scoping, pre/post-flight, safety
+  hooks, routing) land in a later version as warn.
+
+  '
+version: 1.0.0
+applicable_to:
+- platform-repo
+- service
+- library
+- terraform-module
+- terraform-root
+- frontend-app
+- documentation
+introduced_date: '2026-07-10'
+introduced_by: platform-team
+status: active
+categories:
+  mandatory:
+    description: 'Structural and security controls for agent configuration. These block at the
+      merge and release gates for any repository declaring the agent context.
+
+      '
+    controls:
+    - id: AGT-001
+    - id: AGT-002
+    - id: AGT-003
+  manual_initially:
+    description: 'No manually-attested agent controls at this time; all A1 controls are
+      automated.
+
+      '
+    controls: []
+  deferred:
+    description: 'Agent-effectiveness controls planned for the next version (ADR-0017 phase A2):
+      rich descriptions, least-privilege agent tools, instruction scoping hygiene, pre/post-flight
+      discipline, safety-hook presence, and multi-agent routing. They will land as warn and be
+      promoted to block at v2.0.0. Not enforced yet.
+
+      '
+    controls: []
+gates:
+  merge_gate:
+    description: 'Agent-configuration controls evaluated before a PR may merge.
+
+      '
+    required_controls:
+    - id: AGT-001
+      enforcement: block
+    - id: AGT-002
+      enforcement: block
+    - id: AGT-003
+      enforcement: block
+  release_gate:
+    description: 'Agent-configuration controls evaluated before a version tag is published.
+
+      '
+    required_controls:
+    - id: AGT-001
+      enforcement: block
+    - id: AGT-002
+      enforcement: block
+    - id: AGT-003
+      enforcement: block
+  deployment_gate:
+    description: 'Agent configuration is not a deployed artifact; no controls evaluated at
+      deployment.
+
+      '
+    required_controls: []
+  continuous_audit:
+    description: 'Agent-configuration controls re-checked continuously; findings notify owners.
+
+      '
+    required_controls:
+    - id: AGT-001
+      enforcement: notify
+    - id: AGT-002
+      enforcement: notify
+    - id: AGT-003
+      enforcement: notify
+notes: >
+  Opt-in overlay. Enforcement is driven by the 'agent' technology context: a repository that
+  declares the context runs AGT-001/002/003 in CI. platform-compliance itself declares the
+  context and this profile, dogfooding the agent operating layer it defines.

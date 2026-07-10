@@ -106,7 +106,8 @@
           "go",
           "node",
           "python",
-          "frontend"
+          "frontend",
+          "agent"
         ]
       },
       "description": "Technology contexts from 02-taxonomy/technology-contexts.yaml. Determines which bindings and policies apply."

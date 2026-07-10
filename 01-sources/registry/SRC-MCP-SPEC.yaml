@@ -1,0 +1,30 @@
+$schema: "../../schemas/standard-source.schema.json"
+
+id: SRC-MCP-SPEC
+name: Model Context Protocol — Specification
+version: "2025-06-18"
+publisher: Anthropic / Model Context Protocol project
+source_url: "https://modelcontextprotocol.io/specification/2025-06-18"
+retrieved_at: "2026-07-10"
+registered_date: "2026-07-10"
+registered_by: platform-team
+role: normative
+
+applies_to:
+  - AGT  # MCP server configuration in agent setup
+  - SEC  # Secret handling and trust in MCP transport/config
+
+status: active
+
+notes: >
+  The Model Context Protocol (MCP) standardizes how AI agents connect to external tools and
+  data via MCP servers. Agent configurations declare these servers (in VS Code, via
+  .vscode/mcp.json).
+
+  Platform control mappings:
+  - AGT-003 (secure MCP configuration): the MCP config must be valid and must NOT embed
+    credentials. Secrets belong in inputs/environment variables (VS Code `${input:…}` /
+    `${env:…}` references), never as literal tokens in the committed config. Servers should be
+    trusted/pinned. This intersects the SEC domain (no plaintext secrets in repositories).
+  - The spec's authorization and transport-security guidance underpins the requirement that
+    remote servers use vetted endpoints and that credentials are never checked in.

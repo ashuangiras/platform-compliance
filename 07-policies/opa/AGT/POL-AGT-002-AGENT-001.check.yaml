@@ -1,0 +1,11 @@
+id: POL-AGT-002-AGENT-001
+title: "AGT-002 (agent): customization files must have valid frontmatter + description"
+binding_ids: [BIND-AGT-002-AGENT]
+engine: opa
+file_path: "07-policies/opa/AGT/POL-AGT-002-AGENT-001.rego"
+pass_criteria: "Every .agent.md / .instructions.md / .prompt.md has valid frontmatter and a non-empty description."
+fail_criteria: "One or more customization files have missing/invalid frontmatter or no description."
+evidence_type: agent-config
+severity: medium
+introduced_date: "2026-07-10"
+status: active
