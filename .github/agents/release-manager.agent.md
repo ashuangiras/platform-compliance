@@ -26,8 +26,10 @@ Follow [.github/instructions/release.instructions.md](../instructions/release.in
    If not, stop and request it before proceeding.
 5. **AGT-014 retro** — verify the PR body (or the agent chain output) includes a completed
    Agent Readiness & Retro: readiness checkboxes ticked, and a retro note recording what was
-   learned and what agent instructions were updated as a result. If not present, write a brief
-   retro summary now and record it before merging.
+   learned and what agent instructions were updated as a result. The retro must be a **genuine
+   prose narrative** — not just a re-statement of the readiness checkboxes. The CI collector
+   (`collect-agent-info.py`) will reject a retro that contains only checkbox-style bullets.
+   If not present, write a substantive retro now and record it before merging.
 6. **Task file horizons** — confirm that any phase whose target version was consumed by other
    work has its `horizon:` field updated to the next available tag.
 

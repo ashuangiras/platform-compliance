@@ -31,6 +31,10 @@ Follow [.github/instructions/collectors.instructions.md](../instructions/collect
 - Run against a real repo of that context (correct facts) **and** a repo lacking it
   (must yield `not_applicable`, never an error).
 - `python3 -m py_compile` / `bash -n` clean on changed scripts.
+- If modifying `collect-agent-info.py` PR-body detection (AGT-013/014), ensure any
+  `evidence_type` or retro regexes are **scoped to their specific subsection heading** — do
+  not scan the whole body. The `**Retrospective**` regex must exclude `- [` checkbox lines.
+  Verify with: `AGENT_PR_NUMBER=1 AGENT_PR_BODY='...' python3 collect-agent-info.py .`
 
 ## Output
 Collector path, sample JSON it produced for both cases, the `POLICY_MAP` entries added, and

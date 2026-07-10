@@ -10,7 +10,42 @@ agents more effective* — not just what files changed.
 
 ---
 
-## AGT-LEARNING-002 — CHG-20260710-014: pr_has_retro regex false-positive on checkbox lines
+## AGT-LEARNING-003 — Full session retro: v1.7.0–v1.9.0 (2026-07-10)
+
+**Date:** 2026-07-10 | **Change Records:** CHG-20260710-011 through CHG-20260710-014
+**Tag span:** v1.7.0 → v1.9.0 | **Covers:** ADR-0016 P2+P3, agent handoff protocol, AGT-014 enforcement
+
+### AGT-014 Readiness Check
+- [x] AGT suite passes (`tools/check-agents.sh`) — 15/15 pass
+- [x] All 7 agent files updated with retro-driven improvements
+- [x] Pre-flight / post-flight checklists accurate and improved
+
+### Full Retrospective
+
+**What went well:**
+- The Compliance Reviewer correctly caught the missing `evidence_type` registrations mid-chain (P3), routed back to Control Author, and blocked the merge — exactly what it should do.
+- The specialist chain worked end-to-end for P3 (Control Author → Collector Engineer → Policy Engineer → Compliance Reviewer → fix loop → Release Manager) with real handoff blocks carrying context forward.
+- The `collect-agent-info.py` collector architecture (env-var PR context, scoped section detection) proved sound — once the regex was fixed, it correctly distinguished real retros from placeholders.
+
+**What was harder than expected:**
+- The router executed all P2 work itself in the first attempt instead of delegating to specialists. Root cause: instructions lacked explicit "never self-execute" and one-agent-at-a-time rules. Fixed by the handoff protocol.
+- AGT-014 retros were skipped in two consecutive merges (v1.7.0, v1.7.1) before the user called it out. The release-manager had no enforcement gate; it was added as pre-flight steps 4–6.
+- `pr_has_retro` had a false-positive: the regex matched `- [x] checkbox text` as "retro bullets" because it searched for any bullet after any occurrence of the word "retro" rather than scoping to the `**Retrospective**` subsection. Required two iterations to fix correctly.
+- Task file horizons were stale after agent governance work displaced P2–P5 version targets. No agent owned this check; added to release-manager pre-flight step 6.
+
+**Agent instruction changes made this session (what improved and why):**
+
+| Agent | Change | Why |
+|-------|--------|-----|
+| `compliance-router` | Added `## Pre-flight` block (verify branch before delegating), Step 6 AGT gate, delegation rule 7 (AGT gate is mandatory) | Router was skipping AGT check before release-manager; branch not always created first |
+| `control-author` | Pre-flight step 4: register `evidence_type` before handoff; HANDOFF block now includes "Evidence types registered" field | Compliance Reviewer blocked P3 for unregistered types; fixing mid-chain costs more than preventing upfront |
+| `collector-engineer` | Pre-flight step 2: `collect-all-inputs.py` dispatch is mandatory (not implied); post-flight: scoped regex warning for `collect-agent-info.py` modifications | Both were implicit; made them explicit to prevent regressions |
+| `compliance-reviewer` | Approach step 2: explicit `evidence_type` check against `evidence-types.yaml` for every `*.check.yaml` in scope | Was not a named check; added so it is never skipped |
+| `release-manager` | Pre-flight steps 4–6: AGT-013 ledger, AGT-014 retro (must be genuine prose, not checkbox re-statements), task file horizons | Three merges skipped these gates before the enforcement was written |
+| `collect-agent-info.py` | `pr_has_retro`: scoped to `**Retrospective**` subsection; excludes `- [` checkbox lines; `pr_has_readiness`: scoped to Agent Readiness section | False positives caused incorrect gate passes |
+| `copilot-instructions.md` | Added `## Agent operating rules (MANDATORY)` with 5 hard rules: 7 agents only, maximize involvement, router coordinates, HANDOFF protocol, ordering enforced | Session started without these rules; router violated all of them in the first P2 attempt |
+
+
 
 **Date:** 2026-07-10
 **Change Record:** CHG-20260710-014
