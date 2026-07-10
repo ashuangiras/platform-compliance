@@ -7,6 +7,25 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.3.3] — 2026-07-11 (CHG-20260711-036)
+
+### feat(forge): role-appropriate agent stubs per repo type
+
+`forge new repo` now scaffolds role-appropriate agents based on the repository type
+instead of copying platform-compliance's internal governance team verbatim.
+
+- `RenderAgentStubs(vars, repoType)` renders from embedded templates under
+  `templates/repo/agents/<type>/`
+- Types with full agent teams: `terraform-module`, `terraform-root`, `service`,
+  `library`; minimal `fallback` for unknown types
+- `platform-repo` type still copies the live governance team from the compliance dir
+- `copilot-instructions.md.tmpl` updated with type-specific content blocks
+- `pull_request_template.md.tmpl` updated: removed `tools/check-agents.sh`
+  reference; replaced with type-agnostic readiness checklist
+- 4 new scaffold tests; all existing tests pass
+
+---
+
 ## [v3.3.2] — 2026-07-10 (CHG-20260710-033)
 
 ### fix(gate): profile-aware enforcement levels for downstream repos
