@@ -148,7 +148,7 @@ phases:
     - PC-0115
   - id: PC-0119
     title: Implement plt validate <file> command
-    status: not-started
+    status: done
     depends_on:
     - PC-0117
   - id: PC-0120
