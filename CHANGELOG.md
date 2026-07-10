@@ -7,6 +7,28 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.3.1] — 2026-07-10 (CHG-20260710-032)
+
+### fix(reusable-workflow): absolute script paths for downstream repo support
+
+**Critical bugfix** — the OPA policy-checks job in `reusable-compliance.yml` ran
+`collect-all-inputs.py` and `run-all-policies.py` using paths relative to the
+calling repository's checkout. This worked only for platform-compliance self-governance
+(where those files exist) but broke with `No such file or directory` on every
+downstream repository. The bug was invisible until `platform-modules` ran its first PR.
+
+**Changes:**
+- `.github/workflows/reusable-compliance.yml`: After fetching the OPA policy bundle,
+  also extract the collector scripts from the platform-compliance source archive to
+  `/tmp/platform-compliance-scripts/`. Both scripts are now referenced by absolute path.
+- `07-policies/scripts/collect-all-inputs.py`: Made self-locating via
+  `Path(__file__).resolve().parent`. All sibling collector script calls resolve
+  relative to the script's own directory, not the process CWD.
+- `.github/AGENT_LEARNINGS.md`: Rule added — always test reusable workflows from at
+  least one downstream repo before tagging.
+
+---
+
 ## [v3.3.0] — 2026-07-10 (CHG-20260710-031)
 
 ### forge new repo: complete downstream repo scaffold
