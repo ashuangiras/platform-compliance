@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": ".github/hooks/scripts/guard-destructive-ops.sh",
+        "timeout": 10
+      }
+    ]
+  }
+}
