@@ -95,7 +95,7 @@ phases:
     status: done
 - id: phase-P3-node-python
   title: 'P3 — Node + Python: extend QUA/TST/ARC bindings + profiles'
-  horizon: v1.5.0
+  horizon: v1.8.0
   tasks:
   - id: PC-0241
     title: 'Register standards: SRC-TS-STYLE, SRC-PYTHON-PEP8'
@@ -120,7 +120,7 @@ phases:
     status: done
 - id: phase-P4-frontend
   title: 'P4 — Frontend: CSP, bundle budget, a11y, PROF-FRONTEND-V1'
-  horizon: v1.7.0
+  horizon: v1.9.0
   tasks:
   - id: PC-0248
     title: 'Register standards: SRC-WEB-CSP, SRC-WCAG-2-2'
@@ -142,7 +142,7 @@ phases:
     status: not_started
 - id: phase-P5-library
   title: 'P5 — Library: reuse QUA/TST, relax RUN/NET/OBS, PROF-LIBRARY-V1'
-  horizon: v1.9.0
+  horizon: v2.0.0
   tasks:
   - id: PC-0254
     title: Create PROF-LIBRARY-V1 (inherits PROF-BASE; QUA/TST; no RUN/NET/OBS)

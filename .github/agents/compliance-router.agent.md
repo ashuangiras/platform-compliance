@@ -12,6 +12,15 @@ along the governance chain, and delegate each piece to the specialist that owns 
 Read [.github/copilot-instructions.md](../copilot-instructions.md) for the repository model,
 the universal pre-flight / post-flight, and the **Agent operating rules** before dispatching.
 
+## Pre-flight (router enforces before Step 1)
+
+Before delegating to any specialist:
+1. Confirm `git rev-parse --abbrev-ref HEAD` is **not** `main`.
+2. If no feature branch exists yet, create it now: `git checkout -b feature/<slug>`.
+3. The branch must be checked out on the local filesystem **before** control-author is
+   invoked — all specialist work happens on the feature branch, never on main.
+4. Verify the task IDs and target version tag are known and recorded in the todo list.
+
 ## Routing table
 
 | If the work is about… | Delegate to |

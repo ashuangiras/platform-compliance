@@ -10,7 +10,56 @@ agents more effective* — not just what files changed.
 
 ---
 
-## 2026-07-10 — Evidence types must be registered before compliance-reviewer will pass (ADR-0016 P3)
+## 2026-07-10 — AGT-014 Retro: P2/P3 session (ADR-0016 P2 + P3 + agent handoff protocol)
+
+**Agent Readiness Check (AGT-014):**
+- [x] AGT suite passes locally (`tools/check-agents.sh`) — all 15 controls pass
+- [x] New conventions (handoff protocol, specialist ordering) reflected in all 7 agent files
+  and `copilot-instructions.md`
+- [x] Pre-flight / post-flight checklists updated (control-author, collector-engineer,
+  compliance-reviewer, release-manager) based on session retro findings
+
+**Retrospective — what this session taught us and what changed:**
+
+1. **Router self-execution (original problem → fixed)**
+   The router was invoked as a single subagent for P2 and did all the work itself, defeating
+   the multi-specialist model. Root cause: the router's instructions did not mandate sequential
+   single-agent delegation with HANDOFF blocks. Fixed by adding `## Agent operating rules` to
+   `copilot-instructions.md` and rewriting `compliance-router.agent.md` with explicit delegation
+   rules, the inter-agent handoff protocol, and a template for prompting each specialist.
+   *All 7 agent files now carry a typed `## HANDOFF` output section.*
+
+2. **Evidence type registration gap (caught at review → control-author pre-flight updated)**
+   P3 node/python policies used `evidence_type` values (`node-quality`, `node-testing`, etc.)
+   that were not registered in `08-evidence/evidence-types.yaml`. The compliance-reviewer
+   blocked the chain and routed back to control-author. A pre-existing P1 gap (`go-quality`,
+   `go-testing`) was also caught and back-filled.
+   *Control-author pre-flight now has an explicit step 4: register all evidence_type values
+   before handing off. Compliance-reviewer approach now lists evidence-type check as step 2.*
+
+3. **collect-all-inputs.py dispatch was implicit (collector-engineer clarified)**
+   The collector-engineer correctly updated `collect-all-inputs.py` for new contexts, but this
+   responsibility was not explicit in the instructions.
+   *Collector-engineer pre-flight step 2 now states: "adding the dispatch block is part of this
+   task — not optional."*
+
+4. **Release manager skipped AGT-013/014 gates (release-manager pre-flight strengthened)**
+   Two merges (v1.7.0 and v1.7.1) completed without verifying that AGENT_LEARNINGS.md was
+   updated and without recording a retro. The release-manager let this pass.
+   *Release-manager pre-flight now has explicit steps 4 and 5: AGT-013 ledger check and
+   AGT-014 retro confirmation before any merge is allowed.*
+
+5. **Feature branch was not verified before specialist delegation (router pre-flight added)**
+   The router delegated to control-author without first confirming the feature branch was
+   checked out. Specialists must always work on a feature branch, never on main.
+   *Router now has a `## Pre-flight` block: create/verify branch before Step 1.*
+
+6. **Task file horizons go stale when versions are displaced by other work**
+   Agent governance work consumed v1.4.0–v1.6.1, pushing the P2/P3/P4/P5 horizons forward.
+   The task file was not updated promptly, creating confusion about which version to target.
+   *Release-manager pre-flight step 6: confirm task file horizons are correct before merging.*
+
+
 
 - **Lesson:** `evidence_type` values in `*.check.yaml` files must be registered in
   `08-evidence/evidence-types.yaml` before `compliance-reviewer` will pass the validation
