@@ -1,0 +1,7 @@
+compliance_ref: "{{ .ComplianceRef }}"
+profile: "{{ .ProfileID }}"
+repo_type: "{{ .RepoType }}"
+technology_contexts:
+{{- range .TechContexts }}
+  - {{ . }}
+{{- end }}

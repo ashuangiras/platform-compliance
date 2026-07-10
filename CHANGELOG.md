@@ -7,6 +7,20 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.8.0] — 2026-07-10 (CHG-20260710-023)
+
+### forge Phase B.2 — `forge new repo` (governed repository bootstrapping)
+
+- `pkg/github/`: GitHub API client — CreateRepo, CommitFiles, SetMergeGateProtection
+- `pkg/scaffold/`: template renderer (Go embed.FS), 5 repo templates
+- `cmd/new/repo.go`: `forge new repo <name>` with --dry-run, --with-agents, --profile,
+  --type, --contexts, --private, --description flags
+- Phase B.2 unlocks Phase C: use `forge new repo` to create downstream repositories
+- 19 tests total (6 new scaffold tests), all passing
+- Smoke test: forge new repo platform-services --with-agents --dry-run → 13 files
+
+---
+
 ## [v2.7.0] — 2026-07-10 (CHG-20260710-022)
 
 ### forge Phase B.1 — `forge validate` (offline schema validation)

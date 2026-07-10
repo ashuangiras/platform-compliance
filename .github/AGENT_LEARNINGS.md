@@ -10,6 +10,20 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — forge Phase B.2 implemented: forge new repo (repo bootstrapping)
+
+- `forge new repo <name>` creates a governed repository with .compliance-manifest.yaml,
+  CODEOWNERS, PR template, .forge.yaml, branch protection, and optionally the full agent
+  operating layer (7 .agent.md files + .vscode/settings.json).
+- Templates are embedded in the binary using Go's embed.FS — no external files needed at runtime.
+- The --dry-run flag prints all files that would be committed without touching GitHub.
+  This was the correct first behaviour to implement: it lets users preview the output and
+  verify template correctness before creating a real repository.
+- Phase B.2 unlocks Phase C: platform-modules, platform-infrastructure, and platform-services
+  can now be created using forge new repo with the appropriate profile.
+
+---
+
 ## 2026-07-10 — forge Phase B.1 implemented: forge validate (offline validation)
 
 - Phase B.1 (forge validate) is fully implemented: pkg/config, pkg/taxonomy, pkg/schema,
