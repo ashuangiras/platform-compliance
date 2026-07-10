@@ -315,9 +315,7 @@ WRITE_TOOLS = {"edit"}
 
 # Continuous-improvement ledger candidates (AGT-013).
 LEDGER_CANDIDATES = [
-    ".github/agents/LEARNINGS.md",
     ".github/AGENT_LEARNINGS.md",
-    ".github/agents/IMPROVEMENTS.md",
     "docs/agent-learnings.md",
 ]
 

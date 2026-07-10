@@ -9,7 +9,7 @@ severity: medium
 
 statement: >
   The repository must maintain an agent learnings/improvement ledger (e.g.
-  .github/agents/LEARNINGS.md), and every pull request must add or update an entry in it. Each
+  .github/AGENT_LEARNINGS.md), and every pull request must add or update an entry in it. Each
   entry records how the agents' profiles, instructions, configuration, or knowledge improved as a
   result of the change — keeping the agent team continuously and verifiably better.
 
