@@ -10,6 +10,20 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — Team-wide agent discoverability (workspace settings)
+
+- Committed `.vscode/settings.json` with `chat.agentFilesLocations: { ".github/agents": true }`
+  so every team member's VS Code explicitly scans the agent team, regardless of their personal
+  defaults. `.github/agents` is already a default location in current VS Code, so this is an
+  explicit, documented guarantee for the whole team rather than a behavior change.
+- Learned: in VS Code, custom agents are the current form of what were once "custom chat modes"
+  (`.chatmode.md` is the deprecated format — do NOT convert). Agents surface in the **agents
+  dropdown**; when they don't appear, the authoritative diagnosis is the Chat **Diagnostics**
+  view (right-click in Chat) which lists every loaded agent and any load error, plus the
+  **Configure Custom Agents** menu (`/agents`) whose per-agent eye icon can hide/show them.
+- Efficiency gain: the specialist team is discoverable by default for everyone who clones the
+  repo, and the troubleshooting path is now recorded for the next person.
+
 ## 2026-07-10 — Stringent agent-quality + self-improvement controls (ADR-0017 A2)
 
 - Promoted the agent-effectiveness controls to **blocking** and expanded them to a 12-control
