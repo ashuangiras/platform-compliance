@@ -7,6 +7,31 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.2.0] — 2026-07-10 (CHG-20260710-030)
+
+### Phase C start — ADRs ratified, platform-modules created
+
+**ADRs ratified (PC-0131–PC-0133):**
+- ADR-0008: Vault self-hosted on platform-infrastructure (secrets backend)
+- ADR-0012: Environment-specific profiles — PROF-SERVICE-STAGING-V1 (relaxed) + PROF-SERVICE-PROD-V1 (strict)
+- ADR-0014: S3-compatible Terraform state (MinIO self-hosted or cloud S3)
+- ADR-0019: HashiCorp Consul for service config/discovery alongside Vault (secrets)
+
+**Profiles:**
+- PROF-SERVICE-STAGING-V1 (inherits PROF-SERVICE-V1; relaxes BAK-001/NET-001/OBS-001 to warn)
+- PROF-SERVICE-PROD-V1 (inherits PROF-SERVICE-V1; promotes BAK-001/NET-001/OBS-001 to block)
+
+**Taxonomy:** `vault` and `consul` technology contexts registered
+
+**forge fix:** personal account repo creation routes to `POST /user/repos`
+
+**Phase C (PC-0134): platform-modules created**
+- https://github.com/ashuangiras/platform-modules
+- Profile: PROF-TERRAFORM-MODULE-V1; contexts: github, github-actions, terraform
+- Branch protection: Compliance Merge Gate + 1 required review
+
+---
+
 ## [v3.1.0] — 2026-07-10 (CHG-20260710-029)
 
 ### Full repo audit — gap fixes

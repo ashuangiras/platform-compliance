@@ -107,7 +107,9 @@
           "node",
           "python",
           "frontend",
-          "agent"
+          "agent",
+          "vault",
+          "consul"
         ]
       },
       "description": "Technology contexts from 02-taxonomy/technology-contexts.yaml. Determines which bindings and policies apply."

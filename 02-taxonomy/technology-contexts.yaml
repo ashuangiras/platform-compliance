@@ -95,3 +95,17 @@ contexts:
       quality, least-privilege agent tools, instruction scoping, pre/post-flight
       discipline, safety hooks, and multi-agent routing.
     applies_when: "repository declares the 'agent' context (any agent configuration present)"
+
+  vault:
+    code: vault
+    description: >
+      The repository integrates with HashiCorp Vault for secret injection.
+      Applicable to services that use Vault Agent or direct Vault API calls.
+    applies_when: "repository declares the 'vault' context (Vault Agent or Vault API integration present)"
+
+  consul:
+    code: consul
+    description: >
+      The repository uses HashiCorp Consul for service configuration (KV store),
+      service discovery, or service mesh (Consul Connect).
+    applies_when: "repository declares the 'consul' context (Consul KV, service registration, or Connect in use)"

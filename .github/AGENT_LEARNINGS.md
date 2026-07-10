@@ -10,6 +10,21 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — Phase C start: 4 ADRs ratified, platform-modules created via forge
+
+- forge new repo was used for real for the first time (platform-modules, PROF-TERRAFORM-MODULE-V1).
+  A bug was caught and fixed: go-github routes /orgs/{owner}/repos for all non-empty owners,
+  which returns 404 for personal accounts. Fix: detect user vs org account via GET /users/{login}
+  and route to POST /user/repos when type==User. This fix is now in tools/forge/pkg/github/repo.go.
+- ADR decisions: Vault (self-hosted), Consul (config+discovery), S3-compatible TF state,
+  env-specific profiles (staging relaxed, prod strict). All four ratified in decisions/.
+- Profile delta rule: child profiles must declare ONLY enforcement overrides that differ from
+  the parent. Reviewer caught 8 duplicate declarations (same enforcement as parent) in the
+  staging/prod profiles. Removed. This is the second time this rule was violated — it should
+  be a pre-flight item in control-author's checklist.
+
+---
+
 ## 2026-07-10 — CHG-001 fix: PR body format requires "Change Record: CHG-..." inline
 
 - CHG-001 policy uses regex `change\s+record\s*:\s*CHG-\d{8}-\d{3}` requiring the CHG

@@ -38,6 +38,9 @@ types:
       Services have runtime behaviour and must declare health checks.
     applicable_profiles:
       - PROF-PLATFORM-V1
+      - PROF-SERVICE-V1
+      - PROF-SERVICE-STAGING-V1
+      - PROF-SERVICE-PROD-V1
     implied_domains:
       - RUN
       - OBS

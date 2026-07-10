@@ -12,16 +12,16 @@ phases:
     tasks:
       - id: PC-0131
         title: "Ratify ADR-0008 (secret management backend)"
-        status: not-started
+        status: done
       - id: PC-0132
         title: "Ratify ADR-0012 (multi-environment gate differentiation)"
-        status: not-started
+        status: done
       - id: PC-0133
         title: "Ratify ADR-0014 (Terraform state backend selection)"
-        status: not-started
+        status: done
       - id: PC-0134
         title: "Create platform-modules repository with PROF-TERRAFORM-MODULE-V1"
-        status: not-started
+        status: done
         depends_on: [PC-0125]
         note: "First downstream governed repository — ADR-0003 gate passed"
       - id: PC-0135

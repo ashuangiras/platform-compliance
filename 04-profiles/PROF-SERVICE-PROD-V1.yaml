@@ -1,0 +1,79 @@
+$schema: ../schemas/profile.schema.json
+id: PROF-SERVICE-PROD-V1
+name: Service Profile — Production Environment v1
+description: >
+  Production environment profile — all controls block; use for production
+  deployments. Inherits all controls from PROF-SERVICE-V1 and promotes BAK-001,
+  NET-001, and OBS-001 to unconditional block enforcement. Nothing is advisory in
+  production. Scope conditions on BAK-001 and NET-001 are lifted: every production
+  service must satisfy backup and network policy declarations regardless of
+  service.type or service.externally_exposed.
+
+version: "1.0.0"
+inherits: PROF-SERVICE-V1
+applicable_to:
+  - service
+introduced_date: "2026-07-10"
+introduced_by: platform-team
+status: active
+
+categories:
+  mandatory:
+    description: >
+      Runtime operational controls promoted to unconditional block enforcement
+      in production. BAK-001, NET-001, and OBS-001 are block for all production
+      services; scope conditions from PROF-SERVICE-V1 are overridden. All other
+      controls are inherited unchanged from PROF-SERVICE-V1.
+    controls:
+      - id: BAK-001
+        enforcement_override: block
+      - id: NET-001
+        enforcement_override: block
+      - id: OBS-001
+        enforcement_override: block
+  manual_initially:
+    description: >
+      No additional manual controls beyond those inherited from PROF-SERVICE-V1.
+    controls: []
+  deferred:
+    description: >
+      No additional deferred controls beyond those inherited from PROF-SERVICE-V1.
+    controls: []
+
+gates:
+  merge_gate:
+    description: >
+      Evaluated before any service change PR is merged. All controls from
+      PROF-SERVICE-V1 merge gate apply. BAK-001, NET-001, and OBS-001 are
+      blocking unconditionally for production-targeted services.
+    required_controls:
+      - id: BAK-001
+        enforcement: block
+      - id: NET-001
+        enforcement: block
+      - id: OBS-001
+        enforcement: block
+  release_gate:
+    description: >
+      Evaluated before a service version tag is published. All mandatory controls
+      must pass at block enforcement. BAK-001, NET-001, and OBS-001 are inherited
+      at block from PROF-SERVICE-V1.
+    required_controls: []
+  deployment_gate:
+    description: >
+      Evaluated before a service deployment proceeds to the production environment.
+      BAK-001, NET-001, and OBS-001 are inherited at block from PROF-SERVICE-V1
+      and block the deployment unconditionally.
+    required_controls: []
+  continuous_audit:
+    description: >
+      Continuous monitoring of production service compliance. All controls from
+      PROF-SERVICE-V1 continuous audit apply; BAK-001, NET-001, and OBS-001
+      findings are blocking in production continuous audit.
+    required_controls:
+      - id: BAK-001
+        enforcement: block
+      - id: NET-001
+        enforcement: block
+      - id: OBS-001
+        enforcement: block
