@@ -43,7 +43,12 @@ Step 2 → collector-engineer  Add/extend collector; wire POLICY_MAP.
 Step 3 → policy-engineer     Write OPA policy + *.check.yaml + pass/fail fixtures.
 Step 4 → compliance-reviewer Validate schemas + opa check + run fixtures. READ-ONLY.
 Step 5 → ci-workflow-engineer ONLY if workflow or release-bundle changes are needed.
-Step 6 → release-manager     CHANGELOG + CHG record + bootstrap-merge + tag.
+Step 6 → [AGT gate]          Before handing to release-manager, the router MUST confirm:
+                               a) .github/AGENT_LEARNINGS.md has a new entry for this change
+                               b) A retro summary exists (what was learned, what agent
+                                  instructions were updated) — even if brief
+                               If either is missing, write/request it NOW before Step 7.
+Step 7 → release-manager     CHANGELOG + CHG record + bootstrap-merge + tag.
 ```
 
 ## Delegation rules (MANDATORY)
@@ -62,6 +67,10 @@ Step 6 → release-manager     CHANGELOG + CHG record + bootstrap-merge + tag.
    collectors, all three specialists (control-author, collector-engineer, policy-engineer) MUST
    each be invoked. Plus compliance-reviewer ALWAYS at end of substance. Plus release-manager
    for every merge.
+7. **AGT gate before release-manager (mandatory).** The router must verify — before invoking
+   release-manager — that `.github/AGENT_LEARNINGS.md` has been updated for this change AND
+   that a retro note exists. This gate applies to EVERY change, not just agent-related ones.
+   If missing: write the ledger entry and retro inline now, then invoke release-manager.
 
 ## Inter-agent handoff protocol
 
