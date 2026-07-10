@@ -6,6 +6,7 @@ Usage: python3 run-all-policies.py --bundle /tmp/policy-bundle --inputs /tmp/inp
                                    --contexts github,terraform --repo-type platform-repo
 """
 import argparse, json, os, subprocess, sys
+from datetime import date
 from pathlib import Path
 
 
@@ -115,6 +116,74 @@ def run_opa(rego_path, input_path, query):
         return {"result": "error", "details": {"message": f"OPA evaluation failed: {e}"}}
 
 
+def load_active_waivers():
+    """Return a dict of {control_id: waiver_id} for all active, non-expired waivers
+    declared in the nearest .compliance-manifest.yaml.
+
+    Only waivers that are active AND not past their expiry_date count.
+    Returns an empty dict if no manifest or waivers are found.
+    """
+    # Find .compliance-manifest.yaml walking up from cwd
+    manifest_path = None
+    search = Path.cwd()
+    for _ in range(6):
+        candidate = search / ".compliance-manifest.yaml"
+        if candidate.exists():
+            manifest_path = candidate
+            break
+        search = search.parent
+
+    if manifest_path is None:
+        return {}
+
+    try:
+        import yaml
+        manifest = yaml.safe_load(manifest_path.read_text())
+    except Exception:
+        return {}
+
+    waiver_ids = manifest.get("waiver_ids", []) or []
+    if not waiver_ids:
+        return {}
+
+    today = date.today()
+    waived = {}
+
+    # Waiver files live relative to the manifest's repo root
+    repo_root = manifest_path.parent
+    waivers_dir = repo_root / "09-assessments" / "waivers"
+
+    for wid in waiver_ids:
+        # Strip inline comments (e.g. "WAV-SRC-001-... # comment")
+        wid = str(wid).split("#")[0].strip()
+        waiver_path = waivers_dir / f"{wid}.yaml"
+        if not waiver_path.exists():
+            continue
+        try:
+            import yaml
+            w = yaml.safe_load(waiver_path.read_text())
+        except Exception:
+            continue
+
+        if w.get("status") != "active":
+            continue
+
+        expiry = w.get("expiry_date")
+        if expiry:
+            try:
+                exp_date = date.fromisoformat(str(expiry))
+                if exp_date < today:
+                    continue  # waiver expired
+            except ValueError:
+                pass
+
+        control_id = w.get("control_id", "")
+        if control_id:
+            waived[control_id] = wid
+
+    return waived
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--bundle", default="/tmp/platform-compliance-policies")
@@ -131,7 +200,10 @@ def main():
     contexts = set(args.contexts.split(","))
     contexts.add("github")  # always included
 
-    total, passed, failed, skipped = 0, 0, 0, 0
+    # Load active waivers from the manifest so waived controls don't count as failures.
+    waived_controls = load_active_waivers()
+
+    total, passed, failed, skipped, waived = 0, 0, 0, 0, 0
 
     for control_id, policy_info in POLICY_MAP.items():
         rego_rel = policy_info[0]
@@ -191,12 +263,16 @@ def main():
             print(f"  ○ {control_id}: not_applicable")
         elif r == "manual_review":
             print(f"  ⚠ {control_id}: manual_review")
+        elif control_id in waived_controls:
+            waived += 1
+            waiver_id = waived_controls[control_id]
+            print(f"  ~ {control_id}: {r} (waived — {waiver_id})")
         else:
             failed += 1
             msg = result.get("details", {}).get("message", "") if isinstance(result, dict) else str(result)
             print(f"  ✗ {control_id}: {r} — {msg[:80]}")
 
-    print(f"\nResults: {passed} pass, {failed} fail/error, {skipped} not_applicable")
+    print(f"\nResults: {passed} pass, {failed} fail/error, {waived} waived, {skipped} not_applicable")
     print(f"Written to: {results}/")
     return 1 if failed > 0 else 0
 

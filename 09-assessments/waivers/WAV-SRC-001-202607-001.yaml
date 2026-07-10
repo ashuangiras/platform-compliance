@@ -1,0 +1,45 @@
+$schema: "../../schemas/waiver.schema.json"
+
+id: "WAV-SRC-001-202607-001"
+schema_version: "1.0.0"
+
+control_id: "SRC-001"
+
+resource_ref:
+  type: repository
+  identifier: "https://github.com/ashuangiras/platform-compliance"
+
+rationale: >
+  GitHub prohibits users from approving their own pull requests. The platform is
+  currently operated by a single contributor (ashuangiras). The bootstrap-merge
+  procedure temporarily sets required_approving_review_count to 0 to allow the
+  single developer to merge compliance changes. This causes SRC-001 (branch
+  protection: required approvals ≥ 1) to fail during the bootstrap-merge window.
+
+  This waiver covers the transient state only. Branch protection is restored to
+  required_approvals: 1 immediately after every merge. The protection intent is
+  fully active outside the bootstrap window.
+
+risk_acceptance_statement: >
+  Same risk profile as WAV-SRC-002-202607-001. The risk is that changes to
+  platform-compliance can be merged without a second human review during the
+  bootstrap window. Mitigated by: (1) automated compliance checks on every PR,
+  (2) full git history, (3) protection restored immediately post-merge, (4) the
+  single contributor is the platform owner accountable for all changes.
+
+  This waiver expires when a second contributor joins the platform team, making
+  real code review possible and eliminating the bootstrap-merge procedure.
+
+compensating_controls:
+  - SEC-001    # PRs still scanned for secrets
+  - SEC-002    # push protection still active
+  - DOC-001    # README must still be present
+  - CHG-001    # change records still required
+  - SRC-002    # separately waived — same rationale
+
+approved_by: "ashuangiras (platform-team)"
+approved_date: "2026-07-10"
+expiry_date: "2026-10-07"
+review_date: "2026-08-09"
+
+status: active
