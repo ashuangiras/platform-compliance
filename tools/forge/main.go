@@ -9,8 +9,14 @@ import (
 	"fmt"
 	"os"
 
-	validatecmd "github.com/ashuangiras/platform-compliance/forge/cmd/validate"
+	assesscmd "github.com/ashuangiras/platform-compliance/forge/cmd/assess"
+	checkcmd "github.com/ashuangiras/platform-compliance/forge/cmd/check"
+	evidencecmd "github.com/ashuangiras/platform-compliance/forge/cmd/evidence"
+	gatecmd "github.com/ashuangiras/platform-compliance/forge/cmd/gate"
 	newcmd "github.com/ashuangiras/platform-compliance/forge/cmd/new"
+	registrycmd "github.com/ashuangiras/platform-compliance/forge/cmd/registry"
+	reportcmd "github.com/ashuangiras/platform-compliance/forge/cmd/report"
+	validatecmd "github.com/ashuangiras/platform-compliance/forge/cmd/validate"
 	"github.com/ashuangiras/platform-compliance/forge/pkg/config"
 	"github.com/spf13/cobra"
 )
@@ -74,6 +80,12 @@ func init() {
 
 	rootCmd.AddCommand(validatecmd.NewCmd(&cfg, &outputFormat, &verboseFlag, &quietFlag))
 	rootCmd.AddCommand(newcmd.NewCmd(&cfg))
+	rootCmd.AddCommand(checkcmd.NewCmd(&cfg, &outputFormat))
+	rootCmd.AddCommand(gatecmd.NewCmd(&cfg, &outputFormat))
+	rootCmd.AddCommand(evidencecmd.NewCmd(&cfg))
+	rootCmd.AddCommand(assesscmd.NewCmd(&cfg))
+	rootCmd.AddCommand(registrycmd.NewCmd(&cfg))
+	rootCmd.AddCommand(reportcmd.NewCmd(&cfg))
 }
 
 func main() {

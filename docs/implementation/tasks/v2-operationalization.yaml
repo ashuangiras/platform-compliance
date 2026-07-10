@@ -153,17 +153,37 @@ phases:
     - PC-0117
   - id: PC-0120
     title: Implement plt new control / adr / waiver scaffold commands
-    status: not-started
+    status: done
+    change_record: CHG-20260710-024
+    version: v2.9.0
     depends_on:
     - PC-0119
+  - id: PC-0214
+    title: forge Phase B.2 — forge new repo (governed repo bootstrapping, embed.FS templates)
+    status: done
+    change_record: CHG-20260710-023
+    version: v2.8.0
+    depends_on:
+    - PC-0119
+  - id: PC-0215
+    title: forge v1.0.0 — Phases B.3–B.6 (check/gate/evidence/assess/scaffold/registry/report)
+    status: done
+    change_record: CHG-20260710-024
+    version: v2.9.0
+    depends_on:
+    - PC-0214
   - id: PC-0121
     title: Implement plt gate check release / deploy commands
-    status: not-started
+    status: done
+    change_record: CHG-20260710-024
+    version: v2.9.0
     depends_on:
     - PC-0119
   - id: PC-0122
     title: Implement plt report status / coverage commands
-    status: not-started
+    status: done
+    change_record: CHG-20260710-024
+    version: v2.9.0
     depends_on:
     - PC-0121
   - id: PC-0123

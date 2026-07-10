@@ -10,6 +10,23 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — forge v1.0.0: Phases B.3–B.6 complete — full command set
+
+- forge is now feature-complete for v1.0.0: validate, new repo, new control/adr/waiver,
+  check, gate, evidence, assess, registry, report. All 50+ subcommands are implemented.
+- B.3 (OPA): the POLICY_MAP regex parser (`policyMapLineRE`) handles the Python tuple
+  format reliably. The engine uses the embedded OPA Go library for pure-Go evaluation —
+  no external opa binary required for forge check/gate.
+- B.4–B.6 are lightweight wrappers over the file system and the pkg/ core. The right
+  pattern for these commands: do the heavy lifting in pkg/, keep cmd/ thin.
+- forge report drift revealed 75 controls with incomplete governance coverage in the live
+  repo — this is accurate and expected (some controls have bindings but no per-language
+  policies yet, which is correct for the current implementation state).
+- Phase C (platform-modules, platform-infrastructure, platform-services) is now fully
+  unlocked: forge new repo handles all three bootstraps.
+
+---
+
 ## 2026-07-10 — forge Phase B.2 implemented: forge new repo (repo bootstrapping)
 
 - `forge new repo <name>` creates a governed repository with .compliance-manifest.yaml,

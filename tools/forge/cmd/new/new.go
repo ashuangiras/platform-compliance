@@ -14,13 +14,24 @@ func NewCmd(cfg **config.Config) *cobra.Command {
 		Short: "Bootstrap a governed repository or scaffold a governance object",
 		Long: `Create new governed repositories or scaffold governance YAML objects.
 
-  forge new repo <name>          Bootstrap a complete governed repository on GitHub
-  forge new control              Scaffold a control YAML in the correct domain directory
-  forge new adr                  Scaffold the next ADR with auto-incremented ID
-  forge new waiver               Scaffold a waiver record`,
+  forge new repo <name>     Bootstrap a complete governed repository on GitHub
+  forge new control         Scaffold a control YAML in the correct domain directory
+  forge new adr             Scaffold the next ADR with auto-incremented ID
+  forge new waiver          Scaffold a waiver record
+  forge new change-record   Allocate the next CHG-YYYYMMDD-NNN`,
 	}
 
 	cmd.AddCommand(newRepoCmd(cfg))
+
+	// Authoring commands need the compliance dir from the parent config.
+	// We pass a closure that reads cfg at call time.
+	getCompDir := func() string {
+		if *cfg != nil {
+			return (*cfg).ComplianceDir
+		}
+		return ""
+	}
+	RegisterAuthoringCommands(cmd, getCompDir)
 
 	return cmd
 }
