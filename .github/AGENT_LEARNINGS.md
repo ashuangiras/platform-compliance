@@ -10,6 +10,19 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — CHG-001 fix: PR body format requires "Change Record: CHG-..." inline
+
+- CHG-001 policy uses regex `change\s+record\s*:\s*CHG-\d{8}-\d{3}` requiring the CHG
+  record on the same line as the "Change Record:" label. All previous PRs used a section
+  header `## Change Record` with the CHG number on a separate line — the regex never matched.
+- Fix: PR template now shows `Change Record: CHG-YYYYMMDD-NNN` as a literal inline placeholder.
+  The forge scaffold template for new repos has the same fix.
+- Release-manager pre-flight step 7 now explicitly states this format requirement with an example.
+- Lesson: when a policy uses a regex to detect content in a PR body, the PR template must
+  guide users to produce exactly the matching string. A section header alone is not enough.
+
+---
+
 ## 2026-07-10 — forge collector-map: data-driven collector dispatch (no code changes for new collectors)
 
 - Moved the input-file → collector-script mapping out of forge's Go code
