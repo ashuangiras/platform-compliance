@@ -1,0 +1,18 @@
+id: POL-SRC-004-GITHUB-001
+title: "Commit signing is enforced on the default branch via branch protection"
+binding_ids:
+  - BIND-SRC-004-GITHUB
+engine: opa
+file_path: "07-policies/opa/SRC/POL-SRC-004-GITHUB-001.rego"
+pass_criteria: >
+  input.branch_protection is a valid object and
+  input.branch_protection.required_signatures.enabled is true.
+fail_criteria: >
+  input.branch_protection is present but required_signatures.enabled is
+  false, absent, or any value other than true. A not_applicable result is
+  returned when branch_protection data is absent or null (SRC-001 governs
+  whether protection is enabled).
+evidence_type: github-branch-protection-api-response
+severity: high
+introduced_date: "2026-07-10"
+status: active

@@ -1,0 +1,23 @@
+# Secrets and local configuration — required patterns for SEC-001 CI check
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+*.tfvars
+*.tfvars.json
+
+# Build and test outputs
+tools/forge/bin/
+tools/forge/dist/
+07-policies/scripts/__pycache__/
+**/__pycache__/
+
+# OS / IDE
+.DS_Store
+.idea/
+*.swp
+
+# Local forge overrides
+.forge.yaml.local

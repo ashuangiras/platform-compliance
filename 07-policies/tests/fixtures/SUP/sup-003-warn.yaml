@@ -1,0 +1,8 @@
+# Fixture: SUP-003 — WARN
+# Scenario: Dependabot alerts are enabled but automated security fixes are disabled.
+# Expected policy result: { "result": "warn" }
+vulnerability_alerts_enabled: true
+automated_security_fixes_enabled: false
+repository:
+  name: my-repo
+  type: platform-repo

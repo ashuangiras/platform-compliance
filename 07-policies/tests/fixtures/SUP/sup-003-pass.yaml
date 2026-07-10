@@ -1,0 +1,8 @@
+# Fixture: SUP-003 — PASS
+# Scenario: Both Dependabot vulnerability alerts and automated security fixes are enabled.
+# Expected policy result: { "result": "pass" }
+vulnerability_alerts_enabled: true
+automated_security_fixes_enabled: true
+repository:
+  name: platform-compliance
+  type: platform-repo

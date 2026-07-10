@@ -1,0 +1,15 @@
+# Fixture: SRC-004 — PASS
+# Scenario: Branch protection is configured with required_signatures enabled.
+# Expected policy result: { "result": "pass" }
+branch_protection:
+  required_signatures:
+    enabled: true
+    url: https://api.github.com/repos/org/platform-compliance/branches/main/protection/required_signatures
+  allow_force_pushes:
+    enabled: false
+  allow_deletions:
+    enabled: false
+repository:
+  name: platform-compliance
+  type: platform-repo
+default_branch: main

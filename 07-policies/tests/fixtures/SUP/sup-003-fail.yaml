@@ -1,0 +1,8 @@
+# Fixture: SUP-003 — FAIL
+# Scenario: Dependabot vulnerability alerts are disabled entirely.
+# Expected policy result: { "result": "fail" }
+vulnerability_alerts_enabled: false
+automated_security_fixes_enabled: false
+repository:
+  name: my-ungoverned-repo
+  type: platform-repo
