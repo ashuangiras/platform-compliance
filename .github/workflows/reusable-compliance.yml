@@ -370,6 +370,9 @@ jobs:
               "details": details,
               "collected_by": {"tool": "platform-compliance", "version": "${{ inputs.platform-compliance-ref }}", "workflow_run_id": run_id}
             }
+            # Propagate waiver_id if the control was waived in the policy run.
+            if "waiver_id" in policy_result:
+              record["waiver_id"] = policy_result["waiver_id"]
 
             out = os.path.join(evidence_dir, f"{commit_sha[:8]}-{control_id}-{run_id}.yaml")
             import yaml
