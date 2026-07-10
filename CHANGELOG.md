@@ -7,6 +7,25 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.7.0] — 2026-07-10 (CHG-20260710-022)
+
+### forge Phase B.1 — `forge validate` (offline schema validation)
+
+- `pkg/config`: Config struct + global/repo/env loading
+- `pkg/taxonomy`: loads all 02-taxonomy/ files into typed structs
+- `pkg/schema`: validates any governance YAML against its schema;
+  infers schema from $schema field (handles .yaml extension) or file path pattern;
+  supports all 16 schemas
+- `pkg/manifest`: reads .compliance-manifest.yaml; deep validation
+  (profiles exist, contexts registered, waivers have files)
+- `pkg/compliance`: local directory loader + profile inheritance resolver
+- `cmd/validate`: `forge validate <file>`, `forge validate repo [path]`,
+  `forge validate manifest [path]`
+- 13 tests passing; 75 real controls validated in test suite
+- `forge validate repo . --compliance-dir .` validates the entire compliance repo
+
+---
+
 ## [v2.6.0] — 2026-07-10 (CHG-20260710-021)
 
 ### forge Go module scaffolded + implementation plan

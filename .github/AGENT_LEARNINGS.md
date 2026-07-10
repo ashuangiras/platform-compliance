@@ -10,6 +10,20 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-10 — forge Phase B.1 implemented: forge validate (offline validation)
+
+- Phase B.1 (forge validate) is fully implemented: pkg/config, pkg/taxonomy, pkg/schema,
+  pkg/manifest, pkg/compliance, cmd/validate — 13 tests passing, 75 real controls validated.
+- Key implementation insight: the $schema field in control files uses .yaml extension
+  (control.schema.yaml) but the actual schema files are .json. InferSchemaName normalises
+  both extensions, plus provides path-pattern fallback for files without a $schema field.
+- The test strategy of pointing at the real compliance directory (../../../../) rather than
+  testdata copies means tests always validate against the live governance objects —
+  if a control ever becomes schema-invalid, the forge test suite catches it.
+- Phase B.2 (forge new repo) is next: pkg/github + pkg/scaffold + cmd/new/repo.go.
+
+---
+
 ## 2026-07-10 — forge Go module scaffolded + implementation plan written
 
 - tools/forge/ is a compiling Go module with stub main.go; `forge --version` works.
