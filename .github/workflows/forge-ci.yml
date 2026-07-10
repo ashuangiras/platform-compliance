@@ -1,0 +1,43 @@
+name: "forge CI — Build and Test"
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/forge/**"
+  push:
+    branches: [main]
+    paths:
+      - "tools/forge/**"
+
+# Read-only at top level per SEC-004.
+permissions: read-all
+
+jobs:
+  forge-ci:
+    name: "forge — build, vet, test"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/forge
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tools/forge/go.mod
+          cache-dependency-path: tools/forge/go.sum
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go build
+        run: go build ./...
+
+      - name: go test
+        run: go test -race ./...
+
+      - name: Check forge --version
+        run: go run . --version
