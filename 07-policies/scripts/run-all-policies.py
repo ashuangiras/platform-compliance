@@ -260,21 +260,27 @@ def main():
             continue
 
         result = run_opa(rego_path, input_path, query)
-        (results / f"{control_id}.json").write_text(json.dumps(result))
         total += 1
 
         r = result.get("result", "error") if isinstance(result, dict) else "error"
         if r == "pass":
             passed += 1
+            (results / f"{control_id}.json").write_text(json.dumps(result))
             print(f"  ✓ {control_id}: pass")
         elif r == "not_applicable":
             skipped += 1
+            (results / f"{control_id}.json").write_text(json.dumps(result))
             print(f"  ○ {control_id}: not_applicable")
         elif r == "manual_review":
+            (results / f"{control_id}.json").write_text(json.dumps(result))
             print(f"  ⚠ {control_id}: manual_review")
         elif control_id in waived_controls:
             waived += 1
             waiver_id = waived_controls[control_id]
+            # Embed waiver_id in the result file so downstream jobs (evidence
+            # assembly, gate assessment) can skip this as a blocking failure.
+            result_with_waiver = {**result, "waiver_id": waiver_id}
+            (results / f"{control_id}.json").write_text(json.dumps(result_with_waiver))
             print(f"  ~ {control_id}: {r} (waived — {waiver_id})")
         else:
             failed += 1
