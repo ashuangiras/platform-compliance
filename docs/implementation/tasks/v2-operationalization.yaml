@@ -129,7 +129,7 @@ phases:
     status: done
 - id: phase-B
   title: Tooling and developer experience
-  horizon: v1.2.0
+  horizon: v2.3.0
   blocked_by: Phase A complete, ADR-0009, ADR-0010, ADR-0011
   tasks:
   - id: PC-0115
@@ -140,7 +140,7 @@ phases:
     status: done
   - id: PC-0117
     title: Ratify ADR-0011 (plt CLI technology selection)
-    status: not-started
+    status: done
   - id: PC-0118
     title: Implement policy bundle packaging step in release workflow
     status: done

@@ -1,33 +1,24 @@
 # tools — Platform CLI and Tooling
 
-This directory contains the `plt` command-line tool and supporting scripts for interacting with the compliance system programmatically.
+Supporting scripts for interacting with the compliance system.
 
-## What this directory owns
+## `plt` CLI
 
-- Source code for the `plt` platform CLI
-- Supporting shell scripts for operations too simple to warrant CLI commands
+The `plt` command-line tool lives in its own repository: **[ashuangiras/platform-plt](https://github.com/ashuangiras/platform-plt)**
 
-## Status
+Per [ADR-0011](../decisions/ADR-0011-plt-cli.md): Go binary, distributed via GitHub Releases.
 
-**Not yet populated.** CLI design and implementation is deferred to a future phase. Supporting scripts for schema validation will be added when Phase 4 (schemas) is complete.
-
-## Planned structure
-
+**Install:**
+```bash
+curl -sSfL https://github.com/ashuangiras/platform-plt/releases/latest/download/plt_$(uname -s)_$(uname -m) \
+  -o plt && chmod +x plt
 ```
-tools/
-├── README.md           ← this file
-├── plt/                ← platform CLI source code
-│   ├── cmd/
-│   │   ├── validate.go
-│   │   ├── assess.go
-│   │   ├── evidence.go
-│   │   └── report.go
-│   ├── go.mod
-│   └── go.sum
-└── scripts/
-    ├── validate-schemas.sh
-    ├── check-profile-coverage.sh
-    └── generate-dashboard-data.sh
+
+## Scripts in this directory
+
+| Script | Purpose |
+|--------|---------|
+| `check-agents.sh` | Run the full AGT suite locally — fails loudly if agent configuration is below standard |
 ```
 
 ## Planned CLI commands
