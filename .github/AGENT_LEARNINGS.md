@@ -10,6 +10,26 @@ agents more effective* — not just what files changed.
 
 ---
 
+## AGT-LEARNING-006 — ADR-0017 A3: AGT-001/002/003 promoted to PROF-BASE baseline (2026-07-10)
+
+**Date:** 2026-07-10 | **Change Record:** CHG-20260710-017
+**Tag:** v2.2.0 (MINOR) | **Covers:** PROF-BASE.yaml (AGT-001/002/003 added to mandatory)
+
+A3 promotes the three foundational agent controls (instructions exist, frontmatter valid,
+MCP secret-free) from opt-in (PROF-AGENTIC-V1 only) to universal baseline (PROF-BASE).
+The OPA policies already gate on `has_agent_config`, so repos without agent config get
+`not_applicable` — no over-enforcement.
+
+PROF-AGENTIC-V1 keeps all 15 AGT controls as the full agentic overlay; PROF-BASE now
+carries just the 3-control foundation. This dual-presence pattern is intentional and
+verified by the reviewer (no AGT-004..015 leaked into PROF-BASE).
+
+A3 was a minimal 1-file change (PROF-BASE.yaml). The agent chain correctly used only
+Control Author + Compliance Reviewer + Release Manager — no collector or policy work
+was needed. Right-sizing the chain to the actual scope is an efficiency win.
+
+---
+
 ## AGT-LEARNING-005 — ADR-0016 P5 Library profile (PROF-LIBRARY-V1) (2026-07-10)
 
 **Date:** 2026-07-10 | **Change Record:** CHG-20260710-016

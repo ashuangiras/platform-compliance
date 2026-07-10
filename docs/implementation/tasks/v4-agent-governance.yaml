@@ -78,11 +78,11 @@ phases:
     status: done
 - id: phase-A3-baseline
   title: 'A3 — Baseline: fold into PROF-BASE'
-  horizon: v2.1.0
+  horizon: v2.2.0
   tasks:
   - id: PC-0277
     title: Fold AGT-001/002/003 into PROF-BASE (universal for all repositories)
-    status: not_started
+    status: done
   - id: PC-0278
-    title: CI; merge; roll into v2.1.0 with ADR-0016 P5
-    status: not_started
+    title: CI; merge; cut v2.2.0
+    status: done
