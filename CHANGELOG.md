@@ -7,6 +7,19 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v2.6.0] — 2026-07-10 (CHG-20260710-021)
+
+### forge Go module scaffolded + implementation plan
+
+- `tools/forge/` — compiling Go module (Go 1.26, cobra + viper + OPA embedded)
+  `forge --version` works; all package directories created
+- `tools/forge/docs/IMPLEMENTATION-PLAN.md` — full phased plan:
+  exact types, function signatures, file creation order, deliverable checklists for B.1–B.6
+- `tools/forge/Makefile` — build, test, lint, release-binaries targets
+- Phase B.1 (`forge validate`) is ready to implement
+
+---
+
 ## [v2.5.0] — 2026-07-10 (CHG-20260710-020)
 
 ### forge full architecture (pre-implementation design)
