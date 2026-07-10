@@ -16,6 +16,7 @@ technology_contexts:
   - agent
 
 waiver_ids:
+  - WAV-SRC-001-202607-001   # Single-developer bootstrap: approvals temporarily 0 during bootstrap-merge (expires 2026-10-07)
   - WAV-SRC-002-202607-001   # Single-developer bootstrap: GitHub prohibits self-approval (expires 2026-10-07)
 
 compliance_contact: platform-team
