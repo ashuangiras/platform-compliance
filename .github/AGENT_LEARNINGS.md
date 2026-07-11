@@ -10,6 +10,32 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-11 — fix: DEFECT-6 — the release-gate caught its own collector on first run
+
+**Change Record:** CHG-20260711-067
+
+- **Fixing a dead gate immediately exposes the next silent failure.** DEFECT-5 (v4.0.1) added
+  `push: tags: ['v*']` so the `release-gate` job finally runs on a tag. On its very first real
+  execution it BLOCKED — `CHG-002` reported the v4.0.1 release record's `gate_assessment_id` and
+  `release_summary` "missing" even though both are present. Root cause: `collect-all-inputs.py`
+  produced `chg-release.json` with `release_record` hardcoded to `null` while
+  `release_record_exists` was `true`. The control had been unenforceable on every release, hidden
+  because the gate never ran (DEFECT-5). Lesson for **release-manager**: never treat a freshly
+  un-gated path as trustworthy — the first time a dormant gate runs is a *test*, not a formality;
+  budget for it to fail and reveal latent defects.
+- **`exists: true` + `payload: null` is a silent-failure anti-pattern.** A collector that reports
+  a resource exists but hands the policy an empty body guarantees a misleading "incomplete" verdict.
+  Lesson for **collector-engineer**: when a collector signals `*_exists: true`, it MUST populate the
+  corresponding parsed object; a hard-coded `None` beside a `True` existence flag is a review
+  red flag added to the collector pre-flight.
+- **Rule learned (release-manager):** verifying `merge_gate` green is necessary but NOT sufficient
+  for a release — the `release_gate` runs a different profile (PROF-PLATFORM-V1) with different
+  controls (CHG-002) and only fires on the tag. Post-tag, always confirm the tag-triggered
+  release-gate run is green before declaring the release done; a published tag whose release-gate
+  fails must be reconciled (fix-forward + re-point, or supersede), never left broken.
+
+---
+
 ## 2026-07-11 — fix: five enforcement-engine defects (v4.0.1) — "green ≠ enforced"
 
 **Change Record:** CHG-20260711-067

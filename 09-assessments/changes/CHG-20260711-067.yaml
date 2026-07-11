@@ -39,6 +39,13 @@ description: >
   unreachable because the workflow on: triggers could never reach it on a tag. Added
   push: tags: ['v*'] so tagging vX.Y.Z evaluates the release gate.
 
+  DEFECT-6 (CHG-002 never passable on a real release): collect-all-inputs.py produced
+  chg-release.json with release_record hardcoded to null while release_record_exists was
+  true, so CHG-002 always reported gate_assessment_id and release_summary missing and
+  blocked every tagged release. This latent bug was invisible until DEFECT-5 made the
+  release-gate run on tags for the first time. The collector now parses the release-record
+  YAML and embeds it so CHG-002 validates the real fields.
+
 affected_object_ids:
   - "07-policies/scripts/run-all-policies.py"
   - "07-policies/scripts/collect-github-security-settings.sh"
