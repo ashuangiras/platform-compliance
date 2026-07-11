@@ -89,21 +89,9 @@ Authentik is deployed in **`platform-infrastructure`** alongside Vault, Consul, 
 1. Authentik is a platform dependency, not a business service. Vault and MinIO need it to be running before services can authenticate.
 2. Placing it in `platform-infrastructure` makes it part of the foundation that `platform-services` builds on.
 3. The integration between Authentik and Vault/MinIO must be automated and lifecycle-managed with the infrastructure, not the services.
+4. PostgreSQL and Redis are **shared data infrastructure** — not components of the identity system. They are deployed as a separate `data/` component that any future service in `platform-infrastructure` or `platform-services` can consume by adding a database or ACL entry.
 
-```
-platform-infrastructure/
-  networking/     ← Docker bridge network
-  storage/        ← MinIO + state backend
-  secrets/        ← Vault
-  discovery/      ← Consul
-  identity/       ← NEW: PostgreSQL + Redis + Authentik
-  integrations/   ← NEW: automated Vault OIDC + MinIO OIDC configuration
-```
-
-**Deployment order (strictly sequential):**
-```
-networking → storage → secrets → discovery → identity → integrations
-```
+See the full topology and module design in the "New modules required" section below.
 
 ### Automated integration (Terraform-managed)
 
@@ -148,11 +136,182 @@ Every authentication rule, group mapping, and policy binding is a PR with a Chan
 
 ### New modules required in `platform-modules`
 
-| Module | What it deploys |
+#### Data infrastructure (shared — not identity-specific)
+
+PostgreSQL and Redis are general-purpose data services. A future observability service, a task queue, or any stateful service may need them. Deploying a new PostgreSQL or Redis per service wastes resources and multiplies operational burden. The correct pattern is one instance of each, with proper database/user/ACL separation per consumer.
+
+```
+modules/data/
+  postgresql/   ← shared PostgreSQL instance; per-service databases + roles
+  redis/        ← shared Redis instance; per-service ACL users + key prefixes
+```
+
+**`modules/data/postgresql`** — manages:
+- The PostgreSQL container (kreuzwerker/docker provider)
+- Per-service database creation via the `cyrilgdn/postgresql` provider
+- Per-service roles with minimum required privileges (not superuser)
+- The superuser credentials go to Vault; service credentials are outputs (sensitive)
+
+Interface:
+```hcl
+variable "databases" {
+  description = "Map of service name → { password } to create as database+owner role pairs."
+  type = map(object({ password = string }))
+  sensitive = true
+}
+
+output "connections" {
+  description = "Map of service name → connection details. Sensitive — store in Vault."
+  sensitive = true
+  # { host, port, database, username, password }
+}
+```
+
+**`modules/data/redis`** — manages:
+- The Redis container (kreuzwerker/docker provider)
+- Per-service ACL users with scoped commands and key prefixes (mounted `users.acl` file)
+- No service shares another service's key prefix
+
+Interface:
+```hcl
+variable "acl_users" {
+  description = "Map of service name → { password, commands, key_prefix }."
+  type = map(object({
+    password   = string
+    commands   = string  # e.g. "+@all" or "+@read +@write ~authentik:*"
+    key_prefix = string  # e.g. "authentik:*"
+  }))
+  sensitive = true
+}
+
+output "connections" {
+  description = "Map of service name → { host, port, username, password }. Sensitive."
+  sensitive = true
+}
+```
+
+#### Identity module (Authentik only — no embedded database)
+
+```
+modules/identity/
+  authentik/    ← Authentik server + worker; accepts external pg + redis connections
+```
+
+**`modules/identity/authentik`** — takes PostgreSQL and Redis connection strings as inputs. It does NOT deploy its own database instances. This makes the module reusable: the same module works whether the caller provides an RDS instance, a self-hosted PostgreSQL, or the `modules/data/postgresql` module output.
+
+```hcl
+variable "database_url" {
+  description = "PostgreSQL connection URL from modules/data/postgresql output."
+  sensitive = true
+}
+
+variable "redis_url" {
+  description = "Redis connection URL from modules/data/redis output."
+  sensitive = true
+}
+```
+
+### Updated deployment topology
+
+```
+platform-infrastructure/
+  networking/     ← Docker bridge network
+  storage/        ← MinIO + state backend
+  secrets/        ← Vault
+  discovery/      ← Consul
+  data/           ← NEW: shared PostgreSQL + Redis (with per-service separation)
+  identity/       ← NEW: Authentik (connects to data/)
+  integrations/   ← NEW: Vault OIDC + MinIO OIDC + Authentik app declarations
+```
+
+**Strict deployment order:**
+```
+networking → storage → secrets → discovery → data → identity → integrations
+```
+
+**Why `data/` comes before `identity/`**: Authentik requires PostgreSQL and Redis to be running and the Authentik database + ACL user to exist before the container starts.
+
+**Why `data/` is separate from `identity/`**: Any future service that needs PostgreSQL (e.g., a task queue, a service registry, a configuration audit log) calls the same `data/` module with an additional entry in `databases` and `acl_users`. No new PostgreSQL instance, no new Redis instance — just a new row in the map.
+
+### Database and cache user management policy
+
+- **PostgreSQL**: the `modules/data/postgresql` module creates a dedicated role and database per service. Each role has `CONNECT`, `USAGE`, and object-level privileges on its own database only — no cross-database access. The superuser credentials are bootstrapped and stored in Vault; application credentials use the per-service roles.
+
+- **Redis**: ACL entries constrain each service to its own key prefix (`authentik:*`, `grafana:*` etc.) and the minimum required command set. The `default` user is disabled. All credentials go to Vault after module output.
+
+### Vault as the single credential store (non-negotiable)
+
+**Every credential — superuser and service-level — is stored in Vault immediately after creation.** No credential is held only in Terraform state, environment variables, config files, or `tfvars`. The only place credentials exist at runtime is inside the running service process, read from Vault via Vault Agent or direct API call.
+
+#### Credential generation and storage flow
+
+```
+Terraform random_password resource
+        │
+        ▼
+modules/data/postgresql  ──────────────────────► PostgreSQL container
+  (creates DB + role with generated password)           │
+        │                                               │  runtime
+        │                                               ▼
+        ▼                                     Service reads credentials
+platform-infrastructure/integrations/         from Vault via Vault Agent
+  vault_kv_secret_v2 resources                (never in container env spec)
+  (writes all credentials to Vault)
+        │
+        ▼
+Vault KV v2 — single source of truth at runtime
+```
+
+#### Vault secret paths
+
+All platform data credentials live under `secret/platform/`:
+
+| Secret path | Contents |
 |---|---|
-| `modules/identity/postgresql` | PostgreSQL container (Authentik database backend) |
-| `modules/identity/redis` | Redis container (Authentik cache/session backend) |
-| `modules/identity/authentik` | Authentik server + worker containers |
+| `secret/platform/postgresql/superuser` | `username`, `password` — PostgreSQL superuser |
+| `secret/platform/postgresql/databases/<name>` | `username`, `password`, `database`, `host`, `port` — per-service DB role |
+| `secret/platform/redis/admin` | `password` — Redis admin (ACL user with full access) |
+| `secret/platform/redis/users/<name>` | `username`, `password`, `key_prefix` — per-service ACL user |
+| `secret/platform/authentik/admin` | `username`, `password` — Authentik bootstrap admin |
+| `secret/platform/authentik/secret-key` | `value` — Authentik SECRET_KEY (Django signing key) |
+
+#### Terraform implementation in `integrations/`
+
+```hcl
+# Generate credentials deterministically (idempotent via keepers)
+resource "random_password" "pg_authentik" {
+  length  = 32
+  special = false
+  keepers = { service = "authentik" }
+}
+
+# Write to Vault immediately — credentials never live only in state
+resource "vault_kv_secret_v2" "pg_authentik" {
+  mount = "secret"
+  name  = "platform/postgresql/databases/authentik"
+  data_json = jsonencode({
+    username = "authentik"
+    password = random_password.pg_authentik.result
+    database = "authentik"
+    host     = module.data.postgresql_host
+    port     = module.data.postgresql_port
+  })
+}
+
+# Module receives the password transiently — only uses it for DB role creation
+module "data" {
+  source    = "git::...//modules/data/postgresql?ref=v1.x.x"
+  databases = { authentik = { password = random_password.pg_authentik.result } }
+}
+```
+
+#### Service runtime access
+
+Services read credentials from Vault at startup via:
+- **Vault Agent sidecar** (preferred): injects credentials as environment variables or files before the service process starts — zero credentials in the container spec.
+- **Direct Vault API**: for services with native Vault SDK support.
+
+**No credential ever appears in `terraform.tfvars`, Docker `env` blocks, or mounted config files.** The transient exception is during `terraform apply`: the generated password exists in Terraform state (local backend, operator's machine only) for the duration of the apply, then is immediately written to Vault. It is never committed to version control.
 
 ### Authentication integration map
 
