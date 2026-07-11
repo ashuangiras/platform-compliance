@@ -1,0 +1,17 @@
+id: POL-RUN-009-TERRAFORM-001
+title: "Vault must be configured with Authentik as OIDC identity provider"
+binding_ids: [BIND-RUN-009-TERRAFORM]
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-009-TERRAFORM-001.rego"
+input_file: iac-terraform.json
+pass_criteria: >
+  The repository declares a vault_jwt_auth_backend resource with an
+  oidc_discovery_url attribute AND has an integrations/ directory with
+  Terraform files (indicating Authentik OIDC wiring for all services).
+fail_criteria: >
+  No vault_jwt_auth_backend is found, or the integrations/ directory is
+  absent, indicating services are not using Authentik as IDP.
+evidence_type: terraform-resource-check
+severity: high
+introduced_date: "2026-07-11"
+status: active

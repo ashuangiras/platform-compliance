@@ -1,0 +1,18 @@
+id: POL-RUN-008-TERRAFORM-001
+title: "All docker_container resources must declare a memory limit"
+binding_ids: [BIND-RUN-008-TERRAFORM]
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-008-TERRAFORM-001.rego"
+input_file: iac-terraform.json
+pass_criteria: >
+  All docker_container resources in any .tf file in the repository
+  declare a memory attribute (memory = <number>). Repositories with no
+  direct docker_container resources (platform-infrastructure delegates
+  to platform-modules) also pass.
+fail_criteria: >
+  One or more docker_container resources are missing a memory = <value>
+  attribute. This indicates unbounded memory consumption is possible.
+evidence_type: terraform-resource-check
+severity: high
+introduced_date: "2026-07-11"
+status: active

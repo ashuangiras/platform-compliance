@@ -93,6 +93,48 @@ for tf_file in repo_root.rglob('*.tf'):
         mod_version = match.group(3) or ''
         module_calls.append({'name': mod_name, 'source': mod_source, 'version': mod_version})
 
+# ── Additional checks for hardening and automation controls ──────────────────
+
+# IAC-006: Does deploy.sh (or equivalent automation script) exist?
+has_deploy_script = (repo_root / 'deploy.sh').exists() or (repo_root / 'scripts' / 'deploy.sh').exists()
+
+# IAC-007: Does an integrations/ component exist (writes creds to Vault)?
+has_integrations_module = (repo_root / 'integrations').is_dir() and any((repo_root / 'integrations').glob('*.tf'))
+
+# RUN-009: Is a vault_jwt_auth_backend declared (Authentik as Vault IDP)?
+has_vault_jwt_backend = False
+for tf_file in repo_root.rglob('*.tf'):
+    if '.git' in str(tf_file) or '.terraform' in str(tf_file):
+        continue
+    try:
+        c = tf_file.read_text()
+        if 'vault_jwt_auth_backend' in c and 'oidc_discovery_url' in c:
+            has_vault_jwt_backend = True
+            break
+    except Exception:
+        pass
+
+# RUN-008: Find docker_container resources that declare NO memory limit.
+# A compliant container has: memory = <number> or memory_swap = <number>
+docker_containers_missing_limits = []
+for tf_file in repo_root.rglob('*.tf'):
+    if '.git' in str(tf_file) or '.terraform' in str(tf_file):
+        continue
+    try:
+        c = tf_file.read_text()
+    except Exception:
+        continue
+    for m in re.finditer(r'resource\s+"docker_container"\s+"([^"]+)"\s*\{(.*?)\n\}', c, re.DOTALL):
+        container_name = m.group(1)
+        body = m.group(2)
+        has_memory = bool(re.search(r'\bmemory\s*=', body))
+        if not has_memory:
+            docker_containers_missing_limits.append({
+                'file': str(tf_file.relative_to(repo_root)),
+                'name': container_name,
+                'issue': 'No memory limit declared'
+            })
+
 output = {
     'repository': {'name': repo_name},
     'required_version': required_version,
@@ -108,7 +150,12 @@ output = {
         'errors': [],
         'warnings': [],
         'directories_checked': []
-    }
+    },
+    # Hardening and automation control fields
+    'has_deploy_script': has_deploy_script,
+    'has_integrations_module': has_integrations_module,
+    'has_vault_jwt_backend': has_vault_jwt_backend,
+    'docker_containers_missing_limits': docker_containers_missing_limits,
 }
 
 print(json.dumps(output, indent=2, ensure_ascii=False, default=str))

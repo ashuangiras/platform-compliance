@@ -1,0 +1,23 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-IAC-006-TERRAFORM
+control_id: IAC-006
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Terraform-root repositories must contain a deploy.sh file at the repository
+  root (or scripts/deploy.sh) that:
+
+  1. Performs a Phase 1 apply with -target flags covering all infrastructure
+     modules (networking, storage, secrets, discovery, data, identity).
+  2. Runs health gate checks confirming all services are healthy.
+  3. Exports VAULT_TOKEN from ~/.platform/vault-keys.json (or VAULT_KEYS_PATH).
+  4. Performs a Phase 2 full terraform apply to configure integrations.
+  5. Supports --plan (plan only) and --destroy (clean teardown) flags.
+
+  No manual steps, web UI interactions, or out-of-band credential copying
+  may be required between Phase 1 and Phase 2.
+
+  Enforcement is via POL-IAC-006-TERRAFORM-001 which checks for deploy.sh existence.

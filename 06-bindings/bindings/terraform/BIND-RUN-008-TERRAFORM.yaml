@@ -1,0 +1,19 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-RUN-008-TERRAFORM
+control_id: RUN-008
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  All docker_container resources declared directly in Terraform files must
+  include a memory = <MiB> attribute. Modules that wrap docker_container must
+  expose a memory variable and pass it to the resource.
+
+  Enforcement is via POL-RUN-008-TERRAFORM-001 which scans .tf files for
+  docker_container resources missing a memory attribute.
+
+  Platform-infrastructure repositories that call platform-modules (which own
+  the docker_container resources) satisfy this control when the module version
+  in use has memory variables declared and passed through.
