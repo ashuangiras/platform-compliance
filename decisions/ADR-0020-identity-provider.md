@@ -84,17 +84,75 @@ A platform identity provider (IdP) centralises authentication and enables SSO vi
 
 ### Deployment topology
 
-Authentik runs as a service in `platform-services`, deployed before any user-facing service:
+Authentik is deployed in **`platform-infrastructure`** alongside Vault, Consul, and MinIO — not in `platform-services`. The rationale:
+
+1. Authentik is a platform dependency, not a business service. Vault and MinIO need it to be running before services can authenticate.
+2. Placing it in `platform-infrastructure` makes it part of the foundation that `platform-services` builds on.
+3. The integration between Authentik and Vault/MinIO must be automated and lifecycle-managed with the infrastructure, not the services.
 
 ```
-platform-services/
-  identity/           ← new component
-    main.tf           ← Authentik + PostgreSQL + Redis
-    variables.tf
-    outputs.tf
-    service-contracts/
-      authentik.yaml
+platform-infrastructure/
+  networking/     ← Docker bridge network
+  storage/        ← MinIO + state backend
+  secrets/        ← Vault
+  discovery/      ← Consul
+  identity/       ← NEW: PostgreSQL + Redis + Authentik
+  integrations/   ← NEW: automated Vault OIDC + MinIO OIDC configuration
 ```
+
+**Deployment order (strictly sequential):**
+```
+networking → storage → secrets → discovery → identity → integrations
+```
+
+### Automated integration (Terraform-managed)
+
+All integration between Authentik and the platform services is managed by Terraform — no manual console configuration. This is non-negotiable: manually configured SSO is undocumented, unversioned, and fails the governance requirement (IAC-002, IAC-003).
+
+The `platform-infrastructure/integrations/` component uses three Terraform providers:
+
+| Provider | Manages |
+|---|---|
+| `goauthentik/authentik` | Authentik applications, OIDC providers, groups, flows, policies |
+| `hashicorp/vault` | Vault OIDC JWT auth backend, roles, policies |
+| `registry.terraform.io/hashicorp/aws` (MinIO-compatible) or MinIO Terraform provider | MinIO OIDC identity provider configuration |
+
+**What is declared as code:**
+
+```hcl
+# identity/ — deploy Authentik stack
+module "identity" {
+  source = "git::...//modules/identity/authentik?ref=v1.x.x"
+  # PostgreSQL + Redis + Authentik containers
+  # Outputs: authentik_url, authentik_token (stored in Vault)
+}
+
+# integrations/ — configure SSO
+resource "authentik_provider_oauth2" "vault" {
+  name          = "vault"
+  client_id     = "vault"
+  # ... redirect URIs, scopes, group claims
+}
+
+resource "vault_jwt_auth_backend" "authentik" {
+  path         = "oidc"
+  type         = "oidc"
+  oidc_discovery_url = module.identity.authentik_url
+  # ... Vault reads group claims → maps to policies
+}
+
+# MinIO OIDC configured via MinIO provider or null_resource + mc admin
+```
+
+Every authentication rule, group mapping, and policy binding is a PR with a Change Record.
+
+### New modules required in `platform-modules`
+
+| Module | What it deploys |
+|---|---|
+| `modules/identity/postgresql` | PostgreSQL container (Authentik database backend) |
+| `modules/identity/redis` | Redis container (Authentik cache/session backend) |
+| `modules/identity/authentik` | Authentik server + worker containers |
 
 ### Authentication integration map
 
@@ -141,27 +199,28 @@ A new technology context `authentik` is registered in `02-taxonomy/technology-co
 
 ### Negative
 - **New critical dependency**: Authentik becomes a hard dependency for all human access. If Authentik is down, human operators cannot authenticate (machine workloads via AppRole are unaffected). Mitigation: break-glass emergency tokens stored in Vault's emergency response kit.
-- **Additional stateful services**: Authentik requires PostgreSQL and Redis. These add to the backup obligation (BAK-001 applies to Authentik's database). This will be deployed as part of `platform-services/identity/` using Docker containers managed by Terraform.
-- **Bootstrap dependency**: The platform engineer who runs the initial Authentik setup needs a local admin account before SSO is configured. This is the same bootstrap pattern as Vault initialisation.
+- **Additional stateful services**: Authentik requires PostgreSQL and Redis. These add to the backup obligation (BAK-001 applies to Authentik's database). Deployed as Docker containers in `platform-infrastructure/identity/` managed by Terraform.
+- **Bootstrap dependency**: The platform engineer who runs the initial Authentik setup needs a local admin account before SSO is configured. This is the same bootstrap pattern as Vault initialisation. The Authentik admin bootstrap token is stored in Vault immediately after first deploy.
+- **Integration complexity**: `platform-infrastructure/integrations/` adds a fourth Terraform provider (`goauthentik/authentik`) alongside docker, vault, and potentially minio. The `integrations/` component must run after both Vault and Authentik are healthy.
 
 ### Migration path for existing services
 
-After Authentik is deployed:
-1. Grafana: configure OIDC in `platform-services/observability/` Terraform config
-2. MinIO: configure OIDC endpoint in `platform-infrastructure/storage/` config
-3. Vault: add OIDC auth method via `platform-infrastructure/secrets/` config
-4. Consul/Prometheus: deploy Authentik outpost and configure forward auth
+`platform-infrastructure/integrations/` is a new Terraform component that manages all SSO wiring. Adding SSO to an existing service is a governed PR to this component:
 
-Each migration is a governed PR with a Change Record.
+1. Add an `authentik_application` + `authentik_provider_oauth2` resource
+2. Add the corresponding service-side resource (e.g., `vault_jwt_auth_backend`, Grafana env vars)
+3. Test with a staging deploy
+4. PR with Change Record → merge → staging gate passes → production
 
-### Implementation tasks (Phase C extension)
+### Implementation tasks (Phase C identity extension)
 
-| Task | Depends on |
-|---|---|
-| Deploy Authentik (PostgreSQL + Redis + Authentik) | Vault running (secrets) |
-| Configure OIDC applications for each service | Authentik deployed |
-| Migrate Grafana auth → Authentik | Authentik OIDC app |
-| Configure MinIO OIDC | Authentik OIDC app |
-| Add Vault OIDC auth method | Authentik OIDC app |
-| Deploy forward auth proxy for Consul/Prometheus | Authentik outpost |
-| Define ACC-002 control | All migrations complete |
+| Task ID | Task | Depends on |
+|---|---|---|
+| PC-0160 | Ratify ADR-0020 | — |
+| PC-0161 | Add `modules/identity/postgresql`, `modules/identity/redis`, `modules/identity/authentik` to platform-modules | PC-0160 |
+| PC-0162 | Add `identity/` component to platform-infrastructure (deploys Authentik stack) | PC-0161 |
+| PC-0163 | Add `integrations/` component to platform-infrastructure (Vault OIDC + MinIO OIDC + Authentik app declarations) | PC-0162 |
+| PC-0164 | Migrate Grafana in platform-services to use Authentik OIDC (env vars from integrations output) | PC-0163 |
+| PC-0165 | Deploy Authentik forward auth proxy for Consul UI + Prometheus | PC-0163 |
+| PC-0166 | Remove all static admin credentials from tfvars (MinIO, Grafana) — replaced by OIDC | PC-0164, PC-0165 |
+| PC-0167 | Define ACC-002 control (SSO mandatory for all human-facing services) | PC-0166 |
