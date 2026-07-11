@@ -476,18 +476,33 @@ jobs:
           # Load BLOCK controls for the active gate from the profile YAML.
           # Any control NOT listed as enforcement:block in the gate is treated
           # as warn-level and will not fail the overall gate result.
+          # The `inherits` chain is expanded so a child profile also enforces its
+          # parents' gate controls (must match load_block_controls in job 4).
           block_controls = set()
-          profile_path = os.path.join(profiles_dir, f"{profile_id}.yaml")
-          if os.path.exists(profile_path):
-            with open(profile_path) as pf:
-              prof = yaml.safe_load(pf)
-            gate_def = (prof or {}).get("gates", {}).get(active_gate, {})
-            for ctrl in gate_def.get("required_controls", []):
-              if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
-                block_controls.add(ctrl.get("id") or ctrl.get("control_id", ""))
-            print(f"Profile {profile_id} gate {active_gate}: {len(block_controls)} BLOCK controls")
+
+          def _load_profile(pid):
+            p = os.path.join(profiles_dir, f"{pid}.yaml")
+            if not os.path.exists(p):
+              return None
+            with open(p) as pf:
+              return yaml.safe_load(pf) or {}
+
+          if os.path.exists(os.path.join(profiles_dir, f"{profile_id}.yaml")):
+            seen = set()
+            pid = profile_id
+            while pid and pid not in seen:
+              seen.add(pid)
+              prof = _load_profile(pid)
+              if prof is None:
+                break
+              gate_def = prof.get("gates", {}).get(active_gate, {})
+              for ctrl in gate_def.get("required_controls", []):
+                if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
+                  block_controls.add(ctrl.get("id") or ctrl.get("control_id", ""))
+              pid = prof.get("inherits")
+            print(f"Profile {profile_id} (+inherited) gate {active_gate}: {len(block_controls)} BLOCK controls")
           else:
-            print(f"::warning::Profile {profile_path} not found — all failures treated as blocking")
+            print(f"::warning::Profile {profile_id} not found — all failures treated as blocking")
 
           records = []
           for f in glob.glob(os.path.join(evidence_dir, "*.yaml")):

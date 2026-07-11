@@ -204,31 +204,52 @@ def load_active_waivers():
 
 
 def load_block_controls(profiles_dir, profile_id, gate):
-    """Load the set of BLOCK-level control IDs for the active gate from the profile.
+    """Load the set of BLOCK-level control IDs for the active gate from the profile,
+    expanding the `inherits` chain so a child profile also enforces its parents' gate
+    controls.
 
     Mirrors the logic in the gate evaluator (job 7) so job 4 (this script) and job 7
     agree on what constitutes a blocking failure (SF-4). Returns a set of control IDs,
     or None if the profile could not be loaded (caller treats None as "all failures
     block" — the conservative fallback used elsewhere in the pipeline).
+
+    Profiles declare `inherits: PROF-PARENT`; a child's gate does not repeat the
+    parent's controls, so gate resolution must walk the chain (SF-3 / review finding).
     """
     if not profiles_dir or not profile_id or not gate:
         return None
-    profile_path = os.path.join(profiles_dir, f"{profile_id}.yaml")
-    if not os.path.exists(profile_path):
+
+    def _load_one(pid):
+        path = os.path.join(profiles_dir, f"{pid}.yaml")
+        if not os.path.exists(path):
+            return None
+        try:
+            import yaml  # PyYAML is available in the CI runner
+            with open(path) as pf:
+                return yaml.safe_load(pf) or {}
+        except Exception:
+            return None
+
+    root = _load_one(profile_id)
+    if root is None:
         return None
-    try:
-        import yaml  # PyYAML is available in the CI runner
-        with open(profile_path) as pf:
-            prof = yaml.safe_load(pf) or {}
-    except Exception:
-        return None
+
     block = set()
-    gate_def = prof.get("gates", {}).get(gate, {})
-    for ctrl in gate_def.get("required_controls", []):
-        if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
-            cid = ctrl.get("id") or ctrl.get("control_id", "")
-            if cid:
-                block.add(cid)
+    seen = set()
+    pid = profile_id
+    # Walk the inheritance chain, unioning BLOCK controls at each level.
+    while pid and pid not in seen:
+        seen.add(pid)
+        prof = _load_one(pid)
+        if prof is None:
+            break
+        gate_def = prof.get("gates", {}).get(gate, {})
+        for ctrl in gate_def.get("required_controls", []):
+            if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
+                cid = ctrl.get("id") or ctrl.get("control_id", "")
+                if cid:
+                    block.add(cid)
+        pid = prof.get("inherits")
     return block
 
 
