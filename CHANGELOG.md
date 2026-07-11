@@ -7,6 +7,28 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v4.0.2] — 2026-07-11 (CHG-20260711-068)
+
+### fix(release): clean re-cut of the v4.0.1 patch on the DEFECT-6-fixed commit
+
+PATCH — bug fix delivery only. No new controls, schemas, profiles, or OPA-policy changes;
+`breaking_changes: false`. Delivers the already-merged **DEFECT-6 (release_record) fix** in
+`07-policies/scripts/collect-all-inputs.py` under an immutable, release-gate-green tag cut on
+`main` (`d272770`).
+
+- **Why v4.0.2 exists**: the published `v4.0.1` tag points at pre-DEFECT-6 commit `25a151a`,
+  whose tag-triggered `release-gate` **fails** — `collect-all-inputs.py` hardcoded
+  `release_record: null` while `release_record_exists: true`, so `CHG-002` always reported
+  `gate_assessment_id` / `release_summary` "missing" and blocked the tagged release. The
+  collector now parses the release-record YAML and embeds it, so `CHG-002` validates the real
+  fields and the release-gate is green on `d272770`.
+- **v4.0.1 is superseded**: its tag predates the DEFECT-6 fix and its release-gate cannot pass.
+  Per the maintainer's decision, **release immutability is preserved** — the published `v4.0.1`
+  tag is **not** mutated or force-moved; the fix ships forward here in `v4.0.2`. The v4.0.2
+  release record chains `change_record_ids` back to `CHG-20260711-067` for provenance.
+
+---
+
 ## [v4.0.1] — 2026-07-11 (CHG-20260711-067)
 
 ### fix(enforcement): five enforcement-engine defects from the v4.0.0 downstream rollout

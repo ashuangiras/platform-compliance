@@ -1,0 +1,39 @@
+$schema: "../../schemas/change-record.schema.json"
+
+id: "CHG-20260711-068"
+schema_version: "1.0.0"
+
+change_type: "tool"
+
+description: >
+  v4.0.2 PATCH — clean re-cut of the v4.0.1 patch cycle on the DEFECT-6-fixed commit
+  (d272770). No new mandatory controls and no changes to any governance object, schema,
+  profile, or OPA policy — this ships the already-merged DEFECT-6 (release_record) fix in
+  collect-all-inputs.py under an immutable, release-gate-green tag.
+
+  Why a re-cut instead of moving v4.0.1: the published v4.0.1 tag points at pre-DEFECT-6
+  commit 25a151a, whose tag-triggered release-gate fails because collect-all-inputs.py
+  still hardcoded release_record: null (DEFECT-6). Per the maintainer's decision, release
+  immutability is preserved — the published v4.0.1 tag is NOT mutated or force-moved.
+  Instead v4.0.1 is marked superseded and the fix ships forward in v4.0.2, which is cut on
+  d272770 where DEFECT-6 is fixed and the release-gate is green.
+
+  DEFECT-6 (CHG-002 never passable on a real release): collect-all-inputs.py produced
+  chg-release.json with release_record hardcoded to null while release_record_exists was
+  true, so CHG-002 always reported gate_assessment_id and release_summary missing and
+  blocked every tagged release. The collector now parses the release-record YAML and embeds
+  it so CHG-002 validates the real fields. This change was authored and verified on the
+  v4.0.1 cycle (CHG-20260711-067) and is delivered to consumers under this v4.0.2 tag.
+
+affected_object_ids:
+  - "07-policies/scripts/collect-all-inputs.py"
+  - "09-assessments/releases/v4.0.2.yaml"
+  - "09-assessments/reports/platform-compliance/ASSESS-PLATFORM-COMPLIANCE-20260711-068.yaml"
+  - "CHANGELOG.md"
+
+breaking: false
+
+author: "platform-team"
+date: "2026-07-11"
+
+review_refs: []
