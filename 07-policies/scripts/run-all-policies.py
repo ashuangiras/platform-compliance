@@ -85,6 +85,8 @@ POLICY_MAP = {
     "SEC-007":   ("SEC/POL-SEC-007-GITHUB-001.rego",           "sec-vuln-sla.json",   "data.platform.sec.sec_007_github.result",            ["github"]),
     "IAC-005":   ("IAC/POL-IAC-005-GITHUB-ACTIONS-001.rego",   "actions-info.json",   "data.platform.iac.iac_005_github_actions.result",    ["terraform"]),
     "AUD-001":   ("AUD/POL-AUD-001-GITHUB-001.rego",           "aud-security.json",   "data.platform.aud.aud_001_github.result",            ["github"]),
+    # ── CAT domain: service catalog controls (PC-0143) ───────────────────────
+    "CAT-001":   ("CAT/POL-CAT-001-SERVICE-001.rego",          "doc-files.json",      "data.platform.cat.cat_001_service.result",           ["github"]),
     # ── ADR-0016 P3: Node + Python quality (QUA, TST) ────────────────────────
     "QUA-001-NODE":   ("QUA/POL-QUA-001-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_001_node.result",   ["node"]),
     "QUA-002-NODE":   ("QUA/POL-QUA-002-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_002_node.result",   ["node"]),

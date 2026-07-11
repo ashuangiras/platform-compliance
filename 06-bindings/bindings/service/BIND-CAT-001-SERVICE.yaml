@@ -1,0 +1,26 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-CAT-001-SERVICE
+control_id: CAT-001
+technology_context: github
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Every service repository must contain at least one non-empty YAML file in
+  the service-contracts/ directory. The file must be named after the service
+  it represents (e.g. service-contracts/prometheus.yaml).
+
+  The presence of the service contract file is the machine-verifiable part of
+  CAT-001 registration. Content completeness (meaningful descriptions, real
+  health endpoint, declared dependencies) is verified by human review at
+  code review time.
+
+observable_artifact: >
+  Repository file list (GitHub API: GET /repos/{owner}/{repo}/git/trees/{sha}?recursive=1)
+  Field evaluated:
+  - files[].path: starts with "service-contracts/" and ends with ".yaml"
+  - files[].size: > 0 (non-empty)
+
+policy_check_ids:
+  - POL-CAT-001-SERVICE-001

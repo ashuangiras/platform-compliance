@@ -31,9 +31,9 @@ phases:
         note: "Both PRs merged; gate passes with v3.3.2 profile-aware enforcement"
       - id: PC-0136
         title: "Add initial Terraform modules to platform-modules"
-        status: in-progress
+        status: done
         depends_on: [PC-0135]
-        note: "PR #4 open — docker-network, minio (ADR-0014), vault (ADR-0008), consul (ADR-0019); kreuzwerker/docker provider"
+        note: "Merged: docker-network, minio (ADR-0014), vault (ADR-0008), consul (ADR-0019), prometheus, grafana (kreuzwerker/docker provider)"
       - id: PC-0137
         title: "Create platform-infrastructure repository with PROF-TERRAFORM-ROOT-V1"
         status: done
@@ -41,9 +41,9 @@ phases:
         note: "Created with forge new repo v3.3.3; infra-router agent team; PLATFORM_ADMIN_TOKEN + required signatures + secret scanning configured"
       - id: PC-0138
         title: "Configure Terraform state backend for platform-infrastructure"
-        status: in-progress
+        status: done
         depends_on: [PC-0133, PC-0137]
-        note: "PR #2 open — backend s3 {} with backend.hcl.example; terraform-plan.yml CI workflow"
+        note: "Merged: backend s3 {} pointing at MinIO; backend.hcl.example; terraform-plan.yml CI (fmt+validate+plan-output check)"
       - id: PC-0139
         title: "First terraform plan + apply with deployment gate passing"
         status: in-progress
@@ -56,22 +56,26 @@ phases:
         note: "Created with forge new repo v3.3.4; service-router agent team; PLATFORM_ADMIN_TOKEN + required signatures + secret scanning configured"
       - id: PC-0141
         title: "Deploy first service with OBS-001 health check and service contract"
-        status: not-started
+        status: done
         depends_on: [PC-0140]
+        note: "Prometheus + Grafana in platform-services: health checks at /-/healthy and /api/health; service-contracts/ with prometheus.yaml and grafana.yaml"
       - id: PC-0142
         title: "Define CAT-001 and CAT-002 controls (service catalog domain)"
-        status: not-started
+        status: done
+        note: "CAT-001 and CAT-002 controls defined + schema-validated; CAT-001 OPA policy in progress (PC-0143)"
       - id: PC-0143
         title: "Register all platform services in service catalog"
-        status: not-started
+        status: in-progress
         depends_on: [PC-0142, PC-0141]
+        note: "CAT-001 OPA policy + binding in PR #50; service contracts exist in platform-services"
       - id: PC-0144
         title: "Define REL-001 and REL-002 controls (reliability domain)"
         status: not-started
       - id: PC-0145
         title: "Create PROF-STAGING-V1 and PROF-PRODUCTION-V1 profiles"
-        status: not-started
+        status: done
         depends_on: [PC-0132]
+        note: "PROF-SERVICE-STAGING-V1 and PROF-SERVICE-PROD-V1 created in v3.2.0 cycle"
       - id: PC-0146
         title: "Resolve all [PLACEHOLDER:] markers in all mapping files"
         status: not-started
