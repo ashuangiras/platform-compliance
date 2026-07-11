@@ -119,3 +119,23 @@ contexts:
       applications/providers. Governs SSO integration, token validation, and
       role/group mapping from Authentik to service-level permissions.
     applies_when: "repository declares the 'authentik' context (OIDC integration, forward auth, or Authentik application configuration present)"
+
+  postgresql:
+    code: postgresql
+    description: >
+      The repository integrates with or manages a PostgreSQL database instance.
+      Applicable to services that use PostgreSQL as a backing store, modules that
+      deploy PostgreSQL containers, or platform-infrastructure components that
+      manage databases and roles. Governs connection string management, role
+      privilege scoping, and database-per-service isolation.
+    applies_when: "repository deploys, manages, or connects to a PostgreSQL instance"
+
+  redis:
+    code: redis
+    description: >
+      The repository integrates with or manages a Redis instance.
+      Applicable to services that use Redis for caching or sessions, modules that
+      deploy Redis containers, or platform-infrastructure components that manage
+      Redis ACL users and key prefix isolation. Governs ACL user scoping,
+      key prefix isolation, and the disabling of the default user.
+    applies_when: "repository deploys, manages, or connects to a Redis instance"

@@ -90,37 +90,51 @@ phases:
     horizon: "Phase C extension"
     tasks:
       - id: PC-0160
-        title: "Ratify ADR-0020 (Authentik in platform-infrastructure, automated SSO integration)"
-        status: in-progress
-        note: "ADR-0020 written; authentik context registered; Authentik in platform-infrastructure not platform-services"
-      - id: PC-0161
-        title: "Add modules/identity/postgresql + redis + authentik to platform-modules"
+        title: "Ratify ADR-0020 (Authentik in platform-infrastructure, automated SSO, shared data infra)"
+        status: done
+        note: "ADR merged; authentik context registered; data/ (postgres+redis) separate from identity/"
+      - id: PC-0161a
+        title: "Add modules/data/postgresql — shared PostgreSQL with per-service database+role management"
         status: not-started
         depends_on: [PC-0160]
+        note: "cyrilgdn/postgresql provider for db/role creation; superuser → Vault; per-service limited roles"
+      - id: PC-0161b
+        title: "Add modules/data/redis — shared Redis with per-service ACL users + key prefix isolation"
+        status: not-started
+        depends_on: [PC-0160]
+        note: "ACL via users.acl config file; default user disabled; per-service commands + key prefix"
+      - id: PC-0161c
+        title: "Add modules/identity/authentik — Authentik server+worker; accepts external pg + redis URLs"
+        status: not-started
+        depends_on: [PC-0161a, PC-0161b]
       - id: PC-0162
-        title: "Add identity/ component to platform-infrastructure (deploys Authentik stack)"
+        title: "Add data/ component to platform-infrastructure (shared PostgreSQL + Redis)"
         status: not-started
-        depends_on: [PC-0161, PC-0137]
+        depends_on: [PC-0161a, PC-0161b]
       - id: PC-0163
-        title: "Add integrations/ component to platform-infrastructure (Vault OIDC + MinIO OIDC + Authentik app declarations — all Terraform-managed)"
+        title: "Add identity/ component to platform-infrastructure (Authentik using data/ outputs)"
         status: not-started
-        depends_on: [PC-0162]
+        depends_on: [PC-0161c, PC-0162]
       - id: PC-0164
-        title: "Migrate Grafana in platform-services to Authentik OIDC (env vars from integrations output)"
+        title: "Add integrations/ component to platform-infrastructure (Vault OIDC + MinIO OIDC + Authentik apps — all Terraform-managed)"
         status: not-started
         depends_on: [PC-0163]
       - id: PC-0165
+        title: "Migrate Grafana in platform-services to Authentik OIDC (env vars from integrations output)"
+        status: not-started
+        depends_on: [PC-0164]
+      - id: PC-0166
         title: "Deploy Authentik forward auth proxy for Consul UI and Prometheus"
         status: not-started
-        depends_on: [PC-0163]
-      - id: PC-0166
+        depends_on: [PC-0164]
+      - id: PC-0167
         title: "Remove all static admin credentials from tfvars (MinIO, Grafana) — replaced by OIDC"
         status: not-started
-        depends_on: [PC-0164, PC-0165]
-      - id: PC-0167
+        depends_on: [PC-0165, PC-0166]
+      - id: PC-0168
         title: "Define ACC-002 control (SSO mandatory for all human-facing platform services)"
         status: not-started
-        depends_on: [PC-0166]
+        depends_on: [PC-0167]
 
   - id: phase-D
     title: "Advanced maturity"
