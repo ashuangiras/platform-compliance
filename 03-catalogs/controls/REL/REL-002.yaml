@@ -1,0 +1,69 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: REL-002
+title: Error budget policy must be defined before a service reaches production
+domain: REL
+type: directive
+priority: P2
+severity: low
+
+statement: >
+  Every service with an active SLO (REL-001) must define an error budget policy
+  in its service contract before deployment to a production environment. The error
+  budget policy must specify the actions taken when:
+
+  1. The error budget is at 50% consumed (early warning)
+  2. The error budget is fully consumed (budget exhausted — freeze new feature deploys)
+
+  The policy may be as simple as: "When the error budget is exhausted, no new
+  feature releases are deployed to this service until the budget is replenished
+  in the next measurement window."
+
+rationale: >
+  An SLO without an error budget policy is a metric without consequences. The
+  error budget policy is the mechanism that connects reliability measurement to
+  engineering decision-making: it defines what changes when the service is
+  not meeting its reliability commitments.
+
+  Without an error budget policy, teams make ad-hoc decisions about whether to
+  slow down deployments when reliability degrades. With a policy, the decision
+  is pre-made and enforced by the compliance system.
+
+mapped_standards:
+  - source_id: SRC-GOOGLE-SRE
+    clause: "Chapter 3 — Embracing Risk: the error budget formalises the acceptable
+      risk per SLO window. Chapter 4: error budget depletion should trigger a
+      freeze on non-emergency feature releases."
+    mapping_note: >
+      Google SRE Chapters 3–4 define the error budget as the operationalisation of
+      an SLO. REL-002 requires that this operationalisation is declared explicitly
+      rather than handled ad-hoc.
+  - source_id: SRC-CNCF-PLATFORM-MATURITY-V1
+    clause: "Level 3 — Scaling: error budgets are tracked and used for change
+      management decisions."
+    mapping_note: >
+      CNCF Level 3 explicitly requires error budget-based change management.
+      REL-002 is the governance gate that enforces this requirement before
+      a service reaches production.
+
+automation_status: manual
+assessment_cadence: per-deployment
+failure_behavior: warn
+failure_applies_to:
+  - deployment_gate
+
+scope_conditions:
+  - condition: "repository.type == 'service'"
+    rationale: >
+      Applies only to service repositories with an active SLO (REL-001 satisfied).
+
+evidence_required:
+  - type: service-contract-file
+    description: >
+      service-contracts/<service-id>.yaml with a non-empty slo.error_budget_policy
+      field describing the actions taken when the error budget is 50% and 100%
+      consumed. Human review confirms the policy is meaningful.
+    format: yaml
+
+lifecycle_status: active
+introduced_date: "2026-07-11"
