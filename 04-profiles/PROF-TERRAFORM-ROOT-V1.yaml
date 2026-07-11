@@ -103,6 +103,27 @@ gates:
       enforcement: warn
     - id: IAC-004
       enforcement: block
+    # ── Audit-driven hardening controls (ARCH-AUDIT-2026-07-11) ─────────────
+    - id: SEC-012
+      enforcement: block
+    - id: SEC-013
+      enforcement: block
+    - id: SEC-014
+      enforcement: block
+    - id: NET-002
+      enforcement: block
+    - id: IAC-003b
+      enforcement: block
+    - id: IAC-006
+      enforcement: block
+    - id: IAC-007
+      enforcement: block
+    - id: RUN-008
+      enforcement: block
+    - id: RUN-009
+      enforcement: block
+    - id: RUN-009b
+      enforcement: block
   release_gate:
     description: 'Evaluated before an infrastructure version tag is published. Plan-before-apply
       is required at release; no infrastructure applies may happen without an approved

@@ -102,6 +102,15 @@ gates:
       enforcement: warn
     - id: IAC-004
       enforcement: block
+    # ── Audit-driven hardening controls (ARCH-AUDIT-2026-07-11) ─────────────
+    - id: SEC-012
+      enforcement: block
+    - id: NET-002
+      enforcement: block
+    - id: IAC-003b
+      enforcement: block
+    - id: RUN-008
+      enforcement: block
   release_gate:
     description: 'Evaluated before a module version tag is published.
 

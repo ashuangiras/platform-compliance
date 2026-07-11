@@ -568,3 +568,13 @@ Added this rule to the control-author mental checklist. Before registering a sta
   platform-repo copies from source.
 - Rule learned: scaffold tools must generate role-appropriate content per repo type,
   not copy the mother repo's internal tooling.
+
+---
+
+## 2026-07-11 — fix: gate enforcement + profile corrections
+
+**Change Record:** CHG-20260711-064
+
+- **Gate enforcement**: `run-all-policies.py` was exiting 0 always. The gate evaluator (job 7) sets an output variable but the `Fail if gate fails` step only triggers if that variable is "fail" — and the evidence pipeline might not propagate all results. Fixed by exiting 1 when `failed > 0`. Jobs 5-7 use `if: always()` so they still run.
+- **Wrong profile**: New BLOCK controls were added to `PROF-PLATFORM-V1` but all downstream repos use their own specific profiles (`PROF-TERRAFORM-MODULE-V1`, `PROF-TERRAFORM-ROOT-V1`, `PROF-SERVICE-V1`). Added new controls to all three.
+- **Rule learned**: Always check which profile a repo actually declares in `.compliance-manifest.yaml` before adding controls. `PROF-PLATFORM-V1` is only for the compliance repo itself.
