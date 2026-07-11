@@ -10,6 +10,36 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-11 — fix(policy): a pinning policy must classify dependency SOURCE before choosing its signal
+
+**Change Record:** CHG-20260711-069
+
+- **A version-pinning policy has to classify a dependency's SOURCE TYPE before it picks a
+  pinning signal.** POL-SUP-001-TERRAFORM-001 judged *every* Terraform module by the presence
+  of a registry `version` field. But `version` is a registry-only concept — git modules
+  (`source = "git::…//path?ref=vX.Y.Z"`) pin via the `?ref` tag/SHA, and local modules
+  (`./`, `../`) have no external supply-chain surface at all. Reusing the registry field as the
+  universal signal produced a *systematic* false-positive: ~17 correctly-pinned modules on real
+  infrastructure (`platform-infrastructure`) were reported as unpinned. Lesson for
+  **policy-engineer**: when a control spans heterogeneous sources (git / registry / local /
+  provider), branch on the source type first, then apply the signal that is actually meaningful
+  for that source. A single field checked uniformly across sources is a false-positive factory.
+- **Reuse collector-precomputed classifications instead of re-deriving them in Rego.** The
+  correct fix consumed the collector's existing `modules_with_mutable_refs` (which already
+  distinguishes immutable `?ref=vX.Y.Z` tags / 40-hex SHAs from mutable branch refs) rather than
+  re-parsing refs inside the policy. Lesson for **policy-engineer**: prefer the collector's
+  precomputed, tested signals over re-implementing the same classification in policy logic — it
+  keeps the trust boundary in one place and avoids Rego/collector drift.
+- **Cross-check every new/changed policy against a REAL downstream repo, not just synthetic
+  fixtures.** The PASS/FAIL fixtures were green the whole time; the defect only surfaced when the
+  policy ran against `platform-infrastructure`'s actual module graph. Lesson for
+  **policy-engineer** and **compliance-reviewer**: a fixture proving pass-and-fail is necessary
+  but not sufficient — the reviewer sign-off must include a run against at least one real
+  consuming repo, and the FAIL fixture must keep exercising the genuinely-unpinned case (here a
+  git `?ref=main`) so the fix cannot silently disable enforcement.
+
+---
+
 ## 2026-07-11 — release: v4.0.2 clean re-cut — supersede a stale tag, never force-move it
 
 **Change Record:** CHG-20260711-068

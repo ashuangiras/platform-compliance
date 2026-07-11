@@ -1,0 +1,75 @@
+$schema: "../../schemas/assessment.schema.json"
+
+# Self-assessment report for platform-compliance v4.0.3 (SUP-001 false-positive fix).
+# Restructures only the SUP-001 Terraform OPA policy so it classifies a module's dependency
+# source type before choosing a pinning signal — no governance-object/schema/profile/collector
+# changes. Verified locally: `opa check` clean; SUP-001 PASS fixture passes; SUP-001 FAIL
+# fixture fails with four violations (git "?ref=main" plus other unpinned cases). Critically,
+# the real downstream repo (platform-infrastructure) SUP-001 now PASSES with 0 violations
+# (modules_with_mutable_refs == []). SRC-001/SRC-002 remain covered by active waivers.
+
+id: "ASSESS-PLATFORM-COMPLIANCE-20260711-069"
+schema_version: "1.0.0"
+
+subject:
+  type: release
+  identifier: "https://github.com/ashuangiras/platform-compliance"
+
+profile_id: PROF-PLATFORM-V1
+profile_version: "1.0.0"
+control_catalog_version: "v4.0.3"
+
+assessment_date: "2026-07-11T00:00:00Z"
+
+evidence_window:
+  from: "2026-07-11T00:00:00Z"
+  to: "2026-07-11T23:59:59Z"
+
+# ─── Control results ──────────────────────────────────────────────────────────
+# Summary of the release_gate / merge_gate OPA run on the v4.0.3 commit: `opa check`
+# clean, fixtures pass. SUP-001 evaluates PASS — the policy now classifies git vs registry
+# vs local module sources and judges git modules via modules_with_mutable_refs, so
+# correctly-pinned git and local modules are no longer flagged. SRC-001/SRC-002 remain waived.
+control_results:
+  - control_id: SUP-001
+    result: pass
+    evidence_ids: []
+  - control_id: CHG-002
+    result: pass
+    evidence_ids: []
+  - control_id: SEC-001
+    result: pass
+    evidence_ids: []
+  - control_id: CAT-003
+    result: pass
+    evidence_ids: []
+  - control_id: AGT-013
+    result: pass
+    evidence_ids: []
+  - control_id: SRC-001
+    result: waived
+    evidence_ids: []
+    failure_reason: "Covered by active waiver WAV-SRC-001-202607-001 (branch protection verified out-of-band)."
+  - control_id: SRC-002
+    result: waived
+    evidence_ids: []
+    failure_reason: "Covered by active waiver WAV-SRC-002-202607-001."
+
+summary:
+  total_controls: 92
+  pass: 31
+  fail: 0
+  manual_review: 0
+  not_applicable: 59
+  waived: 2
+  error: 0
+
+overall_result: pass-with-waivers
+
+gate_evaluation:
+  gate_id: release_gate
+  gate_result: pass-with-warnings
+
+generated_by:
+  tool: run-all-policies.py
+  version: "v4.0.3"

@@ -1,0 +1,46 @@
+$schema: "../../schemas/change-record.schema.json"
+
+id: "CHG-20260711-069"
+schema_version: "1.0.0"
+
+change_type: "policy"
+
+description: >
+  v4.0.3 PATCH — fixes a proven SUP-001 Terraform false-positive. No new mandatory controls
+  and no changes to any governance object, schema, or profile — this restructures only the
+  SUP-001 Terraform OPA policy (and its fixtures) so it classifies a module's dependency
+  SOURCE before choosing a pinning signal.
+
+  Root cause: POL-SUP-001-TERRAFORM-001 judged every module by the presence of a registry
+  "version" field. Git modules (source "git::...//path?ref=vX.Y.Z") and local modules
+  ("./", "../") have no registry version, so they were systematically flagged as unpinned
+  even when immutably pinned by a git tag or commit SHA. On real infrastructure
+  (platform-infrastructure) this produced ~17 bogus violations while the modules were in
+  fact correctly pinned.
+
+  Fix: git modules are now judged via the collector's precomputed
+  "modules_with_mutable_refs" — a module pinned to an immutable "?ref=vX.Y.Z" tag or a
+  40-hex commit SHA passes, while a mutable branch ref (or a missing ref) still FAILS.
+  Registry modules keep the existing "version" bound check. Local ("./", "../") modules are
+  exempt (no external supply-chain surface). The provider version-constraint checks and the
+  "required_version" check are unchanged. NON-BREAKING: enforcement of genuinely-unpinned
+  dependencies is preserved — the FAIL fixture (git "?ref=main" + others) still reports four
+  violations. The collector was NOT changed (verified correct for all required ref cases).
+  Real-infra platform-infrastructure SUP-001 now PASSES (modules_with_mutable_refs == []).
+
+affected_object_ids:
+  - "POL-SUP-001-TERRAFORM-001"
+  - "07-policies/opa/SUP/POL-SUP-001-TERRAFORM-001.rego"
+  - "07-policies/opa/SUP/POL-SUP-001-TERRAFORM-001.check.yaml"
+  - "07-policies/tests/fixtures/SUP/sup-001-terraform-pass.yaml"
+  - "07-policies/tests/fixtures/SUP/sup-001-terraform-fail.yaml"
+  - "09-assessments/releases/v4.0.3.yaml"
+  - "09-assessments/reports/platform-compliance/ASSESS-PLATFORM-COMPLIANCE-20260711-069.yaml"
+  - "CHANGELOG.md"
+
+breaking: false
+
+author: "platform-team"
+date: "2026-07-11"
+
+review_refs: []

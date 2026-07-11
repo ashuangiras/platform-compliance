@@ -1,0 +1,47 @@
+$schema: "../../schemas/release-record.schema.json"
+
+# Release record for platform-compliance v4.0.3
+# PATCH — fixes a proven SUP-001 Terraform false-positive.
+#
+# The SUP-001 Terraform policy judged every module by the presence of a registry `version`
+# field. Git modules (source "git::…//path?ref=vX.Y.Z") and local modules ("./", "../") have
+# no registry version, so they were systematically flagged as unpinned even when immutably
+# pinned by a git tag or commit SHA. On platform-infrastructure this produced ~17 bogus
+# violations. Per ADR-0010 this is NOT a breaking change — enforcement of genuinely-unpinned
+# dependencies is preserved; only the false-positives are removed.
+
+id: "v4.0.3"
+schema_version: "1.0.0"
+
+release_date: "2026-07-11"
+
+change_record_ids:
+  - CHG-20260711-069   # v4.0.3 — SUP-001 honors git ?ref pinning; exempts local modules
+  - CHG-20260711-068   # v4.0.2 clean re-cut delivering the DEFECT-6 fix — provenance
+  - CHG-20260711-067   # v4.0.1 enforcement-defect patch cycle — provenance chains back to it
+
+gate_assessment_id: "ASSESS-PLATFORM-COMPLIANCE-20260711-069"
+
+release_summary: >
+  PATCH release — fixes a proven SUP-001 Terraform false-positive. Bug fix only: no new
+  mandatory controls and no governance-object / schema / profile / collector changes;
+  breaking_changes: false.
+
+  The SUP-001 Terraform policy (POL-SUP-001-TERRAFORM-001) judged every module by the
+  presence of a registry "version" field. Git modules ("git::…//path?ref=vX.Y.Z") and local
+  modules ("./", "../") have no registry version, so they were systematically flagged as
+  unpinned even when immutably pinned by a git tag or commit SHA — ~17 bogus violations on
+  platform-infrastructure.
+
+  The policy now classifies a module's dependency source type before choosing its pinning
+  signal: git modules are judged via the collector's precomputed modules_with_mutable_refs
+  (immutable "?ref=vX.Y.Z" tags / 40-hex SHAs pass, mutable branch refs / missing refs fail);
+  registry modules keep the "version" bound check; local modules are exempt; provider
+  version-constraint checks and required_version are unchanged. Enforcement of
+  genuinely-unpinned dependencies is preserved (the FAIL fixture still reports four
+  violations). platform-infrastructure now PASSES SUP-001 (modules_with_mutable_refs == []).
+  change_record_ids chains back to CHG-20260711-068 / CHG-20260711-067 for provenance.
+
+breaking_changes: false
+
+released_by: platform-team
