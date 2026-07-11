@@ -7,10 +7,14 @@ file_path: "07-policies/opa/SUP/POL-SUP-001-TERRAFORM-001.rego"
 pass_criteria: >
   required_version is declared with a bounded constraint (~> or = format).
   All required_providers use bounded version constraints.
-  All module source calls use bounded version or tag/SHA references.
+  Registry module calls use a bounded version constraint; git module calls are
+  pinned to an immutable ref (semver tag or 40-hex commit SHA); local (./ ../)
+  modules are exempt as in-repo dependencies.
 fail_criteria: >
   required_version absent or unbounded (>= without upper bound).
-  One or more providers or modules use an unbounded or absent version constraint.
+  One or more providers or registry modules use an unbounded or absent version
+  constraint, or a git module uses a mutable/absent ref (branch such as main, or
+  no ?ref=).
 evidence_type: dependency-pin-check
 severity: high
 introduced_date: "2026-07-08"

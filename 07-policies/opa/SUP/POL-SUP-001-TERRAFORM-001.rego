@@ -10,6 +10,11 @@ package platform.sup.sup_001_terraform
 #   input.required_version            — string, e.g. "~> 1.5" or null if absent
 #   input.required_providers[]        — { name, source, version }
 #   input.module_calls[]              — { name, source, version }
+#   input.modules_with_mutable_refs[] — { name, source, ref }
+#                                       git modules whose ref is mutable or absent
+#                                       (collector-precomputed; immutable semver
+#                                       tags and 40-hex SHAs are excluded and thus
+#                                       never appear in this list)
 #   input.violations[]                — pre-computed violations from HCL parser
 #                                       (optional — policy also evaluates directly)
 
@@ -36,6 +41,27 @@ is_acceptable_constraint(v) if {
 is_acceptable_constraint(v) if {
 	# Pessimistic constraint operator (~>) — acceptable
 	startswith(v, "~> ")
+}
+
+# Module source classification (Terraform getter semantics):
+# - local  : in-repo path (./ or ../) — EXEMPT, not an external dependency
+# - git    : git:: getter or any source carrying a ?ref= — pinned iff its ref is
+#            an immutable tag/SHA. The collector precomputes mutable/absent refs
+#            into input.modules_with_mutable_refs, so the policy does not re-parse
+#            refs here; it simply trusts that classification.
+# - registry: everything else (e.g. namespace/name/provider) — must carry a
+#            bounded `version` constraint.
+is_local_module(m) if startswith(m.source, "./")
+
+is_local_module(m) if startswith(m.source, "../")
+
+is_git_module(m) if startswith(m.source, "git::")
+
+is_git_module(m) if contains(m.source, "?ref=")
+
+is_registry_module(m) if {
+	not is_local_module(m)
+	not is_git_module(m)
 }
 
 default result := {
@@ -85,8 +111,20 @@ violations[msg] if {
 	msg := sprintf("Provider '%v' has unpinned version '%v'", [p.name, p.version])
 }
 
+# Git modules: the collector already classified mutable/absent refs. Each entry in
+# input.modules_with_mutable_refs is an unpinned git dependency (branch ref or no
+# ref). Immutable tag/SHA refs never appear here, so they produce no violation.
+violations[msg] if {
+	gm := input.modules_with_mutable_refs[_]
+	msg := sprintf("Module '%v' git source '%v' uses mutable/absent ref '%v' (pin to an immutable tag or commit SHA)", [gm.name, gm.source, gm.ref])
+}
+
+# Registry modules only: their pinning is expressed via the `version` constraint.
+# Local (./ ../) modules are exempt; git modules are handled above via the
+# collector's ref classification, not via `version`.
 violations[msg] if {
 	m := input.module_calls[_]
+	is_registry_module(m)
 	not is_acceptable_constraint(m.version)
 	msg := sprintf("Module '%v' source '%v' has unpinned version '%v'", [m.name, m.source, m.version])
 }

@@ -190,6 +190,13 @@ phases:
   - id: PC-0054
     title: Write policy check for SUP-001 Terraform (pinned deps) with fixtures
     status: done
+    note: >
+      v4.0.3 patch (CHG-20260711-069) — fixed a proven false-positive: the policy now
+      classifies module source type (git / registry / local) before choosing its pinning
+      signal. Git modules judged via collector's modules_with_mutable_refs (immutable
+      ?ref=vX.Y.Z tags / 40-hex SHAs pass); registry modules keep the version check; local
+      modules exempt. platform-infrastructure SUP-001 now passes; genuinely-unpinned deps
+      still fail. Collector unchanged.
   - id: PC-0055
     title: Write policy check for SUP-001 GitHub Actions (action pinning) with fixtures
     status: done

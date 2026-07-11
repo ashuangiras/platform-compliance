@@ -7,6 +7,33 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v4.0.3] — 2026-07-11 (CHG-20260711-069)
+
+### fix(policy): SUP-001 honors git ?ref pinning and exempts local modules
+
+PATCH — bug fix only. No new controls, schemas, or profiles, and no collector change;
+`breaking_changes: false`. Fixes a proven false-positive in the SUP-001 Terraform policy
+`07-policies/opa/SUP/POL-SUP-001-TERRAFORM-001.rego` that flagged correctly-pinned git and
+local modules as unpinned.
+
+- **The false-positive**: the policy judged every module by the presence of a *registry*
+  `version` field. Git modules (`source = "git::…//path?ref=vX.Y.Z"`) and local modules
+  (`./`, `../`) have no registry `version`, so they were systematically reported as
+  unpinned even when immutably pinned by a git tag or commit SHA. On real infrastructure
+  (`platform-infrastructure`) this produced ~17 bogus SUP-001 violations.
+- **The fix**: the policy now classifies a module's dependency **source type** before
+  choosing its pinning signal. Git modules are judged via the collector's precomputed
+  `modules_with_mutable_refs` — an immutable `?ref=vX.Y.Z` tag or a 40-hex commit SHA
+  passes, while a mutable branch ref (or a missing ref) still FAILS. Registry modules keep
+  the existing `version` bound check. Local (`./`, `../`) modules are exempt. The provider
+  version-constraint checks and the `required_version` check are unchanged.
+- **Enforcement preserved (non-breaking)**: genuinely-unpinned dependencies still fail — the
+  FAIL fixture (git `?ref=main` plus other unpinned cases) reports four violations. The
+  collector was **not** changed (verified correct for all required ref cases).
+  `platform-infrastructure` now PASSES SUP-001 (`modules_with_mutable_refs == []`).
+
+---
+
 ## [v4.0.2] — 2026-07-11 (CHG-20260711-068)
 
 ### fix(release): clean re-cut of the v4.0.1 patch on the DEFECT-6-fixed commit
