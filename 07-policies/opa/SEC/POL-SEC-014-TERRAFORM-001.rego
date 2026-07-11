@@ -17,14 +17,21 @@ default result := {
 }
 
 # ── NOT APPLICABLE ─────────────────────────────────────────────────────────────
-# Only applies to terraform-root repos that deploy Vault (have secrets module call).
+# Only applies to terraform-root repos that deploy the full platform stack.
 result := {
 	"result": "not_applicable",
 	"details": {"message": "SEC-014: no Vault deployment found — not applicable"},
 } if {
+	input.repository.type != "terraform-root"
+}
+
+result := {
+	"result": "not_applicable",
+	"details": {"message": "SEC-014: no Vault deployment found — not applicable"},
+} if {
+	input.repository.type == "terraform-root"
 	not input.has_vault_jwt_backend
 	not input.has_integrations_module
-	count(input.module_calls) == 0
 }
 
 # ── PASS ───────────────────────────────────────────────────────────────────────

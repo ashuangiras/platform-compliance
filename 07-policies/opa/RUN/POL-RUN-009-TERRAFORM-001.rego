@@ -18,12 +18,12 @@ default result := {
 }
 
 # ── NOT APPLICABLE ─────────────────────────────────────────────────────────────
+# ── NOT APPLICABLE — non-platform-root repositories ─────────────────────────
 result := {
 	"result": "not_applicable",
-	"details": {"message": "RUN-009: only enforced on terraform-root repositories"},
+	"details": {"message": sprintf("only enforced on terraform-root repositories (this repo type=%v)", [input.repository.type])},
 } if {
-	not input.has_vault_jwt_backend
-	count(input.module_calls) == 0
+	input.repository.type != "terraform-root"
 }
 
 # ── PASS ───────────────────────────────────────────────────────────────────────
@@ -50,6 +50,7 @@ result := {
 		"message":  "RUN-009: Add vault_jwt_auth_backend in integrations/ pointing at Authentik OIDC discovery URL.",
 	},
 } if {
+	input.repository.type == "terraform-root"
 	count(input.module_calls) > 0
 	not input.has_vault_jwt_backend
 }
@@ -64,6 +65,7 @@ result := {
 		"message":  "RUN-009: Create integrations/ component with Authentik OIDC wiring for Vault and MinIO.",
 	},
 } if {
+	input.repository.type == "terraform-root"
 	input.has_vault_jwt_backend == true
 	not input.has_integrations_module
 }

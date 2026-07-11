@@ -18,12 +18,12 @@ default result := {
 }
 
 # ── NOT APPLICABLE ─────────────────────────────────────────────────────────────
+# ── NOT APPLICABLE — non-platform-root repositories ─────────────────────────
 result := {
 	"result": "not_applicable",
-	"details": {"message": "IAC-007: only enforced on terraform-root repositories"},
+	"details": {"message": sprintf("only enforced on terraform-root repositories (this repo type=%v)", [input.repository.type])},
 } if {
-	count(input.module_calls) == 0
-	not input.has_integrations_module
+	input.repository.type != "terraform-root"
 }
 
 # ── PASS ───────────────────────────────────────────────────────────────────────
@@ -49,6 +49,7 @@ result := {
 		"message":  "IAC-007: Create integrations/ component. See IAC-007 control guidance for Vault path schema.",
 	},
 } if {
+	input.repository.type == "terraform-root"
 	count(input.module_calls) > 0
 	not input.has_integrations_module
 }

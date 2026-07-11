@@ -15,7 +15,7 @@ REPO_NAME=$(basename "$(git -C "$REPO_ROOT" rev-parse --show-toplevel 2>/dev/nul
 
 # Determine terraform binary
 TF_BIN=""
-for bin in tofu terraform; do
+for bin in terraform tofu; do
   if command -v "$bin" >/dev/null 2>&1; then
     TF_BIN="$bin"
     break
@@ -36,19 +36,21 @@ if [ -n "$TF_BIN" ]; then
   FMT_DIFF=$("$TF_BIN" fmt -check -recursive "$REPO_ROOT" 2>&1 || true)
   FMT_EXIT=$("$TF_BIN" fmt -check -recursive "$REPO_ROOT" >/dev/null 2>&1; echo $?)
   
-  # Find and validate each terraform directory
+  # Validate ONLY the repo root. Child module directories (data/, identity/, etc.)
+  # are not standalone configs — their providers are configured by the root caller.
+  # Validating them in isolation produces false-positive failures.
   validate_dirs=()
   validate_errors=()
-  while IFS= read -r tf_dir; do
-    validate_dirs+=("$tf_dir")
-    result=$("$TF_BIN" -chdir="$tf_dir" init -backend=false -input=false -no-color 2>&1 && \
-              "$TF_BIN" -chdir="$tf_dir" validate -no-color -json 2>/dev/null || echo '{"valid":false,"error_count":1}')
+  if [ -n "$(find "$REPO_ROOT" -maxdepth 1 -name "*.tf" 2>/dev/null | head -1)" ]; then
+    validate_dirs+=("$REPO_ROOT")
+    "$TF_BIN" -chdir="$REPO_ROOT" init -backend=false -input=false -no-color >/dev/null 2>&1 || true
+    result=$("$TF_BIN" -chdir="$REPO_ROOT" validate -no-color -json 2>/dev/null || echo '{"valid":false,"error_count":1}')
     validate_valid=$(echo "$result" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('valid',False))" 2>/dev/null || echo "false")
     if [ "$validate_valid" != "True" ] && [ "$validate_valid" != "true" ]; then
-      validate_errors+=("$tf_dir")
+      validate_errors+=("$REPO_ROOT")
       VALIDATE_EXIT=1
     fi
-  done < <(find "$REPO_ROOT" -name "*.tf" -not -path "*/.git/*" -not -path "*/.terraform/*" | xargs -I{} dirname {} | sort -u)
+  fi
 fi
 
 python3 - "$REPO_ROOT" "$REPO_NAME" "$TF_VERSION" "$FMT_EXIT" "$VALIDATE_EXIT" <<PYTHON
@@ -92,6 +94,32 @@ for tf_file in repo_root.rglob('*.tf'):
         mod_source = match.group(2)
         mod_version = match.group(3) or ''
         module_calls.append({'name': mod_name, 'source': mod_source, 'version': mod_version})
+
+# ── Read repository metadata from .compliance-manifest.yaml ──────────────────
+# Used by policies to scope checks to the correct repository type.
+try:
+    import yaml as _yaml_mod  # optional; fallback regex if absent
+except ImportError:
+    _yaml_mod = None
+
+repository_type = "unknown"
+manifest_path = repo_root / '.compliance-manifest.yaml'
+if manifest_path.exists():
+    try:
+        manifest_text = manifest_path.read_text()
+        # Try PyYAML first, fall back to regex
+        if _yaml_mod is not None:
+            try:
+                manifest_data = _yaml_mod.safe_load(manifest_text)
+                repository_type = manifest_data.get('repository', {}).get('type', 'unknown')
+            except Exception:
+                pass
+        if repository_type == "unknown":
+            m = re.search(r'^\s+type:\s+(\S+)', manifest_text, re.MULTILINE)
+            if m:
+                repository_type = m.group(1).strip('"\'')
+    except Exception:
+        pass
 
 # ── Additional checks for hardening and automation controls ──────────────────
 
@@ -179,18 +207,22 @@ for call in module_calls:
         })
 
 # ── SEC-013: TLS disabled / insecure provider configs ─────────────────────────
-# Also detect the declared environment so the policy can scope correctly
+# Detect declared environment: prefer terraform.tfvars (gitignored, local only)
+# then fall back to terraform.tfvars.example (committed, has placeholder comment).
 declared_environment = ""
-try:
-    tfvars_file = repo_root / 'terraform.tfvars'
-    if tfvars_file.exists():
-        for line in tfvars_file.read_text().splitlines():
-            m = re.match(r'^\s*environment\s*=\s*"([^"]+)"', line)
-            if m:
-                declared_environment = m.group(1)
-                break
-except Exception:
-    pass
+for tfvars_candidate in [repo_root / 'terraform.tfvars', repo_root / 'terraform.tfvars.example']:
+    try:
+        if tfvars_candidate.exists():
+            for line in tfvars_candidate.read_text().splitlines():
+                # Match: environment = "staging"  OR  # environment = "staging"
+                m = re.match(r'^\s*#?\s*environment\s*=\s*"([^"]+)"', line)
+                if m:
+                    declared_environment = m.group(1)
+                    break
+        if declared_environment:
+            break
+    except Exception:
+        pass
 
 tls_disabled_configs = []
 insecure_provider_pattern = re.compile(
@@ -265,7 +297,7 @@ for tf_file in repo_root.rglob('*.tf'):
         pass
 
 output = {
-    'repository': {'name': repo_name},
+    'repository': {'name': repo_name, 'type': repository_type},
     'required_version': required_version,
     'required_providers': required_providers,
     'module_calls': module_calls,
