@@ -338,9 +338,12 @@ def main():
         except Exception:
             pass
 
-    # Always exit 0 — gate enforcement (BLOCK vs WARN vs DEFERRED) is evaluated
-    # by job 7 using the profile gate criteria, not by this script.
-    # Exiting 1 here would prevent jobs 5-7 from running, bypassing proper gate evaluation.
+    # Exit non-zero when any policy fails — step turns red, PR blocked immediately.
+    # Jobs 5-7 use 'if: always()' so they still run and provide the full assessment.
+    if failed > 0:
+        if is_ci:
+            print(f"::error::OPA gate: {failed} policy failure(s). See error annotations above.")
+        return 1
     return 0
 
 
