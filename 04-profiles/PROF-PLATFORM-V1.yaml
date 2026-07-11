@@ -257,6 +257,42 @@ gates:
         enforcement: block
         scope_condition: "repository.type == 'platform-repo'"
 
+      # ── Audit-driven hardening controls (ARCH-AUDIT-2026-07-11) ─────────────
+      # Security: no secrets in git, TLS enforcement, Vault audit device
+      - id: SEC-012
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SEC-013
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SEC-014
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+      # Network: internal services must not bind to all interfaces
+      - id: NET-002
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      # IAC: immutable module refs, deploy automation, Vault credential injection
+      - id: IAC-003b
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: IAC-006
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+      - id: IAC-007
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+      # Runtime: container resource limits, Authentik as IDP (Vault + Grafana)
+      - id: RUN-008
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: RUN-009
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+      - id: RUN-009b
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+
   release_gate:
     description: >
       Checks evaluated before a version tag is published.
@@ -287,6 +323,37 @@ gates:
       - id: CHG-001
         enforcement: block
         scope_condition: "repository.type == 'platform-repo'"
+      # ── Audit-driven hardening controls (carry forward from merge gate) ──────
+      - id: SEC-012
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SEC-013
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SEC-014
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+      - id: NET-002
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: IAC-003b
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: IAC-006
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+      - id: IAC-007
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+      - id: RUN-008
+        enforcement: block
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: RUN-009
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
+      - id: RUN-009b
+        enforcement: block
+        scope_condition: "repository.type == 'terraform-root'"
 
       # ── Release-gate additions ─────────────────────────────────────────────
 

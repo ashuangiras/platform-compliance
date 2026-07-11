@@ -16,13 +16,12 @@ default result := {
 }
 
 # ── NOT APPLICABLE ─────────────────────────────────────────────────────────────
-# Only applies to terraform-root repos (the ones that call deploy.sh).
+# Only applies to terraform-root repos that deploy the full platform stack.
 result := {
 	"result": "not_applicable",
-	"details": {"message": "IAC-006: only enforced on terraform-root repositories"},
+	"details": {"message": sprintf("only enforced on terraform-root repositories (this repo type=%v)", [input.repository.type])},
 } if {
-	count(input.module_calls) == 0
-	not input.has_deploy_script
+	input.repository.type != "terraform-root"
 }
 
 # ── PASS ───────────────────────────────────────────────────────────────────────
@@ -48,6 +47,7 @@ result := {
 		"message":  "IAC-006: Create deploy.sh. See IAC-006 control guidance for required structure.",
 	},
 } if {
+	input.repository.type == "terraform-root"
 	count(input.module_calls) > 0
 	not input.has_deploy_script
 }
