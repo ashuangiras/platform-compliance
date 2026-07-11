@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SEC-014-TERRAFORM
+control_id: SEC-014
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  A vault_audit Terraform resource must be declared in integrations/ whenever a Vault deployment exists. Type=file minimum.

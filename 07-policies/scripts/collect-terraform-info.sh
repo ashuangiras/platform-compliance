@@ -135,6 +135,122 @@ for tf_file in repo_root.rglob('*.tf'):
                 'issue': 'No memory limit declared'
             })
 
+# ── SEC-012: Sensitive files tracked in git ───────────────────────────────────
+import subprocess
+
+tfvars_tracked_in_git = False
+sensitive_files_in_git = []
+try:
+    result = subprocess.run(
+        ['git', '-C', str(repo_root), 'ls-files'],
+        capture_output=True, text=True, timeout=10
+    )
+    tracked = result.stdout.splitlines()
+    sensitive_patterns = ['.tfvars', '.env', '.pem', '.key', 'vault-keys', 'backend.hcl']
+    for f in tracked:
+        for pat in sensitive_patterns:
+            if pat in f and '.example' not in f:
+                sensitive_files_in_git.append(f)
+                if f.endswith('.tfvars'):
+                    tfvars_tracked_in_git = True
+                break
+except Exception:
+    pass
+
+# ── HIGH-003 / IAC-003: Module calls using mutable refs (main, master, HEAD) ──
+MUTABLE_REFS = {'main', 'master', 'HEAD', 'develop', 'dev', 'trunk'}
+modules_with_mutable_refs = []
+for call in module_calls:
+    src = call.get('source', '')
+    if '?ref=' in src:
+        ref = src.split('?ref=')[-1].strip()
+        if ref in MUTABLE_REFS or ref.startswith('refs/heads/'):
+            modules_with_mutable_refs.append({
+                'name': call.get('name', ''),
+                'source': src,
+                'ref': ref
+            })
+    elif src.startswith('git::') and '?ref=' not in src:
+        # git source with no ref at all is also mutable
+        modules_with_mutable_refs.append({
+            'name': call.get('name', ''),
+            'source': src,
+            'ref': '(none — defaults to HEAD)'
+        })
+
+# ── SEC-013: TLS disabled / insecure provider configs ─────────────────────────
+tls_disabled_configs = []
+insecure_provider_pattern = re.compile(
+    r'(?:tls_disable\s*=\s*true|skip_tls_verify\s*=\s*true|insecure\s*=\s*true)',
+    re.IGNORECASE
+)
+for tf_file in repo_root.rglob('*.tf'):
+    if '.git' in str(tf_file) or '.terraform' in str(tf_file):
+        continue
+    try:
+        c = tf_file.read_text()
+    except Exception:
+        continue
+    for m in insecure_provider_pattern.finditer(c):
+        line_no = c[:m.start()].count('\n') + 1
+        tls_disabled_configs.append({
+            'file': str(tf_file.relative_to(repo_root)),
+            'line': line_no,
+            'pattern': m.group(0).strip()
+        })
+
+# ── HIGH-007: Vault audit device declared ─────────────────────────────────────
+has_vault_audit_device = False
+for tf_file in repo_root.rglob('*.tf'):
+    if '.git' in str(tf_file) or '.terraform' in str(tf_file):
+        continue
+    try:
+        c = tf_file.read_text()
+        if 'vault_audit' in c:
+            has_vault_audit_device = True
+            break
+    except Exception:
+        pass
+
+# ── NET-002: Docker containers bound to all interfaces (0.0.0.0) ──────────────
+# Compliant: ports { ip = "127.0.0.1" ... } or no host port binding at all.
+# Violation: ports { external = ... } without ip = "127.0.0.1" for internal services.
+INTERNAL_SERVICES = {'postgresql', 'postgres', 'redis'}
+containers_with_all_interfaces = []
+for tf_file in repo_root.rglob('*.tf'):
+    if '.git' in str(tf_file) or '.terraform' in str(tf_file):
+        continue
+    try:
+        c = tf_file.read_text()
+    except Exception:
+        continue
+    for m in re.finditer(r'resource\s+"docker_container"\s+"([^"]+)"\s*\{(.*?)\n\}', c, re.DOTALL):
+        container_name = m.group(1)
+        body = m.group(2)
+        # Check if container is an internal service with a host port binding
+        is_internal = any(svc in container_name.lower() for svc in INTERNAL_SERVICES)
+        has_external_port = bool(re.search(r'\bexternal\s*=', body))
+        has_localhost_binding = bool(re.search(r'\bip\s*=\s*"127\.0\.0\.1"', body))
+        if is_internal and has_external_port and not has_localhost_binding:
+            containers_with_all_interfaces.append({
+                'file': str(tf_file.relative_to(repo_root)),
+                'name': container_name,
+                'issue': 'Internal service bound to 0.0.0.0 — should bind to 127.0.0.1 or remove host port'
+            })
+
+# ── HIGH-006 / RUN-009 extension: Grafana OIDC in integrations ────────────────
+has_grafana_oidc = False
+for tf_file in repo_root.rglob('*.tf'):
+    if '.git' in str(tf_file) or '.terraform' in str(tf_file):
+        continue
+    try:
+        c = tf_file.read_text()
+        if 'grafana' in c.lower() and ('oidc' in c.lower() or 'oauth' in c.lower() or 'authentik' in c.lower()):
+            has_grafana_oidc = True
+            break
+    except Exception:
+        pass
+
 output = {
     'repository': {'name': repo_name},
     'required_version': required_version,
@@ -156,6 +272,14 @@ output = {
     'has_integrations_module': has_integrations_module,
     'has_vault_jwt_backend': has_vault_jwt_backend,
     'docker_containers_missing_limits': docker_containers_missing_limits,
+    # New fields from audit
+    'tfvars_tracked_in_git': tfvars_tracked_in_git,
+    'sensitive_files_in_git': sensitive_files_in_git,
+    'modules_with_mutable_refs': modules_with_mutable_refs,
+    'tls_disabled_configs': tls_disabled_configs,
+    'has_vault_audit_device': has_vault_audit_device,
+    'containers_with_all_interfaces': containers_with_all_interfaces,
+    'has_grafana_oidc': has_grafana_oidc,
 }
 
 print(json.dumps(output, indent=2, ensure_ascii=False, default=str))

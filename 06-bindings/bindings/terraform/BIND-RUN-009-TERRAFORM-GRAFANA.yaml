@@ -1,0 +1,15 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-RUN-009-TERRAFORM-GRAFANA
+control_id: RUN-009
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Repositories that deploy a Grafana module must also configure Authentik as the
+  OAuth2/OIDC identity provider. The following must be present:
+  1. An Authentik OAuth2 application for Grafana (module.oidc_grafana in integrations/).
+  2. GF_AUTH_GENERIC_OAUTH_ENABLED=true and related env vars in the Grafana module.
+  3. GF_AUTH_GENERIC_OAUTH_CLIENT_ID / CLIENT_SECRET from the Authentik application.
+  Local admin accounts must be disabled in production (GF_AUTH_DISABLE_LOGIN_FORM=true).

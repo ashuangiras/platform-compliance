@@ -1,0 +1,40 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-012
+title: Sensitive files must not be tracked in version control
+domain: SEC
+type: preventive
+priority: P0
+severity: critical
+
+statement: >
+  Files containing secrets, credentials, or environment-specific values — including
+  terraform.tfvars, .env, .pem, .key, backend.hcl, and vault key files — must never
+  be committed to any git repository. Only *.example placeholder files are permitted.
+  Force-adding gitignored files (git add -f) to circumvent this control is prohibited.
+
+rationale: >
+  Credentials committed to git are permanently in the repository history even after
+  deletion. Anyone with read access to the repository — including CI runners, forks,
+  and GitHub staff — can recover them. Secret scanning (SEC-001) may not catch all
+  credential patterns, so preventing the commit in the first place is the primary
+  control.
+
+enforcement_level: mandatory
+automation_status: implemented
+
+guidance:
+  - terraform.tfvars must be in .gitignore. Only terraform.tfvars.example is permitted.
+  - Use 'git filter-repo --path <file> --invert-paths' to purge committed secrets.
+  - Inject secrets via CI environment variables, operator-local files, or Vault Agent.
+  - Never use 'git add -f' or 'git add --force' on gitignored files.
+  - The POL-SEC-012 OPA policy checks git ls-files output for tfvars and other
+    sensitive file patterns on every PR.
+
+tests:
+  - description: git ls-files does not include *.tfvars (non-example)
+    type: automated
+    tool: opa/collect-terraform-info.sh
+  - description: SEC-001 Semgrep scan passes
+    type: automated
+    tool: semgrep

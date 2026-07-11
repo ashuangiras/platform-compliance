@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SEC-013-TERRAFORM
+control_id: SEC-013
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Provider configs must not contain tls_disable=true, skip_tls_verify=true, or insecure=true. Use a reverse proxy with TLS for production.

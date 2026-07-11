@@ -1,0 +1,43 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-013
+title: Provider and service configurations must not disable TLS verification
+domain: SEC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Terraform provider configurations and service configurations must not disable TLS
+  certificate verification. The following attributes are prohibited in production-
+  bound repositories:
+    - tls_disable = true (Vault listener)
+    - skip_tls_verify = true (Vault Terraform provider)
+    - insecure = true (Authentik, MinIO providers)
+  Exceptions require a documented waiver referencing an ADR for the TLS strategy.
+
+rationale: >
+  Disabling TLS verification removes the guarantee of server identity. An attacker
+  with network access can perform a man-in-the-middle attack against any service
+  communication, intercepting secrets, credentials, and sensitive data. For staging
+  environments on a trusted localhost, this is acceptable only if documented and
+  time-limited.
+
+enforcement_level: mandatory
+automation_status: implemented
+
+guidance:
+  - Staging exemption: tls_disable/insecure configs in staging are flagged as
+    warnings by POL-SEC-013, not hard failures, when environment = "staging".
+  - Production path: deploy a reverse proxy (Traefik/Nginx) with auto-HTTPS and
+    replace all http:// internal URLs with https://.
+  - Use Vault PKI secret engine to issue internal TLS certificates.
+  - Document the TLS strategy in an ADR before first production deployment.
+
+tests:
+  - description: No tls_disable=true, skip_tls_verify=true, or insecure=true in any .tf file
+    type: automated
+    tool: opa/collect-terraform-info.sh
+  - description: tfsec TLS checks pass
+    type: automated
+    tool: tfsec

@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-SEC-012-TERRAFORM
+control_id: SEC-012
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Sensitive files (tfvars, .env, .key) must never be tracked in git. git ls-files must contain no non-example sensitive files.

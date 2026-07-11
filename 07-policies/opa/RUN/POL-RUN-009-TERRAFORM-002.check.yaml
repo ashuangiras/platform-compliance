@@ -1,0 +1,12 @@
+id: POL-RUN-009-TERRAFORM-002
+title: "Grafana must use Authentik as OIDC identity provider"
+binding_ids: [BIND-RUN-009-TERRAFORM-GRAFANA]
+engine: opa
+file_path: "07-policies/opa/RUN/POL-RUN-009-TERRAFORM-002.rego"
+input_file: iac-terraform.json
+pass_criteria: "Grafana module is absent OR Grafana OIDC+Authentik configuration is present."
+fail_criteria: "Grafana is deployed but no Authentik OIDC configuration found."
+evidence_type: terraform-resource-check
+severity: high
+introduced_date: "2026-07-11"
+status: active

@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-NET-002-TERRAFORM
+control_id: NET-002
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Internal-only services (postgresql, redis) must bind to 127.0.0.1 not 0.0.0.0. Use ip=127.0.0.1 or remove host port binding.
