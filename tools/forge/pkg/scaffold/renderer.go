@@ -105,6 +105,18 @@ func RenderRepoFiles(vars TemplateVars, withAgents bool, agentSourceDir string) 
 		{"repo/vscode-settings.json.tmpl", ".vscode/settings.json"},
 	}
 
+	// Terraform repos always get the tfsec security scan workflow (IAC-004).
+	if vars.RepoType == "terraform-module" || vars.RepoType == "terraform-root" {
+		entries = append(entries, tmplEntry{
+			"repo/terraform-security.yml.tmpl",
+			".github/workflows/terraform-security.yml",
+		})
+		entries = append(entries, tmplEntry{
+			"repo/gitignore-terraform.tmpl",
+			".gitignore",
+		})
+	}
+
 	var files []RepoFile
 	for _, e := range entries {
 		content, err := RenderTemplate(e.template, vars)

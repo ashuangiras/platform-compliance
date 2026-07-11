@@ -1,0 +1,29 @@
+name: "Terraform Security Scan (IAC-004)"
+
+# Runs tfsec on every PR and push to satisfy IAC-004 (automated IaC security scanning).
+# tfsec detects misconfigurations in Terraform code before merge.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tfsec:
+    name: "IAC-004 — tfsec IaC security scan"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          soft_fail: false
+          format: lovely
+          working_directory: "."

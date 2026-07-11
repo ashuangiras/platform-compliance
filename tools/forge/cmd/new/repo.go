@@ -94,6 +94,9 @@ Use --dry-run to preview all files without touching GitHub.`,
 			vars.RepoName = repoName
 			vars.RepoType = repoType
 			vars.OwnerOrg = org
+			// ComplianceOrg is the GitHub org that owns platform-compliance.
+			// Default: same org as the new repo. Override if compliance lives in a different org.
+			vars.ComplianceOrg = org
 			vars.ComplianceRef = c.ComplianceRef
 			if vars.ComplianceRef == "" {
 				vars.ComplianceRef = "local"
