@@ -35,6 +35,12 @@ semantics v4.0.0 already intended.
 - **DEFECT-5 — release-gate never firing on tags**: added `push: tags: ['v*']` to
   `.github/workflows/self-compliance.yml` so tagging `vX.Y.Z` reaches and evaluates the
   guarded `release-gate` job.
+- **DEFECT-6 — CHG-002 never passable on a real release**: `collect-all-inputs.py`
+  hardcoded `release_record: null` in `chg-release.json` while setting
+  `release_record_exists: true`, so `CHG-002` always saw an absent `gate_assessment_id`
+  / `release_summary` and blocked every tagged release. Invisible until DEFECT-5 made the
+  release-gate actually run on tags. The collector now parses the release-record YAML and
+  embeds it so `CHG-002` validates the real fields.
 
 ---
 

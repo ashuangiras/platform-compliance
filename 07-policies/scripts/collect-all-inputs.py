@@ -132,13 +132,27 @@ def main():
     }))
 
     # Release tag context (CHG-002)
+    # DEFECT-6: the release_record was hardcoded to None, so CHG-002 saw an absent
+    # gate_assessment_id / release_summary and could NEVER pass on a real release.
+    # This was invisible until DEFECT-5 made the release-gate actually run on tags.
+    # Parse the release-record YAML and embed it so CHG-002 validates the real fields.
     tag = os.environ.get("GITHUB_REF", "").replace("refs/tags/", "")
-    has_record = os.path.exists(f"09-assessments/releases/{tag}.yaml") if tag.startswith("v") else False
+    release_record = None
+    has_record = False
+    if tag.startswith("v"):
+        record_path = Path(f"09-assessments/releases/{tag}.yaml")
+        if record_path.is_file():
+            has_record = True
+            try:
+                import yaml  # PyYAML available in the CI runner
+                release_record = yaml.safe_load(record_path.read_text()) or None
+            except Exception:
+                release_record = None  # record_exists stays True → CHG-002 flags incompleteness
     (out / "chg-release.json").write_text(json.dumps({
         "repository": {"name": repo_name},
         "release_tag": tag,
         "release_record_exists": has_record,
-        "release_record": None
+        "release_record": release_record
     }))
 
     # Manifest completeness (CAT-003) — ALWAYS runs (github context).
