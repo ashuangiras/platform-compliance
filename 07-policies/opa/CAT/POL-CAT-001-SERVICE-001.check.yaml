@@ -1,0 +1,12 @@
+id: POL-CAT-001-SERVICE-001
+title: Service repository must have at least one service contract YAML in service-contracts/
+binding_ids:
+- BIND-CAT-001-SERVICE
+engine: opa
+file_path: 07-policies/opa/CAT/POL-CAT-001-SERVICE-001.rego
+pass_criteria: At least one non-empty YAML file exists under service-contracts/. Not applicable to non-service repositories.
+fail_criteria: No files exist in service-contracts/, or the directory is absent.
+evidence_type: service-contract-file
+severity: medium
+introduced_date: "2026-07-11"
+status: active
