@@ -1,0 +1,35 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-008
+title: Containers must declare memory and CPU resource limits
+domain: RUN
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Every Docker container managed by this platform must declare explicit memory
+  and CPU resource limits. Containers without limits can consume unbounded host
+  resources, causing noisy-neighbour failures and service-level degradation for
+  all co-deployed services.
+
+rationale: >
+  Resource limits enforce resource isolation at the container scheduler level.
+  Without limits, a runaway process (memory leak, infinite loop) can exhaust host
+  resources and take down all platform services simultaneously. Limits also enable
+  accurate capacity planning.
+
+enforcement_level: mandatory
+automation_status: planned
+
+guidance:
+  - Set memory limits ≥ the container's measured peak usage × 1.5 headroom.
+  - Set cpu_shares or nanocpus to cap compute consumption per service.
+  - All platform-modules Docker container resources must expose memory/cpu variables.
+  - Reference values: vault ≥ 256 MiB, authentik ≥ 512 MiB, postgresql ≥ 256 MiB.
+  - Alerts must fire when any container reaches 80% of its declared limit.
+
+tests:
+  - description: All docker_container resources in platform-modules declare memory limits
+    type: automated
+    tool: tfsec

@@ -1,0 +1,48 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: IAC-006
+title: Full platform deployment must be achievable by a single automated script
+domain: IAC
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  The complete platform — infrastructure provisioning, service configuration,
+  credential injection, OIDC wiring, and user provisioning — must be deployable
+  without manual intervention by running a single script (deploy.sh) from a clean
+  state. No out-of-band steps, web UI interactions, or manual credential copying
+  are permitted in the deployment path.
+
+rationale: >
+  Manual deployment steps introduce human error, are not reproducible, and block
+  disaster recovery. A fully automated deployment script is the foundation of
+  infrastructure-as-code maturity and is a prerequisite for CI/CD pipeline
+  integration.
+
+enforcement_level: mandatory
+automation_status: implemented
+
+guidance:
+  - deploy.sh in platform-infrastructure performs a two-phase terraform apply.
+  - Phase 1: deploys infrastructure modules (networking → storage → secrets →
+    discovery → data → identity) and waits for health gates.
+  - Phase 2: applies integrations/ module (Vault credentials, Authentik OIDC,
+    MinIO OIDC, user provisioning).
+  - The script must be idempotent: re-running it on a healthy platform produces
+    no changes and exits 0.
+  - All service credentials must flow from Terraform outputs to Vault; no
+    credentials may be hardcoded outside terraform.tfvars (which is gitignored).
+  - deploy.sh --destroy must cleanly remove all platform resources.
+  - CI gate: deploy.sh --plan must succeed in CI to validate the deployment graph.
+
+tests:
+  - description: deploy.sh exists and is executable in platform-infrastructure
+    type: automated
+    tool: file-check
+  - description: deploy.sh --plan exits 0 in CI environment
+    type: automated
+    tool: ci-workflow
+  - description: All terraform.tfvars values are documented in variables.tf with descriptions
+    type: automated
+    tool: tflint
