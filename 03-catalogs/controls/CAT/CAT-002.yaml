@@ -1,0 +1,71 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: CAT-002
+title: Service dependencies must be declared in the service contract
+domain: CAT
+type: directive
+priority: P1
+severity: low
+
+statement: >
+  The service contract for every registered service must include a complete list
+  of its runtime dependencies — other platform services, external APIs, databases,
+  or infrastructure components that the service requires to function correctly.
+  Each dependency must declare its type (required or optional) and the purpose
+  for which the service uses it.
+
+rationale: >
+  Undeclared dependencies are the primary cause of unexpected cascading failures.
+  When a dependency is not known to the platform, it cannot be included in capacity
+  planning, change impact analysis, or incident response runbooks.
+
+  Declared dependencies enable:
+  1. Deployment ordering — dependent services start only after their dependencies are healthy.
+  2. Change impact analysis — changes to a service can be traced to downstream consumers.
+  3. Incident scope reduction — when a dependency fails, its consumers are immediately known.
+  4. CAT-001 catalog completeness — a catalog without dependencies is a partial inventory.
+
+mapped_standards:
+  - source_id: SRC-CNCF-PLATFORM-MATURITY-V1
+    clause: "Level 2 — Managed: dependency metadata is maintained for all catalog services."
+    mapping_note: >
+      CNCF Platform Maturity Level 2 explicitly requires dependency metadata
+      alongside service registration. CAT-002 implements the dependency
+      declaration requirement.
+  - source_id: SRC-12-FACTOR
+    clause: "IV. Backing services: treat backing services as attached resources, explicitly
+      declaring the connection to each service."
+    mapping_note: >
+      The 12-Factor App principle IV requires that backing services (databases,
+      message queues, caches, other services) be explicitly declared and treated
+      as attached resources. CAT-002 extends this to governance documentation:
+      the service contract records the same declarations that the 12-Factor
+      methodology requires in application configuration.
+  - source_id: SRC-ITIL-ADAPTED
+    clause: "Service Level Management — identifies service dependencies and upstream
+      impacts for service continuity planning."
+    mapping_note: >
+      ITIL service continuity planning requires knowledge of service dependencies.
+      CAT-002 ensures this information is captured in the service contract at
+      deployment time, not discovered ad-hoc during an incident.
+
+automation_status: manual
+assessment_cadence: per-deployment
+failure_behavior: warn
+failure_applies_to:
+  - merge_gate
+
+scope_conditions:
+  - condition: "repository.type == 'service'"
+    rationale: >
+      Applies only to service repositories.
+
+evidence_required:
+  - type: service-contract-file
+    description: >
+      service-contracts/<service-id>.yaml with a non-empty dependencies list.
+      Human review confirms completeness of declared dependencies.
+    format: yaml
+
+lifecycle_status: active
+introduced_date: "2026-07-11"

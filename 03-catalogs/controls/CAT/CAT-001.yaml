@@ -1,0 +1,72 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: CAT-001
+title: Every service must be registered in the service catalog with a service contract
+domain: CAT
+type: directive
+priority: P1
+severity: medium
+
+statement: >
+  Every deployable service in platform-services must have a service contract file
+  (a YAML document) committed to the service's repository under service-contracts/.
+  The service contract must declare the service identity, owner, health check
+  endpoint, runtime constraints, and dependency list before the service may be
+  deployed to any environment.
+
+rationale: >
+  A service catalog is the authoritative inventory of what the platform runs. Without
+  it, operators cannot answer basic questions: what services exist, who owns them,
+  what do they depend on, and are they healthy? The service contract is the machine-
+  readable unit of catalog registration — it enables automated inventory, dependency
+  analysis, and compliance reporting.
+
+  The service contract is the governance bridge between the Terraform deployment
+  declaration (what Terraform applies) and the compliance model (what controls apply).
+  A service that is deployed but not registered is invisible to governance, monitoring,
+  and incident response.
+
+mapped_standards:
+  - source_id: SRC-CNCF-PLATFORM-MATURITY-V1
+    clause: "Level 2 — Managed: services are registered in a service catalog; discovery and
+      dependency metadata are maintained."
+    mapping_note: >
+      CNCF Platform Maturity Level 2 requires a managed service catalog where
+      services are discoverable and their dependencies are documented. CAT-001
+      implements the registration requirement.
+  - source_id: SRC-ITIL-ADAPTED
+    clause: "Service Catalog Management — maintains an accurate list of services available
+      to customers and documents the details and current status of each service."
+    mapping_note: >
+      ITIL Service Catalog Management requires that every service be documented
+      with its description, owner, and current status. CAT-001 enforces this
+      requirement at service deployment time.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "OPS 01 — How do you determine what your priorities are? Best practice: understand
+      your workloads and their desired business outcomes."
+    mapping_note: >
+      AWS WAF operational excellence practices require that workloads (services)
+      are documented with their purpose, owner, and operational requirements.
+      The service contract is the platform's implementation of this documentation.
+
+automation_status: partially-automated
+assessment_cadence: per-deployment
+failure_behavior: warn
+failure_applies_to:
+  - merge_gate
+
+scope_conditions:
+  - condition: "repository.type == 'service'"
+    rationale: >
+      Applies only to service repositories. Infrastructure repositories
+      (terraform-module, terraform-root) are not services.
+
+evidence_required:
+  - type: service-contract-file
+    description: >
+      service-contracts/<service-id>.yaml present in the repository with
+      required fields: service.id, service.owner, health.endpoint, dependencies.
+    format: yaml
+
+lifecycle_status: active
+introduced_date: "2026-07-11"
