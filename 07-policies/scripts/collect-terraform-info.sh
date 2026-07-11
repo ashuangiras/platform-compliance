@@ -179,6 +179,19 @@ for call in module_calls:
         })
 
 # ── SEC-013: TLS disabled / insecure provider configs ─────────────────────────
+# Also detect the declared environment so the policy can scope correctly
+declared_environment = ""
+try:
+    tfvars_file = repo_root / 'terraform.tfvars'
+    if tfvars_file.exists():
+        for line in tfvars_file.read_text().splitlines():
+            m = re.match(r'^\s*environment\s*=\s*"([^"]+)"', line)
+            if m:
+                declared_environment = m.group(1)
+                break
+except Exception:
+    pass
+
 tls_disabled_configs = []
 insecure_provider_pattern = re.compile(
     r'(?:tls_disable\s*=\s*true|skip_tls_verify\s*=\s*true|insecure\s*=\s*true)',
@@ -277,6 +290,7 @@ output = {
     'sensitive_files_in_git': sensitive_files_in_git,
     'modules_with_mutable_refs': modules_with_mutable_refs,
     'tls_disabled_configs': tls_disabled_configs,
+    'declared_environment': declared_environment,
     'has_vault_audit_device': has_vault_audit_device,
     'containers_with_all_interfaces': containers_with_all_interfaces,
     'has_grafana_oidc': has_grafana_oidc,

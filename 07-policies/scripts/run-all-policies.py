@@ -106,6 +106,17 @@ POLICY_MAP = {
     # ── Audit gap fixes ──────────────────────────────────────────────────────
     "SRC-004":   ("SRC/POL-SRC-004-GITHUB-001.rego",   "src-branch-protection.json",  "data.platform.src.src_004_github.result",   ["github"]),
     "SUP-003":   ("SUP/POL-SUP-003-GITHUB-001.rego",   "sec-security-settings.json",  "data.platform.sup.sup_003_github.result",   ["github"]),
+    # ── Audit-driven hardening controls (ARCH-AUDIT-2026-07-11) ──────────────
+    "IAC-003b":  ("IAC/POL-IAC-003-TERRAFORM-002.rego",  "iac-terraform.json",  "data.platform.iac.iac_003b_terraform.result",   ["terraform"]),
+    "IAC-006":   ("IAC/POL-IAC-006-TERRAFORM-001.rego",  "iac-terraform.json",  "data.platform.iac.iac_006_terraform.result",    ["terraform"]),
+    "IAC-007":   ("IAC/POL-IAC-007-TERRAFORM-001.rego",  "iac-terraform.json",  "data.platform.iac.iac_007_terraform.result",    ["terraform"]),
+    "RUN-008":   ("RUN/POL-RUN-008-TERRAFORM-001.rego",  "iac-terraform.json",  "data.platform.run.run_008_terraform.result",    ["terraform"]),
+    "RUN-009":   ("RUN/POL-RUN-009-TERRAFORM-001.rego",  "iac-terraform.json",  "data.platform.run.run_009_terraform.result",    ["terraform"]),
+    "RUN-009b":  ("RUN/POL-RUN-009-TERRAFORM-002.rego",  "iac-terraform.json",  "data.platform.run.run_009b_terraform.result",   ["terraform"]),
+    "SEC-012":   ("SEC/POL-SEC-012-TERRAFORM-001.rego",  "iac-terraform.json",  "data.platform.sec.sec_012_terraform.result",    ["terraform"]),
+    "SEC-013":   ("SEC/POL-SEC-013-TERRAFORM-001.rego",  "iac-terraform.json",  "data.platform.sec.sec_013_terraform.result",    ["terraform"]),
+    "SEC-014":   ("SEC/POL-SEC-014-TERRAFORM-001.rego",  "iac-terraform.json",  "data.platform.sec.sec_014_terraform.result",    ["terraform"]),
+    "NET-002":   ("NET/POL-NET-002-TERRAFORM-001.rego",  "iac-terraform.json",  "data.platform.net.net_002_terraform.result",    ["terraform"]),
 }
 
 

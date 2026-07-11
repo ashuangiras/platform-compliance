@@ -88,6 +88,31 @@ categories:
       # Documentation
       - id: DOC-001
         # no scope_condition — all repositories must have a README
+      # ── Audit-driven hardening controls (ARCH-AUDIT-2026-07-11) ─────────────
+      # Security: secrets, TLS, Vault audit
+      - id: SEC-012
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SEC-013
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: SEC-014
+        scope_condition: "repository.type == 'terraform-root'"
+      # Network: internal service port binding
+      - id: NET-002
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      # IAC: module ref pinning (extends IAC-003), deploy automation, Vault creds
+      - id: IAC-003b
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: IAC-006
+        scope_condition: "repository.type == 'terraform-root'"
+      - id: IAC-007
+        scope_condition: "repository.type == 'terraform-root'"
+      # Runtime: resource limits, Authentik IDP (both Vault+Grafana checks)
+      - id: RUN-008
+        scope_condition: "repository.type in ['terraform-module', 'terraform-root']"
+      - id: RUN-009
+        scope_condition: "repository.type == 'terraform-root'"
+      - id: RUN-009b
+        scope_condition: "repository.type == 'terraform-root'"
 
   automated_required:
     description: >
