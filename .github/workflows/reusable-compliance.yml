@@ -232,6 +232,23 @@ jobs:
           fi
           echo "Policy bundle ready: $(find /tmp/platform-compliance-policies -name '*.rego' | wc -l) rego files"
 
+          # Extract profiles so run-all-policies.py can determine BLOCK-level controls
+          # for the active gate (SFR-001 / SF-4: job 4 must agree with job 7).
+          mkdir -p /tmp/platform-compliance-profiles
+          if [ -d /tmp/pc-extract ] && ls /tmp/pc-extract/*/04-profiles/ >/dev/null 2>&1; then
+            cp -r /tmp/pc-extract/*/04-profiles/. /tmp/platform-compliance-profiles/
+          else
+            # Release-asset path didn't include profiles — fetch the archive for them.
+            mkdir -p /tmp/pc-prof-extract
+            PROF_TAG_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/tags/${REF}.tar.gz"
+            PROF_BRANCH_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/heads/${REF}.tar.gz"
+            if curl -sSfL "${PROF_TAG_URL}" -o /tmp/prof.tar.gz 2>/dev/null || curl -sSfL "${PROF_BRANCH_URL}" -o /tmp/prof.tar.gz 2>/dev/null; then
+              tar -xz -f /tmp/prof.tar.gz -C /tmp/pc-prof-extract
+              cp -r /tmp/pc-prof-extract/*/04-profiles/. /tmp/platform-compliance-profiles/ 2>/dev/null || true
+            fi
+          fi
+          echo "Profiles ready: $(ls /tmp/platform-compliance-profiles/*.yaml 2>/dev/null | wc -l) files"
+
           # Extract collector scripts so they are available at a stable absolute
           # path when this workflow is called from a downstream repository whose
           # working directory does not contain 07-policies/scripts/.
@@ -290,7 +307,10 @@ jobs:
             --inputs /tmp/inputs \
             --results /tmp/results \
             --contexts "$CONTEXTS" \
-            --repo-type "$REPO_TYPE"
+            --repo-type "$REPO_TYPE" \
+            --profiles-dir /tmp/platform-compliance-profiles \
+            --profile-id "${{ inputs.profile-id }}" \
+            --gate "${{ inputs.gate }}"
 
           echo "results-path=/tmp/results" >> "$GITHUB_OUTPUT"
 
@@ -456,18 +476,33 @@ jobs:
           # Load BLOCK controls for the active gate from the profile YAML.
           # Any control NOT listed as enforcement:block in the gate is treated
           # as warn-level and will not fail the overall gate result.
+          # The `inherits` chain is expanded so a child profile also enforces its
+          # parents' gate controls (must match load_block_controls in job 4).
           block_controls = set()
-          profile_path = os.path.join(profiles_dir, f"{profile_id}.yaml")
-          if os.path.exists(profile_path):
-            with open(profile_path) as pf:
-              prof = yaml.safe_load(pf)
-            gate_def = (prof or {}).get("gates", {}).get(active_gate, {})
-            for ctrl in gate_def.get("required_controls", []):
-              if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
-                block_controls.add(ctrl.get("id") or ctrl.get("control_id", ""))
-            print(f"Profile {profile_id} gate {active_gate}: {len(block_controls)} BLOCK controls")
+
+          def _load_profile(pid):
+            p = os.path.join(profiles_dir, f"{pid}.yaml")
+            if not os.path.exists(p):
+              return None
+            with open(p) as pf:
+              return yaml.safe_load(pf) or {}
+
+          if os.path.exists(os.path.join(profiles_dir, f"{profile_id}.yaml")):
+            seen = set()
+            pid = profile_id
+            while pid and pid not in seen:
+              seen.add(pid)
+              prof = _load_profile(pid)
+              if prof is None:
+                break
+              gate_def = prof.get("gates", {}).get(active_gate, {})
+              for ctrl in gate_def.get("required_controls", []):
+                if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
+                  block_controls.add(ctrl.get("id") or ctrl.get("control_id", ""))
+              pid = prof.get("inherits")
+            print(f"Profile {profile_id} (+inherited) gate {active_gate}: {len(block_controls)} BLOCK controls")
           else:
-            print(f"::warning::Profile {profile_path} not found — all failures treated as blocking")
+            print(f"::warning::Profile {profile_id} not found — all failures treated as blocking")
 
           records = []
           for f in glob.glob(os.path.join(evidence_dir, "*.yaml")):

@@ -1,0 +1,12 @@
+id: POL-CAT-003-MANIFEST-001
+title: Repository manifest must declare a technology context for every detected surface
+binding_ids:
+- BIND-CAT-003-GITHUB
+engine: opa
+file_path: 07-policies/opa/CAT/POL-CAT-003-MANIFEST-001.rego
+pass_criteria: Every detected governed surface has a matching declared technology_context. If an agent surface is present, 'agent' is in technology_contexts.
+fail_criteria: A governed surface is present on disk (e.g. .github/agents/, .vscode/mcp.json, .github/hooks/) but the manifest does not declare the matching technology_context.
+evidence_type: manifest-completeness-report
+severity: high
+introduced_date: "2026-07-11"
+status: active

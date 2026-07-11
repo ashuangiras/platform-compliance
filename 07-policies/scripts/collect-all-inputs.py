@@ -103,6 +103,57 @@ def main():
         "release_record": None
     }))
 
+    # Manifest completeness (CAT-003) — ALWAYS runs (github context).
+    # Detects governed surfaces on disk and compares them against the
+    # technology_contexts declared in the repo's .compliance-manifest.yaml. Must
+    # NOT be gated on the surface it inspects, otherwise an undeclared surface
+    # would never be checked (SF-3 silent failure).
+    #
+    # Declared contexts are read from the MANIFEST being validated — not from the
+    # --contexts workflow input, which may be stale or manually include a context
+    # the manifest omits (that mismatch is exactly what CAT-003 must catch).
+    declared_contexts = sorted(contexts)  # fallback if manifest cannot be read
+    manifest_file = Path(".compliance-manifest.yaml")
+    if manifest_file.exists():
+        try:
+            import yaml  # PyYAML available in the CI runner
+            _m = yaml.safe_load(manifest_file.read_text()) or {}
+            _tc = _m.get("technology_contexts")
+            if isinstance(_tc, list):
+                declared_contexts = sorted(str(c) for c in _tc)
+        except Exception:
+            pass  # keep fallback
+
+    # Agent surface detection mirrors collect-agent-info.py's has_agent_config so
+    # CAT-003 recognises every surface the AGT collector governs (SF-3 completeness).
+    agent_surface_paths = []
+
+    def _add_file(rel):
+        if os.path.isfile(rel):
+            agent_surface_paths.append(rel)
+
+    def _add_dir_with_glob(dir_rel, pattern):
+        d = Path(dir_rel)
+        if d.is_dir() and any(d.glob(pattern)):
+            agent_surface_paths.append(dir_rel + "/")
+
+    _add_file(".github/copilot-instructions.md")
+    _add_file("AGENTS.md")
+    _add_file(".github/AGENTS.md")
+    _add_file(".vscode/mcp.json")
+    _add_dir_with_glob(".github/agents", "*.agent.md")
+    _add_dir_with_glob(".github/instructions", "*.instructions.md")
+    _add_dir_with_glob(".github/prompts", "*.prompt.md")
+    if Path(".github/hooks").is_dir() and any(Path(".github/hooks").iterdir()):
+        agent_surface_paths.append(".github/hooks/")
+
+    (out / "cat-manifest.json").write_text(json.dumps({
+        "repository": {"name": repo_name, "type": args.repo_type},
+        "declared_contexts": declared_contexts,
+        "detected_surfaces": {"agent": len(agent_surface_paths) > 0},
+        "surface_evidence": {"agent": agent_surface_paths},
+    }))
+
     # ── Terraform context ────────────────────────────────────────────────────
     if "terraform" in contexts:
         result = subprocess.run(

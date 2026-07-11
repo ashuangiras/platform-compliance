@@ -1,0 +1,13 @@
+# Fixture: CAT-003 — NOT APPLICABLE
+# Scenario: Repository has no governed surface requiring a declared context.
+# Expected policy result: { "result": "not_applicable" }
+repository:
+  name: some-service
+  type: service
+declared_contexts:
+  - github
+  - docker
+detected_surfaces:
+  agent: false
+surface_evidence:
+  agent: []
