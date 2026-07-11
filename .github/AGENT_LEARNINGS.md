@@ -10,6 +10,34 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-11 — release: v4.0.2 clean re-cut — supersede a stale tag, never force-move it
+
+**Change Record:** CHG-20260711-068
+
+- **A published tag whose release-gate fails is superseded by a fresh tag, not force-moved.** The
+  v4.0.1 tag was cut at `25a151a`, *before* the DEFECT-6 fix landed, so its tag-triggered
+  `release-gate` fails permanently — `CHG-002` can never pass against that commit's collector. The
+  maintainer's decision was explicit: **preserve release immutability**. Lesson for
+  **release-manager**: a broken published tag has exactly two lawful remedies — fix-forward under a
+  *new* tag on the fixed commit (chosen here), or, only if immutability is not yet promised, a
+  documented re-point. Force-moving or deleting a published tag is off the table once consumers may
+  have pinned it; supersede-and-document is the safe default. Encode the supersession in the new
+  release record's `release_summary` and chain `change_record_ids` back to the superseded cycle so
+  provenance is auditable.
+- **The completion criterion for a release is a GREEN tag-triggered release-gate — nothing less.**
+  v4.0.1 looked "done" (merged, CHANGELOG'd, tagged) yet its release-gate was red. Lesson for
+  **release-manager**: cutting the tag is the start of verification, not the end. After pushing
+  `vX.Y.Z`, always watch the tag-triggered `release-gate` (and the release-bundle workflow) run to
+  completion and confirm green before declaring the release closed. A tag without a green
+  release-gate is an open incident, not a release.
+- **Ship the fix forward; don't retro-patch the history.** Rather than rewriting what v4.0.1 was,
+  v4.0.2 carries the same DEFECT-6 fix commit (`d272770`) under a clean tag and explicitly records
+  v4.0.1 as superseded in both the release record and the CHANGELOG. Lesson for the team: immutable
+  artifacts + forward-only corrections keep the audit trail honest and let downstreams reason about
+  exactly which tag is safe to pin.
+
+---
+
 ## 2026-07-11 — fix: DEFECT-6 — the release-gate caught its own collector on first run
 
 **Change Record:** CHG-20260711-067
