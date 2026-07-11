@@ -1,0 +1,34 @@
+$schema: "../../schemas/release-record.schema.json"
+
+# Release record for platform-compliance v3.4.0
+# P0 silent-failure remediation — restores actual policy enforcement.
+
+id: "v3.4.0"
+schema_version: "1.0.0"
+
+release_date: "2026-07-11"
+
+change_record_ids:
+  - CHG-20260711-066   # P0 silent-failure remediation (SF-2, SF-3, SF-4)
+
+gate_assessment_id: "ASSESS-PLATFORM-COMPLIANCE-20260711-066"
+
+release_summary: >
+  P0 silent-failure remediation from the systems architecture audit (2026-07-11).
+  Restores actual policy enforcement across three critical findings:
+
+  - SF-4: aligns the OPA policy runner (job 4) with the gate evaluator (job 7) so
+    both use identical BLOCK-level semantics — CI fails only on block-level control
+    failures; warn-level failures surface as warnings. Gate BLOCK-control resolution
+    now expands the profile `inherits` chain in both jobs.
+  - SF-2: adds all 15 AGT agent-governance controls to the merge_gate of the
+    downstream profiles (PROF-TERRAFORM-ROOT/MODULE/SERVICE) and PROF-PLATFORM-V1,
+    scoped to the agent technology context. Agent governance is now enforced.
+  - SF-3: introduces CAT-003 (manifest completeness) — runs unconditionally and
+    fails when a repository has an agent surface on disk but omits the agent
+    technology context. Detects every surface the AGT collector recognizes and reads
+    declared contexts from the manifest under validation. Adds BIND-CAT-003-GITHUB.
+
+breaking_changes: false
+
+released_by: platform-team
