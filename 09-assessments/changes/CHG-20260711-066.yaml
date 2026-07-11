@@ -36,7 +36,7 @@ affected_object_ids:
 
 related_adr_id: "ADR-0017"
 
-breaking: false
+breaking: true
 
 author: "platform-team"
 date: "2026-07-11"
