@@ -41,16 +41,19 @@ phases:
         note: "Created with forge new repo v3.3.3; infra-router agent team; PLATFORM_ADMIN_TOKEN + required signatures + secret scanning configured"
       - id: PC-0138
         title: "Configure Terraform state backend for platform-infrastructure"
-        status: not-started
+        status: in-progress
         depends_on: [PC-0133, PC-0137]
+        note: "PR #2 open — backend s3 {} with backend.hcl.example; terraform-plan.yml CI workflow"
       - id: PC-0139
         title: "First terraform plan + apply with deployment gate passing"
-        status: not-started
+        status: in-progress
         depends_on: [PC-0138]
+        note: "Blocked on runtime: requires live Docker + MinIO on host; CI validates + validates"
       - id: PC-0140
         title: "Create platform-services repository with PROF-SERVICE-V1"
-        status: not-started
+        status: done
         depends_on: [PC-0127, PC-0131]
+        note: "Created with forge new repo v3.3.4; service-router agent team; PLATFORM_ADMIN_TOKEN + required signatures + secret scanning configured"
       - id: PC-0141
         title: "Deploy first service with OBS-001 health check and service contract"
         status: not-started
