@@ -1,0 +1,10 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-IAC-003-TERRAFORM-REFS
+control_id: IAC-003
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  All git:: module sources must use a pinned semver tag ref (?ref=vX.Y.Z). Mutable refs (main, master, HEAD) are prohibited.

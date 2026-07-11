@@ -1,0 +1,40 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: RUN-009
+title: All platform services must use Authentik as their identity provider
+domain: RUN
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Every platform service that exposes a user-facing interface or API must
+  delegate authentication and authorisation to the platform Authentik instance
+  via OIDC/OAuth2. Local/built-in user databases must not be the primary
+  authentication mechanism in production environments.
+
+rationale: >
+  Centralised identity management enables single sign-on, consistent access
+  control, audit trails, and credential rotation in one place. Siloed per-service
+  credentials create operational debt and increase the blast radius of a
+  credential compromise.
+
+enforcement_level: mandatory
+automation_status: planned
+
+guidance:
+  - Vault: configure JWT/OIDC auth backend pointing at Authentik (done by integrations/).
+  - MinIO: configure OIDC identity provider via mc admin idp openid (done by integrations/).
+  - Grafana: configure generic_oauth pointing at Authentik application.
+  - New services: must declare an Authentik OIDC application in integrations/ before
+    exposing a user-facing endpoint.
+  - Local admin accounts (bootstrap_admin) are permitted only as break-glass accounts
+    with credentials stored in Vault and access audited.
+
+tests:
+  - description: Vault JWT auth backend targeting Authentik exists in Terraform state
+    type: automated
+    tool: terraform-state-check
+  - description: MinIO OIDC idp openid list shows authentik provider
+    type: automated
+    tool: mc-cli

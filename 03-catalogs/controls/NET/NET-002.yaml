@@ -1,0 +1,38 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: NET-002
+title: Internal services must not bind to all network interfaces on the host
+domain: NET
+type: preventive
+priority: P1
+severity: high
+
+statement: >
+  Docker containers providing internal-only services (PostgreSQL, Redis, and any
+  other service not intended for direct host or external access) must not publish
+  ports bound to 0.0.0.0 (all interfaces). Port bindings for internal services must
+  either be absent entirely (container-network access only) or explicitly bound to
+  127.0.0.1 (loopback only).
+
+rationale: >
+  Binding a database or cache to 0.0.0.0 makes it reachable from any network
+  interface on the host. On a cloud VM, VPS, or any host with a public IP, this
+  exposes the service to the internet. PostgreSQL running without host-based
+  authentication and Redis without requirepass are trivially compromisable.
+  Docker's default port binding is 0.0.0.0; callers must explicitly use 127.0.0.1.
+
+enforcement_level: mandatory
+automation_status: implemented
+
+guidance:
+  - For internal services: remove host port binding entirely if container-network
+    access is sufficient (preferred).
+  - If host access is needed for tooling (e.g., psql, redis-cli): bind to 127.0.0.1
+    by adding ip = "127.0.0.1" to the ports block.
+  - The POL-NET-002 OPA policy checks docker_container resources for the 'postgresql'
+    and 'redis' container names with external port bindings missing 127.0.0.1.
+
+tests:
+  - description: No postgresql or redis docker_container has external port without ip=127.0.0.1
+    type: automated
+    tool: opa/collect-terraform-info.sh

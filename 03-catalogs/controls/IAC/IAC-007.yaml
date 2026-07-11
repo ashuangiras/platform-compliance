@@ -1,0 +1,44 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: IAC-007
+title: Service credentials must be injected via Vault; no hardcoded secrets in container env
+domain: IAC
+type: preventive
+priority: P1
+severity: critical
+
+statement: >
+  Production service credentials (database passwords, API keys, signing keys) must
+  be stored in Vault KV v2 and injected into services at runtime. Credentials must
+  not be hardcoded in Docker environment variables, image layers, or any file
+  committed to version control.
+
+rationale: >
+  Container environment variables are visible in docker inspect output, container
+  logs, and CI/CD pipeline artifacts. Hardcoded credentials become stale, cannot
+  be rotated without redeployment, and appear in git history. Vault provides
+  centralised storage, access control, audit logging, and rotation for all secrets.
+
+enforcement_level: mandatory
+automation_status: partial
+
+guidance:
+  - staging: credentials flow Terraform tfvars → Vault KV (via integrations/).
+    This is acceptable for staging because tfvars is gitignored and the platform
+    network is not internet-exposed.
+  - production: services must use Vault Agent or vault-agent-injector to retrieve
+    credentials at startup. No production credentials in tfvars.
+  - Vault paths follow the schema: secret/platform/<service>/<credential-type>.
+  - integrations/ writes all known credentials to Vault on each apply.
+  - SEC-001 secret-scan CI gate prevents credentials from being committed to git.
+
+tests:
+  - description: No plaintext passwords in any committed .tf file (SEC-001)
+    type: automated
+    tool: semgrep
+  - description: Vault KV secret/platform/postgresql/superuser exists after deploy
+    type: automated
+    tool: vault-cli
+  - description: Vault KV secret/platform/redis/admin exists after deploy
+    type: automated
+    tool: vault-cli

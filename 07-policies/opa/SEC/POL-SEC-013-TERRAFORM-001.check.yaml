@@ -1,0 +1,12 @@
+id: POL-SEC-013-TERRAFORM-001
+title: "No tls_disable, skip_tls_verify, or insecure=true in Terraform files"
+binding_ids: [BIND-SEC-013-TERRAFORM]
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-013-TERRAFORM-001.rego"
+input_file: iac-terraform.json
+pass_criteria: "No TLS-disabling patterns in any .tf file."
+fail_criteria: "One or more .tf files contain tls_disable=true, skip_tls_verify=true, or insecure=true."
+evidence_type: terraform-security-config
+severity: high
+introduced_date: "2026-07-11"
+status: active

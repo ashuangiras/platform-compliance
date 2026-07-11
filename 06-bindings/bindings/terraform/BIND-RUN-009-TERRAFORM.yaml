@@ -1,0 +1,19 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-RUN-009-TERRAFORM
+control_id: RUN-009
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Terraform-root repositories that deploy platform infrastructure must:
+
+  1. Declare a vault_jwt_auth_backend resource with an oidc_discovery_url
+     pointing at the Authentik OIDC discovery endpoint for the Vault application.
+     This configures Vault to accept OIDC tokens from Authentik.
+
+  2. Include an integrations/ Terraform component directory containing resources
+     that wire Authentik OIDC applications to all platform services (Vault, MinIO).
+
+  Enforcement is via POL-RUN-009-TERRAFORM-001 which checks for both signals.

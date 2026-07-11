@@ -1,0 +1,12 @@
+id: POL-SEC-012-TERRAFORM-001
+title: "No sensitive files (tfvars, .env, .key) tracked in git"
+binding_ids: [BIND-SEC-012-TERRAFORM]
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-012-TERRAFORM-001.rego"
+input_file: iac-terraform.json
+pass_criteria: "git ls-files contains no *.tfvars, .env, .pem, .key, or vault-key files."
+fail_criteria: "One or more sensitive files are committed to the repository. Credentials are at risk."
+evidence_type: git-tracked-files
+severity: critical
+introduced_date: "2026-07-11"
+status: active

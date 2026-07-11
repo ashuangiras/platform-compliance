@@ -1,0 +1,12 @@
+id: POL-SEC-014-TERRAFORM-001
+title: "Vault audit device must be declared in integrations/"
+binding_ids: [BIND-SEC-014-TERRAFORM]
+engine: opa
+file_path: "07-policies/opa/SEC/POL-SEC-014-TERRAFORM-001.rego"
+input_file: iac-terraform.json
+pass_criteria: "vault_audit resource present in the repository."
+fail_criteria: "integrations/ module exists but no vault_audit resource — audit logging is absent."
+evidence_type: terraform-resource-check
+severity: high
+introduced_date: "2026-07-11"
+status: active

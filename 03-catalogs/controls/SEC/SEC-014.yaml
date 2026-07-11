@@ -1,0 +1,38 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: SEC-014
+title: Vault audit device must be enabled in all Vault deployments
+domain: SEC
+type: detective
+priority: P1
+severity: high
+
+statement: >
+  Every Vault deployment managed by platform-infrastructure must declare at least one
+  audit device via the vault_audit Terraform resource. The audit device must write to
+  a durable sink (file or syslog). Without an audit device, there is no record of
+  which service accessed which secret, at what time, or under what token.
+
+rationale: >
+  Vault audit logs are the primary forensic tool for detecting credential misuse,
+  lateral movement, and policy violations. Vault ships with all audit devices disabled
+  by default. Enabling file audit costs nothing and provides immutable evidence for
+  incident response and compliance.
+
+enforcement_level: mandatory
+automation_status: implemented
+
+guidance:
+  - Add vault_audit resource to integrations/vault-oidc-auth.tf (or vault-audit.tf):
+      resource "vault_audit" "file" {
+        type    = "file"
+        path    = "file/"
+        options = { file_path = "/vault/logs/audit.log" }
+      }
+  - Mount a host-path volume for /vault/logs in the Vault container module.
+  - Forward audit logs to Grafana Loki or an external SIEM.
+
+tests:
+  - description: vault_audit resource declared in integrations/ component
+    type: automated
+    tool: opa/collect-terraform-info.sh

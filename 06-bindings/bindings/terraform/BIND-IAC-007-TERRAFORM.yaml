@@ -1,0 +1,29 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-IAC-007-TERRAFORM
+control_id: IAC-007
+technology_context: terraform
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Terraform-root repositories that deploy platform infrastructure must contain
+  an integrations/ component directory with Terraform files that:
+
+  1. Enable Vault KV v2 at the "secret" mount path.
+  2. Write all service credentials to Vault using vault_kv_secret_v2 resources
+     following the path schema: secret/platform/<service>/<credential-type>.
+     Required paths:
+       - secret/platform/postgresql/superuser
+       - secret/platform/postgresql/databases/<name> (for each DB)
+       - secret/platform/redis/admin
+       - secret/platform/redis/users/<name> (for each ACL user)
+       - secret/platform/authentik/admin
+       - secret/platform/authentik/secret-key
+       - secret/platform/oidc/<service> (for each OIDC application)
+
+  No credentials may be committed to version control. The tfvars file
+  (gitignored) is the only permitted location for staging credential values.
+
+  Enforcement is via POL-IAC-007-TERRAFORM-001 which checks for integrations/ presence.
+  The absence of hardcoded secrets is separately enforced by SEC-001 (Semgrep scan).
