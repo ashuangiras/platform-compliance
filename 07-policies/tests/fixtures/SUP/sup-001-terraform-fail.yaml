@@ -1,12 +1,21 @@
 
 # Fixture: SUP-001 (Terraform) — FAIL
-# Scenario: Unbounded constraints — required_version '>= 1.0', aws provider '>= 5.0',
-# and the null provider carries an empty version string. Each is a pinning violation.
-# Policy-level expectation: { "result": "fail" }
+# Scenario: Multiple genuine pinning violations —
+#   - git module 'networking' pinned to a MUTABLE branch ref ('?ref=main'), reported
+#     by the collector in modules_with_mutable_refs (name/source/ref: main),
+#   - required_version '>= 1.0' (unbounded),
+#   - aws provider '>= 5.0' (unbounded), null provider '' (absent).
+# Each is a pinning violation. Policy-level expectation: { "result": "fail" }
 # Engine note (DEFECT-2 / v4.0.1): a SUP-001 terraform FAIL is written to SUP-001.json
 # (worst-result-wins) and classified [BLOCK] when the active profile lists SUP-001
 # (PROF-TERRAFORM-*). Filename/gate classification is verified at engine level, not here.
-module_calls: []
+module_calls:
+- name: networking
+  source: git::https://github.com/example/platform-modules.git//networking?ref=main
+modules_with_mutable_refs:
+- name: networking
+  source: git::https://github.com/example/platform-modules.git//networking?ref=main
+  ref: main
 repository:
   name: unpinned-module
 required_providers:

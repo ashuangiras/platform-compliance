@@ -1,7 +1,12 @@
 
 # Fixture: SUP-001 (Terraform) — PASS
-# Scenario: All Terraform dependencies are pinned — required_version '~> 1.5',
-# providers pinned with '~> 5.1' / '= 3.6.0', and the vpc module pinned '~> 5.1'.
+# Scenario: All Terraform dependencies are correctly pinned across every source type:
+#   - registry module 'vpc' bounded with '~> 5.1',
+#   - git module 'networking' pinned to an immutable tag ('?ref=v1.4.0', no version field),
+#   - local module 'labels' ('./modules/labels', in-repo → EXEMPT, no version field),
+#   - providers pinned '~> 5.1' / '= 3.6.0', required_version '~> 1.5'.
+# The collector reports no mutable git refs (modules_with_mutable_refs: []), so the
+# immutable git tag and the local module produce no violation.
 # Policy-level expectation: { "result": "pass" }
 # Engine note (DEFECT-2 / v4.0.1): control_id_of() strips the '-TF' context suffix,
 # so this policy's result is recorded under catalog id SUP-001 (SUP-001.json).
@@ -9,6 +14,11 @@ module_calls:
 - name: vpc
   source: terraform-aws-modules/vpc/aws
   version: ~> 5.1
+- name: networking
+  source: git::https://github.com/example/platform-modules.git//networking?ref=v1.4.0
+- name: labels
+  source: ./modules/labels
+modules_with_mutable_refs: []
 repository:
   name: pinned-module
 required_providers:
