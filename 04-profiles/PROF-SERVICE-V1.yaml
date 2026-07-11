@@ -120,6 +120,13 @@ gates:
       enforcement: block
     - id: RUN-007
       enforcement: block
+      # ── Audit-driven hardening controls (ARCH-AUDIT-2026-07-11) ─────────────
+    - id: SEC-012
+      enforcement: block
+    - id: IAC-003b
+      enforcement: block
+    - id: RUN-009b
+      enforcement: block
   release_gate:
     description: 'Evaluated before a service version tag is published. All mandatory
       controls must pass, plus health endpoint, resource limits, logging attestation,
