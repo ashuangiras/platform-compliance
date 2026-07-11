@@ -12,10 +12,18 @@ on:
     branches: [main]
   push:
     branches: [main]
+    # Release tags (v*) must reach the release-gate job below. Without this
+    # trigger the tag push never starts this workflow, so release-gate's
+    # `if: startsWith(github.ref, 'refs/tags/v')` guard can never evaluate.
+    tags: ['v*']
 
 jobs:
   merge-gate:
     name: "Compliance: Merge Gate"
+    # Merge gate runs for PRs and pushes to main only. A tag push (release-gate's
+    # trigger) must NOT run the merge gate — key off the PR event / main ref so a
+    # tag ref (refs/tags/v*) is explicitly excluded.
+    if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/main' }}
     uses: ./.github/workflows/reusable-compliance.yml
     secrets: inherit
     permissions:

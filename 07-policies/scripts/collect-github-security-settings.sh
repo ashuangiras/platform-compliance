@@ -5,7 +5,7 @@
 # Output feeds OPA policy checks: SEC-001, SEC-002, SEC-003, SUP-003.
 #
 # Usage: ./collect-github-security-settings.sh <owner/repo>
-# Output: YAML to stdout
+# Output: JSON to stdout
 
 set -euo pipefail
 
@@ -15,16 +15,24 @@ if [ -z "$REPO" ]; then
   exit 1
 fi
 
-REPO_NAME=$(echo "$REPO" | cut -d'/' -f2)
+REPO_NAME="${REPO##*/}"
 
-# Repo security settings (secret scanning status)
-repo_json=$(gh api "repos/${REPO}" 2>/dev/null || echo "{}")
+# Pass all gh JSON blobs to python via FILES, never by interpolating them into the
+# script body. The previous version inlined blobs into a triple-quoted Python
+# string and ran `.replace("'", '"')` over them, which corrupted any apostrophes in
+# text fields and produced invalid Python source on python 3.14 (DEFECT-3). A
+# private temp dir keeps the blobs isolated and cleaned up on exit.
+workdir="$(mktemp -d /tmp/sec-settings-XXXXXX)"
+trap 'rm -rf "$workdir"' EXIT
 
-# Open secret scanning alerts
-alerts_json=$(gh api "repos/${REPO}/secret-scanning/alerts" 2>/dev/null || echo "[]")
+# Repo security settings (secret scanning status) — default {} on any error.
+gh api "repos/${REPO}" > "$workdir/repo.json" 2>/dev/null || echo '{}' > "$workdir/repo.json"
 
-# Dependabot alerts (for SEC-003 SLA check)
-dependabot_json=$(gh api "repos/${REPO}/dependabot/alerts?state=open&per_page=100" 2>/dev/null || echo "[]")
+# Open secret scanning alerts — default [] (404 when GHAS/secret-scanning disabled).
+gh api "repos/${REPO}/secret-scanning/alerts?state=open&per_page=100" > "$workdir/alerts.json" 2>/dev/null || echo '[]' > "$workdir/alerts.json"
+
+# Open Dependabot alerts (for SEC-003 SLA check) — default [].
+gh api "repos/${REPO}/dependabot/alerts?state=open&per_page=100" > "$workdir/dependabot.json" 2>/dev/null || echo '[]' > "$workdir/dependabot.json"
 
 # Vulnerability alerts enabled — HTTP 204 means enabled, 404 means not enabled (SUP-003)
 vulnerability_alerts_enabled="false"
@@ -32,55 +40,83 @@ if gh api "repos/${REPO}/vulnerability-alerts" >/dev/null 2>&1; then
     vulnerability_alerts_enabled="true"
 fi
 
-# Automated security fixes (SUP-003)
-automated_security_fixes_json=$(gh api "repos/${REPO}/automated-security-fixes" 2>/dev/null || echo '{"enabled":false}')
+# Automated security fixes (SUP-003) — default {"enabled":false}.
+gh api "repos/${REPO}/automated-security-fixes" > "$workdir/autofix.json" 2>/dev/null || echo '{"enabled":false}' > "$workdir/autofix.json"
 
-# Gitleaks scan (requires gitleaks binary in PATH)
-gitleaks_findings="[]"
+# Gitleaks scan (optional — absent tool ⇒ empty findings, never hard-fail).
+echo '[]' > "$workdir/gitleaks.json"
+scan_tool_version="unavailable"
 if command -v gitleaks >/dev/null 2>&1; then
-  tmpfile=$(mktemp /tmp/gitleaks-XXXXXX.json)
-  if gitleaks detect --source . --report-format json --report-path "$tmpfile" --exit-code 0 2>/dev/null; then
-    gitleaks_findings=$(cat "$tmpfile" 2>/dev/null || echo "[]")
-  fi
-  rm -f "$tmpfile"
+  scan_tool_version="system"
+  gitleaks detect --source . --report-format json --report-path "$workdir/gitleaks.json" --exit-code 0 >/dev/null 2>&1 || true
+  # gitleaks may leave the file empty if it wrote nothing — normalise to [].
+  [ -s "$workdir/gitleaks.json" ] || echo '[]' > "$workdir/gitleaks.json"
 fi
 
-python3 - <<PYTHON
-import json, sys
+REPO_NAME="$REPO_NAME" \
+VULN_ALERTS_ENABLED="$vulnerability_alerts_enabled" \
+SCAN_TOOL_VERSION="$scan_tool_version" \
+WORKDIR="$workdir" \
+python3 - <<'PYTHON'
+import json, os
 from datetime import datetime, timezone
 
-repo = json.loads('''${repo_json}'''.replace("'", '"').replace('\\n', ''))
-alerts = json.loads('''${alerts_json}'''.replace("'", '"'))
-dependabot = json.loads('''${dependabot_json}'''.replace("'", '"'))
-findings = json.loads('''${gitleaks_findings}'''.replace("'", '"'))
-automated_security_fixes = json.loads('${automated_security_fixes_json}')
+workdir = os.environ["WORKDIR"]
 
-sec_analysis = repo.get('security_and_analysis', {})
+
+def load(name, default):
+    """Robustly load a gh JSON blob from a file; fall back to default on any error."""
+    try:
+        with open(os.path.join(workdir, name)) as fh:
+            return json.load(fh)
+    except Exception:
+        return default
+
+
+repo = load("repo.json", {})
+alerts = load("alerts.json", [])
+dependabot = load("dependabot.json", [])
+findings = load("gitleaks.json", [])
+autofix = load("autofix.json", {"enabled": False})
+
+if not isinstance(repo, dict):
+    repo = {}
+if not isinstance(alerts, list):
+    alerts = []
+if not isinstance(dependabot, list):
+    dependabot = []
+if not isinstance(findings, list):
+    findings = []
+if not isinstance(autofix, dict):
+    autofix = {"enabled": False}
+
+sec_analysis = repo.get("security_and_analysis", {}) or {}
 
 output = {
-    'repository': {
-        'name': '${REPO_NAME}',
-        'security_and_analysis': sec_analysis
+    "repository": {
+        "name": os.environ["REPO_NAME"],
+        "security_and_analysis": sec_analysis,
     },
-    'vulnerability_alerts_enabled': ('${vulnerability_alerts_enabled}' == 'true'),
-    'automated_security_fixes_enabled': automated_security_fixes.get('enabled', False),
-    'scan_tool': 'gitleaks',
-    'scan_tool_version': 'system',
-    'findings': findings if isinstance(findings, list) else [],
-    'github_alerts_open': len([a for a in alerts if isinstance(alerts, list)]),
-    'evaluation_timestamp': datetime.now(timezone.utc).isoformat(),
-    'alerts': [
+    "vulnerability_alerts_enabled": os.environ["VULN_ALERTS_ENABLED"] == "true",
+    "automated_security_fixes_enabled": bool(autofix.get("enabled", False)),
+    # ── SEC-001 secret-scan fields (input schema for POL-SEC-001) ────────────
+    "scan_tool": "gitleaks",
+    "scan_tool_version": os.environ["SCAN_TOOL_VERSION"],
+    "findings": findings,
+    "github_alerts_open": len(alerts),
+    "evaluation_timestamp": datetime.now(timezone.utc).isoformat(),
+    "alerts": [
         {
-            'number': a.get('number'),
-            'severity': a.get('security_vulnerability', {}).get('severity', 'unknown'),
-            'created_at': a.get('created_at', ''),
-            'advisory': {
-                'ghsa_id': a.get('security_advisory', {}).get('ghsa_id', ''),
-                'summary': a.get('security_advisory', {}).get('summary', '')
-            }
+            "number": a.get("number"),
+            "severity": (a.get("security_vulnerability") or {}).get("severity", "unknown"),
+            "created_at": a.get("created_at", ""),
+            "advisory": {
+                "ghsa_id": (a.get("security_advisory") or {}).get("ghsa_id", ""),
+                "summary": (a.get("security_advisory") or {}).get("summary", ""),
+            },
         }
-        for a in (dependabot if isinstance(dependabot, list) else [])
-    ]
+        for a in dependabot
+    ],
 }
 
 print(json.dumps(output, indent=2, ensure_ascii=False, default=str))

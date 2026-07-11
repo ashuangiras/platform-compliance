@@ -5,7 +5,7 @@ run-all-policies.py — Run all applicable OPA policies and write results to /tm
 Usage: python3 run-all-policies.py --bundle /tmp/policy-bundle --inputs /tmp/inputs
                                    --contexts github,terraform --repo-type platform-repo
 """
-import argparse, json, os, subprocess, sys
+import argparse, json, os, re, subprocess, sys
 from datetime import date
 from pathlib import Path
 
@@ -135,6 +135,56 @@ def run_opa(rego_path, input_path, query):
         return {"result": "error", "details": {"message": f"OPA evaluation failed: {e}"}}
 
 
+# ── Control-id normalisation (DEFECT-2 / SF-4) ──────────────────────────────
+# POLICY_MAP keys are context-scoped (e.g. SUP-001-TF, SUP-001-GA, QUA-001-NODE)
+# so several technology variants of one catalog control can coexist in the map.
+# Profiles, however, list the BARE catalog control id (SUP-001, QUA-001) in their
+# gate block sets, and job 5 derives a control's id from the RESULT FILENAME. The
+# engine must therefore RECORD results and LOOK UP gate membership under the
+# catalog control id, or a BLOCK failure is silently downgraded to warn.
+# Lowercase variant ids that profiles list verbatim (IAC-003b, RUN-009b) are real
+# distinct controls and are preserved — the regex only strips an UPPERCASE
+# technology suffix that follows the '<DOMAIN>-<NNN>[letter]' id.
+_CONTEXT_SUFFIX_RE = re.compile(r"^([A-Z]{3}-\d{3}[a-z]?)-[A-Z0-9]+$")
+
+
+def control_id_of(policy_map_key):
+    """Return the catalog control id for a POLICY_MAP key by stripping a trailing
+    technology-context suffix (-TF/-GA/-NODE/-PYTHON/-FRONTEND/…). Bare ids and
+    lowercase variant ids (IAC-003b) are returned unchanged."""
+    m = _CONTEXT_SUFFIX_RE.match(policy_map_key)
+    return m.group(1) if m else policy_map_key
+
+
+# Result severity for worst-result-wins merging when multiple POLICY_MAP keys
+# resolve to the same catalog control id (e.g. a repo that is both terraform and
+# github-actions runs SUP-001-TF and SUP-001-GA → both write SUP-001.json; and a
+# context-skipped variant writes not_applicable to the same file). A later
+# passing/not_applicable variant must never mask an earlier real failure. Higher = worse.
+_RESULT_SEVERITY = {"error": 5, "fail": 4, "manual_review": 3, "pass": 2, "not_applicable": 1}
+
+
+def _severity(result_obj):
+    if not isinstance(result_obj, dict):
+        return 0
+    return _RESULT_SEVERITY.get(result_obj.get("result", ""), 0)
+
+
+def write_result(results_dir, control_id, result_obj):
+    """Write result_obj to <control_id>.json, keeping the WORST result when several
+    context variants resolve to the same catalog control id. Order-independent, so a
+    later passing/not_applicable variant never overwrites an earlier real failure."""
+    path = results_dir / f"{control_id}.json"
+    if path.exists():
+        try:
+            existing = json.loads(path.read_text())
+        except Exception:
+            existing = None
+        if existing is not None and _severity(existing) >= _severity(result_obj):
+            return
+    path.write_text(json.dumps(result_obj))
+
+
 def load_active_waivers():
     """Return a dict of {control_id: waiver_id} for all active, non-expired waivers
     declared in the nearest .compliance-manifest.yaml.
@@ -209,12 +259,22 @@ def load_block_controls(profiles_dir, profile_id, gate):
     controls.
 
     Mirrors the logic in the gate evaluator (job 7) so job 4 (this script) and job 7
-    agree on what constitutes a blocking failure (SF-4). Returns a set of control IDs,
-    or None if the profile could not be loaded (caller treats None as "all failures
-    block" — the conservative fallback used elsewhere in the pipeline).
+    agree on what constitutes a blocking failure (SF-4).
 
     Profiles declare `inherits: PROF-PARENT`; a child's gate does not repeat the
     parent's controls, so gate resolution must walk the chain (SF-3 / review finding).
+
+    SF-4 / DEFECT-4 return contract — the value is a strict sentinel:
+      * None  → the profile (or a profile in its `inherits` chain) could NOT be
+                loaded/parsed, or the profile/gate arguments are missing. This is a
+                genuine LOAD FAILURE; the caller applies the conservative
+                all-failures-block fallback.
+      * set() → the profile loaded successfully but declares ZERO block controls for
+                this gate. This is NOT a load failure: a failure blocks ONLY if its
+                control id is in the (empty) set, i.e. nothing blocks.
+    Callers MUST test `block_controls is None` (identity), never `not block_controls`
+    (truthiness), so an empty-but-loaded set is treated as normal. Job 6/7 in
+    reusable-compliance.yml must mirror this exact contract.
     """
     if not profiles_dir or not profile_id or not gate:
         return None
@@ -230,19 +290,17 @@ def load_block_controls(profiles_dir, profile_id, gate):
         except Exception:
             return None
 
-    root = _load_one(profile_id)
-    if root is None:
-        return None
-
     block = set()
     seen = set()
     pid = profile_id
-    # Walk the inheritance chain, unioning BLOCK controls at each level.
+    # Walk the inheritance chain, unioning BLOCK controls at each level. A profile
+    # we were told to load (the root or any inherited parent) that cannot be read is
+    # a genuine load failure → return None (all-block), never a silently-partial set.
     while pid and pid not in seen:
         seen.add(pid)
         prof = _load_one(pid)
         if prof is None:
-            break
+            return None
         gate_def = prof.get("gates", {}).get(gate, {})
         for ctrl in gate_def.get("required_controls", []):
             if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
@@ -276,8 +334,13 @@ def main():
     is_ci = os.environ.get("GITHUB_ACTIONS") == "true"
 
     # BLOCK-level controls for the active gate (SF-4: job 4 must agree with job 7).
-    # None = profile unavailable → conservative fallback: every failure blocks.
+    # DEFECT-4 contract: None = the profile could not be loaded (genuine load
+    # failure) → conservative fallback where EVERY failure blocks. An empty-but-
+    # loaded set (set()) means "profile loaded, zero BLOCK controls" → NORMAL, so a
+    # failure blocks only if its control id is explicitly listed. Test identity
+    # (`is None`), never truthiness (`not ...`), so empty ≠ unavailable.
     block_controls = load_block_controls(args.profiles_dir, args.profile_id, args.gate)
+    profile_load_failed = block_controls is None
 
     # Load active waivers from the manifest so waived controls don't count as failures.
     waived_controls = load_active_waivers()
@@ -285,7 +348,10 @@ def main():
     total, passed, failed, skipped, waived = 0, 0, 0, 0, 0
     block_failed = 0  # failures on BLOCK-level controls (drives the exit code)
 
-    for control_id, policy_info in POLICY_MAP.items():
+    for policy_key, policy_info in POLICY_MAP.items():
+        # Record + classify under the CATALOG control id (DEFECT-2), while the
+        # POLICY_MAP key stays context-scoped for policy/input file lookup.
+        control_id = control_id_of(policy_key)
         rego_rel = policy_info[0]
         input_file = policy_info[1]
         query = policy_info[2]
@@ -294,10 +360,10 @@ def main():
         # Skip if required context not in this run
         if required_contexts and not any(c in contexts for c in required_contexts):
             skipped += 1
-            (results / f"{control_id}.json").write_text(json.dumps({
+            write_result(results, control_id, {
                 "result": "not_applicable",
                 "details": {"message": f"Context {required_contexts} not in {list(contexts)}"}
-            }))
+            })
             continue
 
         rego_path = str(bundle / rego_rel)
@@ -307,18 +373,18 @@ def main():
         # policy before it's been merged to main), skip gracefully rather than error.
         if not (bundle / rego_rel).exists():
             skipped += 1
-            (results / f"{control_id}.json").write_text(json.dumps({
+            write_result(results, control_id, {
                 "result": "not_applicable",
                 "details": {"message": f"{control_id}: policy file not yet in bundle ({rego_rel}). Will be enforced after next release."}
-            }))
+            })
             print(f"  ○ {control_id}: not_applicable (policy not in bundle — bootstrapping)")
             continue
 
         if not os.path.exists(rego_path):
-            (results / f"{control_id}.json").write_text(json.dumps({
+            write_result(results, control_id, {
                 "result": "error",
                 "details": {"message": f"Policy file not found: {rego_path}"}
-            }))
+            })
             failed += 1
             continue
 
@@ -329,10 +395,10 @@ def main():
             # Job 7 (gate evaluation) will apply profile enforcement levels;
             # an error here would block the upload and prevent gate evaluation.
             skipped += 1
-            (results / f"{control_id}.json").write_text(json.dumps({
+            write_result(results, control_id, {
                 "result": "not_applicable",
                 "details": {"message": f"{control_id}: input file not found ({input_file}). Context may not generate this input for this repo type."}
-            }))
+            })
             print(f"  ○ {control_id}: not_applicable (input file absent — {input_file})")
             continue
 
@@ -342,18 +408,18 @@ def main():
         r = result.get("result", "error") if isinstance(result, dict) else "error"
         if r == "pass":
             passed += 1
-            (results / f"{control_id}.json").write_text(json.dumps(result))
+            write_result(results, control_id, result)
             print(f"  ✓ {control_id}: pass")
         elif r == "not_applicable":
             skipped += 1
-            (results / f"{control_id}.json").write_text(json.dumps(result))
+            write_result(results, control_id, result)
             scope_msg = result.get("details", {}).get("message", "not in scope for this repository type")
             print(f"  ○ {control_id}: not_applicable — {scope_msg[:80]}")
             # Emit a notice annotation so the scope exclusion is visible in the PR.
             if is_ci:
                 print(f"::notice title={control_id} not in scope::{control_id} is not applicable to this repository type. {scope_msg[:120]}")
         elif r == "manual_review":
-            (results / f"{control_id}.json").write_text(json.dumps(result))
+            write_result(results, control_id, result)
             print(f"  ⚠ {control_id}: manual_review")
         elif control_id in waived_controls:
             waived += 1
@@ -361,14 +427,18 @@ def main():
             # Embed waiver_id in the result file so downstream jobs (evidence
             # assembly, gate assessment) can skip this as a blocking failure.
             result_with_waiver = {**result, "waiver_id": waiver_id}
-            (results / f"{control_id}.json").write_text(json.dumps(result_with_waiver))
+            write_result(results, control_id, result_with_waiver)
             print(f"  ~ {control_id}: {r} (waived — {waiver_id})")
         else:
             failed += 1
             msg = result.get("details", {}).get("message", "") if isinstance(result, dict) else str(result)
-            # A failure blocks the gate if the control is BLOCK-level (or if we could
-            # not load the profile, in which case block_controls is None → all block).
-            is_block = (block_controls is None) or (control_id in block_controls)
+            # Record the failure under the catalog control id so job 5 assembles an
+            # evidence record and job 6 sees it (DEFECT-2: previously failures were
+            # never written, so the gate could not classify them).
+            write_result(results, control_id, result if isinstance(result, dict) else {"result": r, "details": {"message": msg}})
+            # A failure blocks the gate if the control is BLOCK-level (or if the
+            # profile could not be loaded — profile_load_failed → all block).
+            is_block = profile_load_failed or (control_id in block_controls)
             if is_block:
                 block_failed += 1
                 tier = "BLOCK"
@@ -393,7 +463,12 @@ def main():
             with open(summary_file, "a") as sf:
                 sf.write("## OPA Policy Gate Results\n\n")
                 sf.write("| Control | Result | Details |\n|---|---|---|\n")
-                for cid in POLICY_MAP:
+                _seen_summary = set()
+                for _policy_key in POLICY_MAP:
+                    cid = control_id_of(_policy_key)
+                    if cid in _seen_summary:
+                        continue  # de-dup context variants that map to one catalog id
+                    _seen_summary.add(cid)
                     rf = results / f"{cid}.json"
                     if not rf.exists():
                         continue

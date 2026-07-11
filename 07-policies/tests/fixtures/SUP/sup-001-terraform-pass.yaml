@@ -1,4 +1,10 @@
 
+# Fixture: SUP-001 (Terraform) — PASS
+# Scenario: All Terraform dependencies are pinned — required_version '~> 1.5',
+# providers pinned with '~> 5.1' / '= 3.6.0', and the vpc module pinned '~> 5.1'.
+# Policy-level expectation: { "result": "pass" }
+# Engine note (DEFECT-2 / v4.0.1): control_id_of() strips the '-TF' context suffix,
+# so this policy's result is recorded under catalog id SUP-001 (SUP-001.json).
 module_calls:
 - name: vpc
   source: terraform-aws-modules/vpc/aws

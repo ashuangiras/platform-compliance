@@ -1,0 +1,16 @@
+# Fixture: SEC-001 — FAIL (open GitHub secret scanning alerts, no scan findings)
+# Scenario: The local gitleaks scan is clean (zero findings) but GitHub secret
+# scanning reports 3 open alerts. This exercises the alerts-only fail branch
+# (count(findings) == 0 AND github_alerts_open > 0).
+# DEFECT-1 lock-in (v4.0.1): github_alerts_open is now read from sec-secrets.json,
+# so SEC-001 resolves to a concrete "fail" here — it must NOT degrade to
+# not_applicable when the input document is present.
+# Expected policy result: { "result": "fail" }
+findings: []
+github_alerts_open: 3
+repository:
+  name: alerts-open-repo
+  type: service
+  url: https://github.com/org/alerts-open-repo
+scan_tool: gitleaks
+scan_tool_version: 8.18.0

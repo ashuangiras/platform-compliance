@@ -1,0 +1,59 @@
+$schema: "../../schemas/change-record.schema.json"
+
+id: "CHG-20260711-067"
+schema_version: "1.0.0"
+
+change_type: "tool"
+
+description: >
+  v4.0.1 PATCH — enforcement-engine defect fixes surfaced during the v4.0.0
+  downstream rollout. Bug fixes only: no new mandatory controls, and no changes to
+  any governance object, schema, profile, or OPA policy. Enforcement semantics are
+  restored to what v4.0.0 intended; consumers pinning a ref are unaffected until
+  they bump.
+
+  DEFECT-1 (SEC-001 silent non-enforcement): the SEC-001 control was mapped in
+  POLICY_MAP but the security-settings input it consumes was never produced by a
+  collector, so the policy silently evaluated not_applicable and never blocked.
+  Wired collect-github-security-settings.sh into collector-map.yaml and
+  collect-all-inputs.py so the mapped input is always produced. Added the
+  sec-001-fail-alerts.yaml fixture proving a concrete fail (never not_applicable).
+
+  DEFECT-2 (SUP-001 warn-downgrade): the engine emitted result ids with technology
+  suffixes (SUP-001-TF / SUP-001-GA) that did not equal the catalog control id the
+  profiles gate on (SUP-001), so gate block membership silently downgraded to warn.
+  Added control_id_of() normalization in run-all-policies.py so engine result ids
+  reconcile to catalog control ids before gate BLOCK/warn resolution.
+
+  DEFECT-3 (py3.14 collector crash): collectors used a cwd-dependent, py3.14-unsafe
+  pattern (str.replace("'", '"')) that crashed under Python 3.14. Made the collectors
+  python3.14-safe and cwd-independent.
+
+  DEFECT-4 (job4/job6 block-fallback mismatch): the job-4 runner and the job-6/7
+  workflow evaluator disagreed on block-fallback semantics — a None sentinel (profile
+  load failure) was conflated with an empty-but-loaded BLOCK set. Aligned both
+  evaluators so load-failure falls back to all-block while a loaded-empty gate is
+  non-blocking.
+
+  DEFECT-5 (release-gate never firing on tags): the release-gate job was guarded but
+  unreachable because the workflow on: triggers could never reach it on a tag. Added
+  push: tags: ['v*'] so tagging vX.Y.Z evaluates the release gate.
+
+affected_object_ids:
+  - "07-policies/scripts/run-all-policies.py"
+  - "07-policies/scripts/collect-github-security-settings.sh"
+  - "07-policies/scripts/collect-all-inputs.py"
+  - "07-policies/scripts/collector-map.yaml"
+  - ".github/workflows/self-compliance.yml"
+  - ".github/workflows/reusable-compliance.yml"
+  - "07-policies/tests/fixtures/SEC/sec-001-pass.yaml"
+  - "07-policies/tests/fixtures/SEC/sec-001-fail-alerts.yaml"
+  - "07-policies/tests/fixtures/SUP/sup-001-terraform-pass.yaml"
+  - "07-policies/tests/fixtures/SUP/sup-001-terraform-fail.yaml"
+
+breaking: false
+
+author: "platform-team"
+date: "2026-07-11"
+
+review_refs: []

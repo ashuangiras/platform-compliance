@@ -1,6 +1,8 @@
 # Fixture: SEC-001 — PASS
 # Scenario: Clean repository with no secret findings from gitleaks scan
 # and zero open GitHub secret scanning alerts.
+# DEFECT-1 lock-in (v4.0.1): with the sec-secrets.json input present, SEC-001
+# resolves to a concrete "pass" — never not_applicable.
 # Expected policy result: { "result": "pass" }
 findings: []
 github_alerts_open: 0
