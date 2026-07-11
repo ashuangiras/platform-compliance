@@ -1,0 +1,71 @@
+$schema: "../../schemas/assessment.schema.json"
+
+# Self-assessment report for platform-compliance v4.0.1 (enforcement-engine defect fixes).
+# Clean PATCH: no governance-object/schema/profile/OPA-policy changes. The enforcement
+# fixes were verified locally — `opa check` clean (97 rego), 42/42 fixtures pass, and the
+# merge_gate simulation on PROF-TERRAFORM-ROOT-V1 confirmed SEC-001 and SUP-001 now BLOCK
+# correctly on failing inputs and pass on compliant inputs. SRC-001/SRC-002 remain covered
+# by active waivers.
+
+id: "ASSESS-PLATFORM-COMPLIANCE-20260711-067"
+schema_version: "1.0.0"
+
+subject:
+  type: release
+  identifier: "https://github.com/ashuangiras/platform-compliance"
+
+profile_id: PROF-PLATFORM-V1
+profile_version: "1.0.0"
+control_catalog_version: "v4.0.1"
+
+assessment_date: "2026-07-11T00:00:00Z"
+
+evidence_window:
+  from: "2026-07-11T00:00:00Z"
+  to: "2026-07-11T23:59:59Z"
+
+# ─── Control results ──────────────────────────────────────────────────────────
+# Summary of the merge_gate OPA run on the release commit:
+#   31 pass, 0 fail/error (0 BLOCK-level), 2 waived, 59 not in scope.
+# The v4.0.1 fixes restore enforcement for SEC-001 and SUP-001; both evaluate pass
+# on this repository's compliant inputs.
+control_results:
+  - control_id: SEC-001
+    result: pass
+    evidence_ids: []
+  - control_id: SUP-001
+    result: pass
+    evidence_ids: []
+  - control_id: CAT-003
+    result: pass
+    evidence_ids: []
+  - control_id: AGT-013
+    result: pass
+    evidence_ids: []
+  - control_id: SRC-001
+    result: waived
+    evidence_ids: []
+    failure_reason: "Covered by active waiver WAV-SRC-001-202607-001 (branch protection verified out-of-band)."
+  - control_id: SRC-002
+    result: waived
+    evidence_ids: []
+    failure_reason: "Covered by active waiver WAV-SRC-002-202607-001."
+
+summary:
+  total_controls: 92
+  pass: 31
+  fail: 0
+  manual_review: 0
+  not_applicable: 59
+  waived: 2
+  error: 0
+
+overall_result: pass-with-waivers
+
+gate_evaluation:
+  gate_id: release_gate
+  gate_result: pass-with-warnings
+
+generated_by:
+  tool: run-all-policies.py
+  version: "v4.0.1"

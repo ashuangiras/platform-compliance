@@ -1,4 +1,11 @@
 
+# Fixture: SUP-001 (Terraform) — FAIL
+# Scenario: Unbounded constraints — required_version '>= 1.0', aws provider '>= 5.0',
+# and the null provider carries an empty version string. Each is a pinning violation.
+# Policy-level expectation: { "result": "fail" }
+# Engine note (DEFECT-2 / v4.0.1): a SUP-001 terraform FAIL is written to SUP-001.json
+# (worst-result-wins) and classified [BLOCK] when the active profile lists SUP-001
+# (PROF-TERRAFORM-*). Filename/gate classification is verified at engine level, not here.
 module_calls: []
 repository:
   name: unpinned-module

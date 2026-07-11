@@ -478,31 +478,59 @@ jobs:
           # as warn-level and will not fail the overall gate result.
           # The `inherits` chain is expanded so a child profile also enforces its
           # parents' gate controls (must match load_block_controls in job 4).
-          block_controls = set()
-
+          #
+          # DEFECT-4 contract — mirror run-all-policies.load_block_controls exactly:
+          #   None  → the profile (or a profile in its `inherits` chain) could NOT
+          #           be loaded/parsed → genuine LOAD FAILURE → conservative
+          #           all-failures-block fallback.
+          #   set() → the profile loaded successfully but declares ZERO block
+          #           controls for this gate → NOT a load failure → a failure blocks
+          #           only if its control id is explicitly listed (empty set = nothing
+          #           blocks).
+          # Test `block_controls is None` (identity), never `not block_controls`
+          # (truthiness), so an empty-but-loaded set is treated as normal — this keeps
+          # job 6 in lock-step with job 4 (`profile_load_failed = block_controls is None`).
           def _load_profile(pid):
             p = os.path.join(profiles_dir, f"{pid}.yaml")
             if not os.path.exists(p):
               return None
-            with open(p) as pf:
-              return yaml.safe_load(pf) or {}
+            try:
+              with open(p) as pf:
+                return yaml.safe_load(pf) or {}
+            except Exception:
+              return None
 
-          if os.path.exists(os.path.join(profiles_dir, f"{profile_id}.yaml")):
+          def _load_block_controls():
+            if not profiles_dir or not profile_id or not active_gate:
+              return None
+            block = set()
             seen = set()
             pid = profile_id
+            # Walk the inheritance chain, unioning BLOCK controls at each level. A
+            # profile we were told to load (the root or any inherited parent) that
+            # cannot be read is a genuine load failure → return None (all-block),
+            # never a silently-partial set.
             while pid and pid not in seen:
               seen.add(pid)
               prof = _load_profile(pid)
               if prof is None:
-                break
+                return None
               gate_def = prof.get("gates", {}).get(active_gate, {})
               for ctrl in gate_def.get("required_controls", []):
                 if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
-                  block_controls.add(ctrl.get("id") or ctrl.get("control_id", ""))
+                  cid = ctrl.get("id") or ctrl.get("control_id", "")
+                  if cid:
+                    block.add(cid)
               pid = prof.get("inherits")
-            print(f"Profile {profile_id} (+inherited) gate {active_gate}: {len(block_controls)} BLOCK controls")
+            return block
+
+          block_controls = _load_block_controls()
+          profile_load_failed = block_controls is None
+          if profile_load_failed:
+            block_controls = set()
+            print(f"::warning::Profile {profile_id} not found or unparseable — all failures treated as blocking")
           else:
-            print(f"::warning::Profile {profile_id} not found — all failures treated as blocking")
+            print(f"Profile {profile_id} (+inherited) gate {active_gate}: {len(block_controls)} BLOCK controls")
 
           records = []
           for f in glob.glob(os.path.join(evidence_dir, "*.yaml")):
@@ -521,9 +549,12 @@ jobs:
               cr["waiver_id"] = r["waiver_id"]
             control_results.append(cr)
             # Track block-level failures for the gate decision.
-            # When the profile is unavailable (block_controls is empty), treat
-            # all failures as blocking (conservative fallback).
-            is_block = (not block_controls) or (r["control_id"] in block_controls)
+            # DEFECT-4: only a genuine profile LOAD FAILURE (profile_load_failed —
+            # missing/unparseable profile or a broken `inherits` parent) treats every
+            # failure as blocking. An empty-but-loaded block_controls set does NOT
+            # trigger the all-block fallback. Matches job 4's
+            # `is_block = profile_load_failed or (control_id in block_controls)`.
+            is_block = profile_load_failed or (r["control_id"] in block_controls)
             if res in ("fail", "error") and is_block and not r.get("waiver_id"):
               block_failures.append(r["control_id"])
 

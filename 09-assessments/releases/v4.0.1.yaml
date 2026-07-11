@@ -1,0 +1,46 @@
+$schema: "../../schemas/release-record.schema.json"
+
+# Release record for platform-compliance v4.0.1
+# PATCH — enforcement-engine defect fixes surfaced during the v4.0.0 rollout.
+#
+# PATCH bump: bug fixes only. No new mandatory controls, and no changes to any
+# governance object, schema, profile, or OPA policy. Per ADR-0010 this is NOT a
+# breaking change — enforcement is restored to what v4.0.0 already intended, so no
+# consumer is force-upgraded by this tag.
+
+id: "v4.0.1"
+schema_version: "1.0.0"
+
+release_date: "2026-07-11"
+
+change_record_ids:
+  - CHG-20260711-067   # v4.0.1 enforcement-engine defect fixes (DEFECT-1..5)
+
+gate_assessment_id: "ASSESS-PLATFORM-COMPLIANCE-20260711-067"
+
+release_summary: >
+  PATCH release fixing five enforcement-engine defects surfaced during the v4.0.0
+  downstream rollout. Bug fixes only — no new mandatory controls and no
+  governance-object / schema / profile / OPA-policy changes.
+
+  - DEFECT-1 (SEC-001 silent non-enforcement): the security-settings input SEC-001
+    consumes was mapped in POLICY_MAP but never produced by a collector, so SEC-001
+    silently evaluated not_applicable and never blocked. Wired
+    collect-github-security-settings.sh into collector-map.yaml and
+    collect-all-inputs.py; added the sec-001-fail-alerts.yaml fixture proving a
+    concrete fail.
+  - DEFECT-2 (SUP-001 warn-downgrade): engine result ids carried technology suffixes
+    (SUP-001-TF / SUP-001-GA) that did not equal the catalog id the profiles gate on
+    (SUP-001), so gate block membership silently downgraded to warn. Added
+    control_id_of() normalization in run-all-policies.py.
+  - DEFECT-3 (py3.14 collector crash): collectors used a cwd-dependent, py3.14-unsafe
+    pattern; made them python3.14-safe and cwd-independent.
+  - DEFECT-4 (job4/job6 block-fallback mismatch): aligned the job-4 runner and the
+    job-6/7 workflow evaluator so a None sentinel (profile load failure) falls back to
+    all-block while a loaded-empty gate stays non-blocking.
+  - DEFECT-5 (release-gate never firing on tags): added push: tags: ['v*'] so tagging
+    vX.Y.Z reaches and evaluates the guarded release-gate job.
+
+breaking_changes: false
+
+released_by: platform-team

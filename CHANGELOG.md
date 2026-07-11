@@ -7,6 +7,37 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v4.0.1] — 2026-07-11 (CHG-20260711-067)
+
+### fix(enforcement): five enforcement-engine defects from the v4.0.0 downstream rollout
+
+PATCH — bug fixes only. No new mandatory controls and no governance-object / schema /
+profile / OPA-policy changes; `breaking_changes: false`. Restores the enforcement
+semantics v4.0.0 already intended.
+
+- **DEFECT-1 — SEC-001 silent non-enforcement**: the security-settings input SEC-001
+  consumes was mapped in POLICY_MAP but never produced by a collector, so SEC-001
+  evaluated `not_applicable` forever and never blocked. Wired
+  `collect-github-security-settings.sh` into `collector-map.yaml` and
+  `collect-all-inputs.py`; added `07-policies/tests/fixtures/SEC/sec-001-fail-alerts.yaml`
+  (new) and updated `sec-001-pass.yaml` to prove a concrete fail (never `not_applicable`).
+- **DEFECT-2 — SUP-001 warn-downgrade**: engine result ids carried technology suffixes
+  (`SUP-001-TF` / `SUP-001-GA`) that did not equal the catalog id `SUP-001` the profiles
+  gate on, so gate block membership silently downgraded to warn. Added `control_id_of()`
+  normalization in `07-policies/scripts/run-all-policies.py`; updated
+  `sup-001-terraform-pass.yaml` / `sup-001-terraform-fail.yaml`.
+- **DEFECT-3 — py3.14 collector crash**: made `collect-github-security-settings.sh` and
+  `collect-all-inputs.py` python3.14-safe and cwd-independent (no `.replace("'", '"')`).
+- **DEFECT-4 — job4/job6 block-fallback mismatch**: aligned the job-4 runner
+  (`run-all-policies.py`) and the job-6/7 workflow evaluator so a `None` sentinel (profile
+  load failure) falls back to all-block while a loaded-empty gate stays non-blocking
+  (`.github/workflows/self-compliance.yml`, `.github/workflows/reusable-compliance.yml`).
+- **DEFECT-5 — release-gate never firing on tags**: added `push: tags: ['v*']` to
+  `.github/workflows/self-compliance.yml` so tagging `vX.Y.Z` reaches and evaluates the
+  guarded `release-gate` job.
+
+---
+
 ## [v4.0.0] — 2026-07-11 (CHG-20260711-066)
 
 ### feat(enforcement)!: P0 silent-failure remediation — restore actual policy enforcement

@@ -90,6 +90,10 @@ src-codeowners.json:
   script: ""
   interpreter: bash
 
+# SEC-001 secret-scan input (DEFECT-1). collect-github-security-settings.sh emits
+# the SEC-001 schema (scan_tool, scan_tool_version, findings, github_alerts_open)
+# alongside the SEC-002/003/SUP-003 fields, so forge can produce this input without
+# a code change. Previously mapped to "" (no collector) → SEC-001 was not_applicable.
 sec-secrets.json:
-  script: ""
+  script: collect-github-security-settings.sh
   interpreter: bash

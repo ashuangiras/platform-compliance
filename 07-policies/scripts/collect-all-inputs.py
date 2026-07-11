@@ -6,7 +6,7 @@ Outputs JSON files to /tmp/inputs/ for each technology context applicable to thi
 
 Usage: python3 collect-all-inputs.py [--repo OWNER/REPO] [--branch BRANCH] [--contexts a,b]
 """
-import argparse, json, os, re, subprocess, sys
+import argparse, json, os, re, shutil, subprocess, sys
 from pathlib import Path
 
 # Directory containing this script — used to locate sibling collector scripts
@@ -56,6 +56,44 @@ def main():
     (out / "sec-security-settings.json").write_text(json.dumps({
         "repository": {"name": repo_name, "security_and_analysis": repo_data.get("security_and_analysis", {})}
     }))
+
+    # Secret-scan input (SEC-001) — DEFECT-1.
+    # SEC-001 maps to sec-secrets.json but no collector produced it, so the runner
+    # fell through to not_applicable on every repo (secret-scanning enforcement was
+    # dead). Produce it here with the exact SEC-001 input schema so the policy
+    # evaluates a real pass/fail. Guarded with `exists()` so a richer artifact placed
+    # by an earlier CI step (job 3 gitleaks scan) is never clobbered.
+    secrets_out = out / "sec-secrets.json"
+    if not secrets_out.exists():
+        # Open GitHub secret-scanning alerts (GHAS). 404/None when disabled → 0 open.
+        secret_alerts = run_gh(f"repos/{repo}/secret-scanning/alerts?state=open&per_page=100")
+        github_alerts_open = len(secret_alerts) if isinstance(secret_alerts, list) else 0
+        # Optional local gitleaks scan — defensive: absent tool ⇒ empty findings,
+        # never hard-fail (collector contract). Distinguish tool-absent from ran-clean.
+        scan_tool, scan_tool_version, findings = "github-secret-scanning", "unavailable", []
+        if shutil.which("gitleaks"):
+            scan_tool, scan_tool_version = "gitleaks", "system"
+            try:
+                import tempfile
+                gl_report = tempfile.NamedTemporaryFile(suffix=".json", delete=False, dir="/tmp")
+                gl_report.close()
+                subprocess.run(
+                    ["gitleaks", "detect", "--source", ".", "--report-format", "json",
+                     "--report-path", gl_report.name, "--exit-code", "0"],
+                    capture_output=True, text=True, timeout=120
+                )
+                raw = json.loads(Path(gl_report.name).read_text() or "[]")
+                findings = raw if isinstance(raw, list) else []
+                os.unlink(gl_report.name)
+            except Exception:
+                findings = []
+        secrets_out.write_text(json.dumps({
+            "repository": {"name": repo_name},
+            "scan_tool": scan_tool,
+            "scan_tool_version": scan_tool_version,
+            "findings": findings,
+            "github_alerts_open": github_alerts_open,
+        }))
 
     # File list for CODEOWNERS, README (SRC-003, DOC-001)
     files = []

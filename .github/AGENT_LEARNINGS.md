@@ -10,6 +10,43 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-11 — fix: five enforcement-engine defects (v4.0.1) — "green ≠ enforced"
+
+**Change Record:** CHG-20260711-067
+
+- **A control can pass `opa check` and still be silently unenforced (SEC-001).** SEC-001 was
+  mapped in POLICY_MAP but the security-settings input it consumes was never produced by any
+  collector, so it evaluated `not_applicable` forever and never blocked. Lesson for
+  **collector-engineer**: a compiling policy is not a running policy — pre-flight must verify that
+  *every* mapped POLICY_MAP input has a producing collector wired into `collector-map.yaml` and
+  `collect-all-inputs.py`. "It compiled" and "it ran" are different claims; only a fixture that
+  produces a concrete `fail` (never `not_applicable`) proves enforcement.
+- **Engine result ids must equal the catalog control ids the profiles gate on (SUP-001).** The
+  engine emitted technology-suffixed ids (`SUP-001-TF` / `SUP-001-GA`) that did not match the
+  catalog id `SUP-001` the profiles list in their gate, so block membership silently downgraded
+  to warn. Lesson for **policy-engineer / collector-engineer**: normalize engine result ids back
+  to their catalog control id (`control_id_of()`) before gate BLOCK/warn resolution, and treat any
+  id-suffixing scheme as a reconciliation hazard, not a cosmetic detail.
+- **Two evaluators must share IDENTICAL block-fallback semantics.** The job-4 runner and the
+  job-6/7 workflow evaluator disagreed: a `None` sentinel (profile *load failure*) is not the same
+  as an empty-but-loaded BLOCK set. Lesson: when two code paths independently decide pass/fail,
+  their fallback rules must be byte-for-byte equivalent — load-failure ⇒ all-block (fail safe),
+  loaded-empty ⇒ non-blocking. Divergent sentinels are a silent-failure factory.
+- **Collectors must be python3.14-safe and cwd-independent.** A `.replace("'", '"')`-style,
+  cwd-dependent pattern crashed under Python 3.14. Lesson for **collector-engineer**: run
+  `py_compile` under *both* the pinned venv and the newest system interpreter, and never assume the
+  process cwd — resolve paths from the script location.
+- **A guarded job is dead code unless a trigger can reach it (release-gate).** The `release-gate`
+  job was correctly guarded but the workflow `on:` triggers could never fire it on a tag. Lesson
+  for **ci-workflow-engineer**: whenever you add a job guarded by a ref/event condition, confirm an
+  `on:` trigger actually reaches it — here, `push: tags: ['v*']`. Add a trigger-reachability check
+  to the workflow pre-flight.
+- **Rule learned (release-manager):** a clean PATCH is still governed. Enforcement fixes that
+  change *no* governance object still need a Change Record, a learnings entry, a passing
+  self-assessment, and a genuine retro — the AGT gate blocks release PRs too, by design.
+
+---
+
 ## 2026-07-11 — chore: v3.4.0 release record (gate self-caught the release PR)
 
 **Change Record:** CHG-20260711-066
