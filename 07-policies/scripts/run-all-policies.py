@@ -216,6 +216,9 @@ def main():
     contexts = set(args.contexts.split(","))
     contexts.add("github")  # always included
 
+    # True when running inside GitHub Actions — enables CI annotations and job summary.
+    is_ci = os.environ.get("GITHUB_ACTIONS") == "true"
+
     # Load active waivers from the manifest so waived controls don't count as failures.
     waived_controls = load_active_waivers()
 
@@ -283,7 +286,11 @@ def main():
         elif r == "not_applicable":
             skipped += 1
             (results / f"{control_id}.json").write_text(json.dumps(result))
-            print(f"  ○ {control_id}: not_applicable")
+            scope_msg = result.get("details", {}).get("message", "not in scope for this repository type")
+            print(f"  ○ {control_id}: not_applicable — {scope_msg[:80]}")
+            # Emit a notice annotation so the scope exclusion is visible in the PR.
+            if is_ci:
+                print(f"::notice title={control_id} not in scope::{control_id} is not applicable to this repository type. {scope_msg[:120]}")
         elif r == "manual_review":
             (results / f"{control_id}.json").write_text(json.dumps(result))
             print(f"  ⚠ {control_id}: manual_review")
@@ -299,9 +306,38 @@ def main():
             failed += 1
             msg = result.get("details", {}).get("message", "") if isinstance(result, dict) else str(result)
             print(f"  ✗ {control_id}: {r} — {msg[:80]}")
+            # Emit a GitHub Actions error annotation — visible in PR diff view and summary.
+            if is_ci:
+                print(f"::error title=Policy {control_id} FAILED ({r})::{control_id}: {msg[:200]}")
 
-    print(f"\nResults: {passed} pass, {failed} fail/error, {waived} waived, {skipped} not_applicable")
+    print(f"\nResults: {passed} pass, {failed} fail/error, {waived} waived, {skipped} not in scope")
     print(f"Written to: {results}/")
+
+    # Emit a GitHub Actions job summary table for at-a-glance visibility.
+    summary_file = os.environ.get("GITHUB_STEP_SUMMARY", "")
+    if summary_file and is_ci:
+        try:
+            with open(summary_file, "a") as sf:
+                sf.write("## OPA Policy Gate Results\n\n")
+                sf.write("| Control | Result | Details |\n|---|---|---|\n")
+                for cid in POLICY_MAP:
+                    rf = results / f"{cid}.json"
+                    if not rf.exists():
+                        continue
+                    rd = __import__("json").loads(rf.read_text())
+                    res = rd.get("result", "unknown")
+                    icon = {"pass": "✅", "not_applicable": "⚪", "manual_review": "⚠️"}.get(res, "❌")
+                    detail = rd.get("details", {}).get("message", "")[:80]
+                    note = " _(not in scope)_" if res == "not_applicable" else ""
+                    sf.write(f"| `{cid}` | {icon} {res}{note} | {detail} |\n")
+                sf.write(f"\n**{passed} ✅ pass · {failed} ❌ fail · {waived} 〰️ waived · {skipped} ⚪ not in scope**\n\n")
+                if failed > 0:
+                    sf.write("> ⛔ **Gate will block** — one or more BLOCK-level controls failed. Fix the issues above before merging.\n")
+                else:
+                    sf.write("> ✅ All in-scope checks passed or not applicable.\n")
+        except Exception:
+            pass
+
     # Always exit 0 — gate enforcement (BLOCK vs WARN vs DEFERRED) is evaluated
     # by job 7 using the profile gate criteria, not by this script.
     # Exiting 1 here would prevent jobs 5-7 from running, bypassing proper gate evaluation.
