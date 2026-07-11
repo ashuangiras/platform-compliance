@@ -10,6 +10,20 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-11 — chore: v3.4.0 release record (gate self-caught the release PR)
+
+**Change Record:** CHG-20260711-066
+
+- **The hard gate proved itself on its own release PR.** After v3.4.0 promoted AGT-013 to
+  `block`, the release-record PR — which touched no agent config — was correctly blocked by
+  `AGT-013` because it added no learnings entry. This is the intended behaviour: *every* PR,
+  including chore/release PRs, must record a meaningful agent improvement.
+- **Rule learned**: release/chore PRs are not exempt from agent governance. Budget a learnings
+  entry (and the readiness/retro sections) into every PR, or the merge gate will block it —
+  which is exactly what a hard gate should do.
+
+---
+
 ## 2026-07-11 — feat: enforce agent governance + close the manifest blind spot
 
 **Change Record:** CHG-20260711-066
