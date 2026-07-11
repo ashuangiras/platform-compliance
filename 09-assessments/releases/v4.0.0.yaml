@@ -1,0 +1,70 @@
+$schema: "../../schemas/release-record.schema.json"
+
+# Release record for platform-compliance v4.0.0
+# P0 silent-failure remediation — restores actual policy enforcement.
+#
+# MAJOR bump per ADR-0010: this release adds a new mandatory BLOCKING control to the
+# merge gate (CAT-003) and promotes the 15 AGT controls to `block` in the downstream
+# profiles. ADR-0010 classifies "adding a new mandatory blocking control" and "a
+# policy that was warn becoming block" as breaking (MAJOR) changes.
+
+id: "v4.0.0"
+schema_version: "1.0.0"
+
+release_date: "2026-07-11"
+
+change_record_ids:
+  - CHG-20260711-066   # P0 silent-failure remediation (SF-2, SF-3, SF-4)
+
+gate_assessment_id: "ASSESS-PLATFORM-COMPLIANCE-20260711-066"
+
+release_summary: >
+  P0 silent-failure remediation from the systems architecture audit (2026-07-11).
+  Restores actual policy enforcement across three critical findings:
+
+  - SF-4: aligns the OPA policy runner (job 4) with the gate evaluator (job 7) so
+    both use identical BLOCK-level semantics — CI fails only on block-level control
+    failures; warn-level failures surface as warnings. Gate BLOCK-control resolution
+    now expands the profile `inherits` chain in both jobs.
+  - SF-2: adds all 15 AGT agent-governance controls to the merge_gate of the
+    downstream profiles (PROF-TERRAFORM-ROOT/MODULE/SERVICE) and PROF-PLATFORM-V1,
+    scoped to the agent technology context. Agent governance is now enforced.
+  - SF-3: introduces CAT-003 (manifest completeness) — runs unconditionally and
+    fails when a repository has an agent surface on disk but omits the agent
+    technology context. Detects every surface the AGT collector recognizes and reads
+    declared contexts from the manifest under validation. Adds BIND-CAT-003-GITHUB.
+
+  Breaking (MAJOR) per ADR-0010:
+  - CAT-003 added as a new mandatory blocking control on the merge gate (all repos).
+  - AGT-001..015 promoted to block on the merge gate for repos with the agent context.
+  - Gate BLOCK-control resolution now expands the profile inherits chain, so child
+    profiles enforce parent gate controls (also enforces the v3.3.6 audit controls
+    such as SEC-012 on child service profiles).
+
+breaking_changes: true
+
+migration_guide: >
+  Who is affected: any repository that pins platform-compliance and declares (or
+  should declare) the `agent` technology context.
+
+  What changes: after bumping `platform-compliance-ref` to v4.0.0, the merge gate
+  enforces (block) the 15 AGT agent-governance controls on repos with an `agent`
+  context, and CAT-003 (manifest completeness) blocks unconditionally when an agent
+  surface exists on disk without the `agent` context declared.
+
+  How to migrate:
+    1. If your repository has any agent surface (.github/agents/, .vscode/mcp.json,
+       .github/hooks/, .github/instructions/, .github/prompts/, copilot-instructions.md,
+       AGENTS.md), add `agent` to technology_contexts in .compliance-manifest.yaml.
+    2. Run the merge gate on a branch and triage any AGT-* / CAT-003 failures. Fix the
+       underlying agent configuration (e.g. AGT-012 requires build/test, conventions,
+       and safety sections in your root instructions).
+    3. Once green, bump `platform-compliance-ref` to v4.0.0 on your default branch.
+
+  Migration window: the ADR-0010 4-week pre-release window is WAIVED for this release.
+  Rationale: all current consumers are internal platform repositories that pin
+  `platform-compliance-ref`, so each repository opts into the new enforcement at the
+  moment it chooses to bump its pin — the pin itself provides a per-consumer migration
+  window. No repository is force-upgraded by this tag.
+
+released_by: platform-team

@@ -1,0 +1,63 @@
+$schema: "../../schemas/assessment.schema.json"
+
+# Self-assessment report for platform-compliance v4.0.0 (P0 silent-failure remediation).
+# Generated from the merge_gate CI run on the release commit — all 7 jobs passed
+# with 0 BLOCK-level failures. SRC-001/SRC-002 are covered by active waivers.
+
+id: "ASSESS-PLATFORM-COMPLIANCE-20260711-066"
+schema_version: "1.0.0"
+
+subject:
+  type: release
+  identifier: "https://github.com/ashuangiras/platform-compliance"
+
+profile_id: PROF-PLATFORM-V1
+profile_version: "1.0.0"
+control_catalog_version: "v4.0.0"
+
+assessment_date: "2026-07-11T00:00:00Z"
+
+evidence_window:
+  from: "2026-07-11T00:00:00Z"
+  to: "2026-07-11T23:59:59Z"
+
+# ─── Control results ──────────────────────────────────────────────────────────
+# Summary of the merge_gate OPA run on the release commit:
+#   31 pass, 0 fail/error (0 BLOCK-level), 2 waived, 59 not in scope.
+# The new v4.0.0 controls (CAT-003, AGT-001..015) evaluated pass on this repository.
+control_results:
+  - control_id: CAT-003
+    result: pass
+    evidence_ids: []
+  - control_id: AGT-001
+    result: pass
+    evidence_ids: []
+  - control_id: AGT-008
+    result: pass
+    evidence_ids: []
+  - control_id: AGT-013
+    result: pass
+    evidence_ids: []
+  - control_id: SRC-001
+    result: waived
+    evidence_ids: []
+    failure_reason: "Covered by active waiver WAV-SRC-001-202607-001 (branch protection verified out-of-band)."
+  - control_id: SRC-002
+    result: waived
+    evidence_ids: []
+    failure_reason: "Covered by active waiver WAV-SRC-002-202607-001."
+
+summary:
+  total_controls: 92
+  pass: 31
+  fail: 0
+  manual_review: 0
+  not_applicable: 59
+  waived: 2
+  error: 0
+
+overall_result: pass-with-waivers
+
+generated_by:
+  tool: run-all-policies.py
+  version: "v4.0.0"

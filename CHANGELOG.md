@@ -7,29 +7,28 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [v3.4.0] — 2026-07-11 (CHG-20260711-066)
+## [v4.0.0] — 2026-07-11 (CHG-20260711-066)
 
-### feat(enforcement): P0 silent-failure remediation — restore actual policy enforcement
+### feat(enforcement)!: P0 silent-failure remediation — restore actual policy enforcement
 
 Closes three critical findings from the systems architecture audit (2026-07-11).
 
+**MAJOR / breaking per ADR-0010** — adds a new mandatory blocking control (CAT-003)
+and promotes the 15 AGT controls to `block`. Consumers opt in when they bump their
+pinned `platform-compliance-ref`; see the `migration_guide` in the v4.0.0 release record.
+
 - **SF-4 — gate consistency**: `run-all-policies.py` (job 4) now loads the active
-  profile's gate BLOCK controls and exits non-zero ONLY when a BLOCK-level control
-  fails, matching the gate evaluator (job 7). Warn-level failures emit `::warning::`
-  and no longer fail CI inconsistently. `reusable-compliance.yml` extracts profiles
-  and passes `--profiles-dir/--profile-id/--gate` to the runner.
+  profile's gate BLOCK controls (expanding the `inherits` chain) and exits non-zero
+  ONLY when a BLOCK-level control fails, matching the gate evaluator (job 7).
+  Warn-level failures emit `::warning::` and no longer fail CI inconsistently.
 - **SF-2 — agent governance enforced**: all 15 AGT controls added to the merge_gate
-  of `PROF-TERRAFORM-ROOT-V1`, `PROF-TERRAFORM-MODULE-V1`, and `PROF-SERVICE-V1`
-  with `enforcement: block`, scoped to the `agent` technology_context. Previously no
-  downstream profile gated any AGT control.
+  of `PROF-TERRAFORM-ROOT-V1`, `PROF-TERRAFORM-MODULE-V1`, `PROF-SERVICE-V1`, and
+  `PROF-PLATFORM-V1` with `enforcement: block`, scoped to the `agent` context.
 - **SF-3 — manifest completeness (CAT-003)**: new control + policy that runs
   unconditionally and fails when a repository has an agent surface on disk but omits
-  the `agent` technology_context. Added `BIND-CAT-003-GITHUB` and pass/fail/NA
-  fixtures. `platform-infrastructure` manifest updated to declare `agent`.
-
-BREAKING for consumers: after bumping to v3.4.0, repos with an agent surface must
-declare `agent` context (CAT-003) and will be evaluated against AGT-001..015 at the
-merge gate.
+  the `agent` context. Detects every surface the AGT collector recognizes and reads
+  declared contexts from the manifest under validation. Added `BIND-CAT-003-GITHUB`
+  and pass/fail/NA fixtures.
 
 ---
 
