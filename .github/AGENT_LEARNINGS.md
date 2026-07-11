@@ -10,6 +10,29 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-11 — feat: enforce agent governance + close the manifest blind spot
+
+**Change Record:** CHG-20260711-066
+
+- **Agent policies now actually block (SF-2)**: the 15 AGT controls existed and ran, but no
+  downstream profile listed them in a gate, so agent misconfigurations never blocked a merge.
+  Added AGT-001..015 to the merge_gate of all three downstream profiles (`block`, scoped to the
+  `agent` context). Agent hygiene is now enforced, not just measured.
+- **Undeclared surfaces can no longer hide (SF-3)**: added CAT-003, a control that runs
+  *unconditionally* and fails when a repo has an agent surface on disk but omits the `agent`
+  context. Crucially, CAT-003 must NOT be gated on the surface it inspects — gating it on `agent`
+  would reproduce the exact blind spot it exists to catch. This is the general lesson: a
+  completeness check must run outside the scope it validates.
+- **Gate math is now consistent (SF-4)**: the OPA runner (job 4) and the gate evaluator (job 7)
+  now use identical BLOCK-level semantics. A warn-level policy failure warns; only a BLOCK-level
+  failure fails CI. Previously job 4 failed on *any* policy failure while job 7 blocked only on
+  BLOCK controls — the two disagreed.
+- **Rule learned**: enforcement has three legs — (1) the control is in the consuming profile's
+  gate, (2) the repo declares the matching context, (3) every job that decides pass/fail uses the
+  same block-vs-warn rule. CAT-003 automates leg (2); this change fixes legs (1) and (3).
+
+---
+
 ## 2026-07-10 — fix: profile-aware gate evaluation for downstream repos
 
 **Date:** 2026-07-10

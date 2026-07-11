@@ -1,0 +1,44 @@
+$schema: "../../schemas/change-record.schema.json"
+
+id: "CHG-20260711-066"
+schema_version: "1.0.0"
+
+change_type: "policy"
+
+description: >
+  P0 silent-failure remediation (systems architecture audit 2026-07-11).
+  Restores actual policy enforcement across three silent-failure findings:
+
+  SF-4 (SFR-001): Aligns the OPA policy runner (job 4, run-all-policies.py) with
+  the gate evaluator (job 7) so both agree on BLOCK-level semantics. The runner
+  now loads the active profile's gate BLOCK controls and exits non-zero ONLY when
+  a BLOCK-level control fails; warn-level failures emit ::warning:: and do not
+  fail CI. reusable-compliance.yml extracts profiles to /tmp and passes
+  --profiles-dir/--profile-id/--gate to the runner.
+
+  SF-2 (SFR-002): Adds all 15 AGT agent-governance controls to the merge_gate of
+  PROF-TERRAFORM-ROOT-V1, PROF-TERRAFORM-MODULE-V1, and PROF-SERVICE-V1 with
+  enforcement:block, scoped to the agent technology_context. Previously no
+  downstream profile gated any AGT control, so agent governance was unenforced.
+
+  SF-3 (SFR-004): Introduces CAT-003 (manifest completeness) — a control that runs
+  unconditionally (github context) and fails when a repository has an agent surface
+  on disk (.github/agents/, .vscode/mcp.json, .github/hooks/, copilot-instructions,
+  AGENTS.md) but omits the agent technology_context from its manifest. This closes
+  the blind spot where an undeclared surface silently disables all its controls.
+
+affected_object_ids:
+  - "CAT-003"
+  - "PROF-TERRAFORM-ROOT-V1"
+  - "PROF-TERRAFORM-MODULE-V1"
+  - "PROF-SERVICE-V1"
+  - "BIND-CAT-003-GITHUB"
+
+related_adr_id: "ADR-0017"
+
+breaking: false
+
+author: "platform-team"
+date: "2026-07-11"
+
+review_refs: []

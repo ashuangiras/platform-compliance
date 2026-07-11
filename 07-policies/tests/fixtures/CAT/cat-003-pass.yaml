@@ -1,0 +1,17 @@
+# Fixture: CAT-003 — PASS
+# Scenario: Repository has an agent surface (.github/agents/) and correctly
+#           declares the 'agent' technology context in its manifest.
+# Expected policy result: { "result": "pass" }
+repository:
+  name: platform-infrastructure
+  type: terraform-root
+declared_contexts:
+  - github
+  - github-actions
+  - terraform
+  - agent
+detected_surfaces:
+  agent: true
+surface_evidence:
+  agent:
+    - .github/agents/

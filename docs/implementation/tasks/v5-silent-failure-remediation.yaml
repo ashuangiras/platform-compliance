@@ -1,0 +1,84 @@
+title: Silent-Failure Remediation (Systems Architecture Audit 2026-07-11)
+audit: docs/audits/systems-architecture-audit-2026-07-11.md
+note: >
+  Closes the 10 silent-failure findings (SF-1..SF-10) from the systems architecture audit.
+  Root cause: collaboration contracts are version-pinned but not version-managed. The P0
+  block restores actual enforcement (agent governance + gate consistency + version propagation);
+  P1 prevents recurrence; P2 removes structural fragility.
+phases:
+- id: phase-P0-restore-enforcement
+  title: 'P0 — Restore actual enforcement (agent governance + gate consistency + refs)'
+  horizon: v3.4.0
+  tasks:
+  - id: SFR-001
+    finding: SF-4
+    title: Align job 4 (run-all-policies.py) exit logic with BLOCK-level gate so job 4 and job 7 agree
+    status: done
+  - id: SFR-002
+    finding: SF-2
+    title: Add AGT controls to PROF-TERRAFORM-ROOT-V1, PROF-TERRAFORM-MODULE-V1, PROF-SERVICE-V1 gates (agent-scoped)
+    status: done
+  - id: SFR-003
+    finding: SF-3
+    title: Add 'agent' technology_context to platform-infrastructure manifest
+    status: done
+  - id: SFR-004
+    finding: SF-3
+    title: Add manifest-completeness policy (CAT-003) — repo with agent surface must declare agent context
+    status: done
+  - id: SFR-005
+    finding: SF-2/SF-4
+    title: Full CI validation, merge, release compliance vX.4.0 with P0 fixes
+    status: not-started
+  - id: SFR-006
+    finding: SF-1
+    title: Bump platform-modules/infrastructure/services compliance refs to vX.4.0 and triage surfaced violations
+    status: not-started
+- id: phase-P1-prevent-recurrence
+  title: 'P1 — Prevent recurrence (registry + automated propagation + drift detection)'
+  horizon: v3.5.0
+  tasks:
+  - id: SFR-007
+    finding: SF-6
+    title: Create governed-repos registry (consumers.yaml) with repo, profile, pinned version, contexts
+    status: not-started
+  - id: SFR-008
+    finding: SF-1
+    title: Add compliance-version-check job to reusable workflow (warn/fail on stale pin vs latest)
+    status: not-started
+  - id: SFR-009
+    finding: SF-1
+    title: Add SUP control — governed repos must track compliance within one minor version of latest
+    status: not-started
+  - id: SFR-010
+    finding: SF-5
+    title: Agent-surface baseline policy + forge reconcile (detect + close agent config drift)
+    status: not-started
+- id: phase-P2-reduce-fragility
+  title: 'P2 — Reduce structural fragility (composition + module refs + robust validate)'
+  horizon: v3.6.0
+  tasks:
+  - id: SFR-011
+    finding: SF-8
+    title: Profile composition (extends/base) to eliminate control duplication across profiles
+    status: not-started
+  - id: SFR-012
+    finding: SF-7
+    title: Module-ref consistency policy (all git module refs within one minor version)
+    status: not-started
+  - id: SFR-013
+    finding: SF-9
+    title: Robust terraform validate — distinguish 'cannot run' from 'invalid'; cache module downloads
+    status: not-started
+  - id: SFR-014
+    finding: SF-10
+    title: Canonical cross-repo agent playbook referenced by every repo's copilot-instructions
+    status: not-started
+- id: phase-P3-maturity
+  title: 'P3 — Maturity (platform status dashboard)'
+  horizon: v3.7.0
+  tasks:
+  - id: SFR-015
+    finding: SF-6
+    title: Platform status dashboard — every repo, pinned versions, gate results, drift in one view
+    status: not-started

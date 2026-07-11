@@ -7,6 +7,32 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.4.0] — 2026-07-11 (CHG-20260711-066)
+
+### feat(enforcement): P0 silent-failure remediation — restore actual policy enforcement
+
+Closes three critical findings from the systems architecture audit (2026-07-11).
+
+- **SF-4 — gate consistency**: `run-all-policies.py` (job 4) now loads the active
+  profile's gate BLOCK controls and exits non-zero ONLY when a BLOCK-level control
+  fails, matching the gate evaluator (job 7). Warn-level failures emit `::warning::`
+  and no longer fail CI inconsistently. `reusable-compliance.yml` extracts profiles
+  and passes `--profiles-dir/--profile-id/--gate` to the runner.
+- **SF-2 — agent governance enforced**: all 15 AGT controls added to the merge_gate
+  of `PROF-TERRAFORM-ROOT-V1`, `PROF-TERRAFORM-MODULE-V1`, and `PROF-SERVICE-V1`
+  with `enforcement: block`, scoped to the `agent` technology_context. Previously no
+  downstream profile gated any AGT control.
+- **SF-3 — manifest completeness (CAT-003)**: new control + policy that runs
+  unconditionally and fails when a repository has an agent surface on disk but omits
+  the `agent` technology_context. Added `BIND-CAT-003-GITHUB` and pass/fail/NA
+  fixtures. `platform-infrastructure` manifest updated to declare `agent`.
+
+BREAKING for consumers: after bumping to v3.4.0, repos with an agent surface must
+declare `agent` context (CAT-003) and will be evaluated against AGT-001..015 at the
+merge gate.
+
+---
+
 ## [v3.3.4] — 2026-07-11 (CHG-20260711-039)
 
 ### fix(forge): ComplianceOrg, default ref v3.3.3, tfsec + gitignore for terraform types

@@ -1,0 +1,17 @@
+# Fixture: CAT-003 — FAIL
+# Scenario: Repository has an agent surface (.github/agents/) on disk but the
+#           manifest omits the 'agent' technology context. AGT-* controls would
+#           silently become not_applicable (SF-3).
+# Expected policy result: { "result": "fail" }
+repository:
+  name: platform-infrastructure
+  type: terraform-root
+declared_contexts:
+  - github
+  - github-actions
+  - terraform
+detected_surfaces:
+  agent: true
+surface_evidence:
+  agent:
+    - .github/agents/

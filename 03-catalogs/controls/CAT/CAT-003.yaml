@@ -1,0 +1,65 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: CAT-003
+title: Repository manifest must declare a technology context for every detected surface
+domain: CAT
+type: directive
+priority: P1
+severity: high
+
+statement: >
+  A repository's .compliance-manifest.yaml must declare a technology_context for
+  every governed surface that physically exists in the repository. In particular,
+  a repository that contains an agent surface — any of `.github/agents/`,
+  `.github/copilot-instructions.md`, `AGENTS.md`, `.vscode/mcp.json`, or
+  `.github/hooks/` — MUST include `agent` in its technology_contexts. A manifest
+  that omits a context for a surface that is present is incomplete and MUST fail
+  the merge gate.
+
+rationale: >
+  Compliance enforcement is context-gated: a control only runs when the repository
+  declares the matching technology_context. This makes the manifest the single
+  point of truth for which controls apply. If a repository grows a new surface
+  (for example, someone adds `.github/agents/`) but the manifest is never updated,
+  every control scoped to that surface silently becomes not_applicable and the
+  surface is governed by nothing.
+
+  This is a silent-failure class (SF-3): the pipeline stays green not because the
+  repository is compliant, but because the enforcement never ran. CAT-003 closes
+  the gap by running unconditionally (github context, always present) and detecting
+  the mismatch between what exists on disk and what the manifest declares. Unlike
+  the surface-specific controls, CAT-003 cannot itself be context-gated on the very
+  surface it is checking for — that would reproduce the blind spot.
+
+mapped_standards:
+  - source_id: SRC-CNCF-PLATFORM-MATURITY-V1
+    clause: "Level 2 — Managed: governed surfaces are inventoried and their controls are applied consistently."
+    mapping_note: >
+      CNCF Platform Maturity Level 2 requires that governance be applied
+      consistently across the platform. CAT-003 ensures the manifest — the
+      mechanism that decides which governance applies — is kept complete as
+      repositories evolve.
+
+automation_status: automated
+assessment_cadence: per-commit
+failure_behavior: block
+failure_applies_to:
+  - merge_gate
+
+scope_conditions:
+  - condition: "always"
+    rationale: >
+      Runs on every repository regardless of declared contexts. The control must
+      not be gated on the surface it inspects, otherwise an undeclared surface
+      would never be checked (the exact failure mode CAT-003 exists to prevent).
+
+evidence_required:
+  - type: manifest-completeness-report
+    description: >
+      Machine-generated comparison of detected surfaces against declared
+      technology_contexts in .compliance-manifest.yaml. Passes only when every
+      detected surface has a matching declared context.
+    format: json
+
+lifecycle_status: active
+introduced_date: "2026-07-11"

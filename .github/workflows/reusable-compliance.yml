@@ -232,6 +232,23 @@ jobs:
           fi
           echo "Policy bundle ready: $(find /tmp/platform-compliance-policies -name '*.rego' | wc -l) rego files"
 
+          # Extract profiles so run-all-policies.py can determine BLOCK-level controls
+          # for the active gate (SFR-001 / SF-4: job 4 must agree with job 7).
+          mkdir -p /tmp/platform-compliance-profiles
+          if [ -d /tmp/pc-extract ] && ls /tmp/pc-extract/*/04-profiles/ >/dev/null 2>&1; then
+            cp -r /tmp/pc-extract/*/04-profiles/. /tmp/platform-compliance-profiles/
+          else
+            # Release-asset path didn't include profiles — fetch the archive for them.
+            mkdir -p /tmp/pc-prof-extract
+            PROF_TAG_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/tags/${REF}.tar.gz"
+            PROF_BRANCH_URL="https://github.com/${OWNER}/platform-compliance/archive/refs/heads/${REF}.tar.gz"
+            if curl -sSfL "${PROF_TAG_URL}" -o /tmp/prof.tar.gz 2>/dev/null || curl -sSfL "${PROF_BRANCH_URL}" -o /tmp/prof.tar.gz 2>/dev/null; then
+              tar -xz -f /tmp/prof.tar.gz -C /tmp/pc-prof-extract
+              cp -r /tmp/pc-prof-extract/*/04-profiles/. /tmp/platform-compliance-profiles/ 2>/dev/null || true
+            fi
+          fi
+          echo "Profiles ready: $(ls /tmp/platform-compliance-profiles/*.yaml 2>/dev/null | wc -l) files"
+
           # Extract collector scripts so they are available at a stable absolute
           # path when this workflow is called from a downstream repository whose
           # working directory does not contain 07-policies/scripts/.
@@ -290,7 +307,10 @@ jobs:
             --inputs /tmp/inputs \
             --results /tmp/results \
             --contexts "$CONTEXTS" \
-            --repo-type "$REPO_TYPE"
+            --repo-type "$REPO_TYPE" \
+            --profiles-dir /tmp/platform-compliance-profiles \
+            --profile-id "${{ inputs.profile-id }}" \
+            --gate "${{ inputs.gate }}"
 
           echo "results-path=/tmp/results" >> "$GITHUB_OUTPUT"
 

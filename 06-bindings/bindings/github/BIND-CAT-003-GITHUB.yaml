@@ -1,0 +1,35 @@
+$schema: "../../schemas/binding.schema.json"
+
+id: BIND-CAT-003-GITHUB
+control_id: CAT-003
+technology_context: github
+introduced_date: "2026-07-11"
+status: active
+
+specification: >
+  Every repository must declare a technology_context for each governed surface
+  present on disk. Enforcement runs unconditionally in the github context, which
+  is present on every repository, so the check cannot be evaded by omitting a
+  context.
+
+  For the agent surface specifically, the collector detects any of:
+    - .github/agents/            (agent definition files)
+    - .github/copilot-instructions.md
+    - AGENTS.md
+    - .vscode/mcp.json           (MCP server configuration)
+    - .github/hooks/             (agent lifecycle hooks)
+
+  If any such surface exists but `agent` is not listed in the manifest's
+  technology_contexts, the control fails at the merge gate. The failure lists the
+  detected surfaces and the missing context so the author can update the manifest.
+
+observable_artifact: >
+  Machine-generated cat-manifest.json produced by collect-all-inputs.py.
+  Fields evaluated:
+  - detected_surfaces.agent: bool — an agent surface exists on disk
+  - declared_contexts[]: the technology_contexts declared in .compliance-manifest.yaml
+  A failure is raised when detected_surfaces.agent is true and "agent" is not in
+  declared_contexts.
+
+policy_check_ids:
+  - POL-CAT-003-MANIFEST-001

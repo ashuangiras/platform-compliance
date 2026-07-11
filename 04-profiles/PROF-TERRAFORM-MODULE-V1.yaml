@@ -111,6 +111,56 @@ gates:
       enforcement: block
     - id: RUN-008
       enforcement: block
+    # ── Manifest completeness (CAT-003 / SF-3) — always block ──
+    - id: CAT-003
+      enforcement: block
+    # ── Agent governance (ADR-0017 / SF-2) — block on agent-context repos ──
+    - id: AGT-001
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-002
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-003
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-004
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-005
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-006
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-007
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-008
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-009
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-010
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-011
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-012
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-013
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-014
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+    - id: AGT-015
+      enforcement: block
+      scope_condition: "'agent' in repository.technology_contexts"
+
   release_gate:
     description: 'Evaluated before a module version tag is published.
 

@@ -103,6 +103,29 @@ def main():
         "release_record": None
     }))
 
+    # Manifest completeness (CAT-003) — ALWAYS runs (github context).
+    # Detects governed surfaces on disk and compares them against the declared
+    # technology_contexts. Must NOT be gated on the surface it inspects, otherwise
+    # an undeclared surface would never be checked (SF-3 silent failure).
+    agent_surface_paths = []
+    for candidate in [".github/agents", ".github/copilot-instructions.md",
+                      "AGENTS.md", ".vscode/mcp.json", ".github/hooks"]:
+        if os.path.isdir(candidate):
+            # Directory counts as a surface only if it contains at least one file.
+            try:
+                if any(os.scandir(candidate)):
+                    agent_surface_paths.append(candidate + "/")
+            except OSError:
+                pass
+        elif os.path.isfile(candidate):
+            agent_surface_paths.append(candidate)
+    (out / "cat-manifest.json").write_text(json.dumps({
+        "repository": {"name": repo_name, "type": args.repo_type},
+        "declared_contexts": sorted(contexts),
+        "detected_surfaces": {"agent": len(agent_surface_paths) > 0},
+        "surface_evidence": {"agent": agent_surface_paths},
+    }))
+
     # ── Terraform context ────────────────────────────────────────────────────
     if "terraform" in contexts:
         result = subprocess.run(

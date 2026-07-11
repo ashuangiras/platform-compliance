@@ -87,6 +87,9 @@ POLICY_MAP = {
     "AUD-001":   ("AUD/POL-AUD-001-GITHUB-001.rego",           "aud-security.json",   "data.platform.aud.aud_001_github.result",            ["github"]),
     # ── CAT domain: service catalog controls (PC-0143) ───────────────────────
     "CAT-001":   ("CAT/POL-CAT-001-SERVICE-001.rego",          "doc-files.json",      "data.platform.cat.cat_001_service.result",           ["github"]),
+    # CAT-003: manifest completeness (SF-3). No context gate — must always run so
+    # an undeclared surface (e.g. .github/agents without 'agent' context) is caught.
+    "CAT-003":   ("CAT/POL-CAT-003-MANIFEST-001.rego",         "cat-manifest.json",   "data.platform.cat.cat_003_manifest.result",          ["github"]),
     # ── ADR-0016 P3: Node + Python quality (QUA, TST) ────────────────────────
     "QUA-001-NODE":   ("QUA/POL-QUA-001-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_001_node.result",   ["node"]),
     "QUA-002-NODE":   ("QUA/POL-QUA-002-NODE-001.rego",   "node-info.json",   "data.platform.qua.qua_002_node.result",   ["node"]),
@@ -200,6 +203,35 @@ def load_active_waivers():
     return waived
 
 
+def load_block_controls(profiles_dir, profile_id, gate):
+    """Load the set of BLOCK-level control IDs for the active gate from the profile.
+
+    Mirrors the logic in the gate evaluator (job 7) so job 4 (this script) and job 7
+    agree on what constitutes a blocking failure (SF-4). Returns a set of control IDs,
+    or None if the profile could not be loaded (caller treats None as "all failures
+    block" — the conservative fallback used elsewhere in the pipeline).
+    """
+    if not profiles_dir or not profile_id or not gate:
+        return None
+    profile_path = os.path.join(profiles_dir, f"{profile_id}.yaml")
+    if not os.path.exists(profile_path):
+        return None
+    try:
+        import yaml  # PyYAML is available in the CI runner
+        with open(profile_path) as pf:
+            prof = yaml.safe_load(pf) or {}
+    except Exception:
+        return None
+    block = set()
+    gate_def = prof.get("gates", {}).get(gate, {})
+    for ctrl in gate_def.get("required_controls", []):
+        if isinstance(ctrl, dict) and ctrl.get("enforcement") == "block":
+            cid = ctrl.get("id") or ctrl.get("control_id", "")
+            if cid:
+                block.add(cid)
+    return block
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--bundle", default="/tmp/platform-compliance-policies")
@@ -207,6 +239,9 @@ def main():
     p.add_argument("--results", default="/tmp/results")
     p.add_argument("--contexts", default="github,github-actions")
     p.add_argument("--repo-type", default="platform-repo")
+    p.add_argument("--profiles-dir", default="")
+    p.add_argument("--profile-id", default="")
+    p.add_argument("--gate", default="merge_gate")
     args = p.parse_args()
 
     bundle = Path(args.bundle)
@@ -219,10 +254,15 @@ def main():
     # True when running inside GitHub Actions — enables CI annotations and job summary.
     is_ci = os.environ.get("GITHUB_ACTIONS") == "true"
 
+    # BLOCK-level controls for the active gate (SF-4: job 4 must agree with job 7).
+    # None = profile unavailable → conservative fallback: every failure blocks.
+    block_controls = load_block_controls(args.profiles_dir, args.profile_id, args.gate)
+
     # Load active waivers from the manifest so waived controls don't count as failures.
     waived_controls = load_active_waivers()
 
     total, passed, failed, skipped, waived = 0, 0, 0, 0, 0
+    block_failed = 0  # failures on BLOCK-level controls (drives the exit code)
 
     for control_id, policy_info in POLICY_MAP.items():
         rego_rel = policy_info[0]
@@ -305,12 +345,24 @@ def main():
         else:
             failed += 1
             msg = result.get("details", {}).get("message", "") if isinstance(result, dict) else str(result)
-            print(f"  ✗ {control_id}: {r} — {msg[:80]}")
-            # Emit a GitHub Actions error annotation — visible in PR diff view and summary.
+            # A failure blocks the gate if the control is BLOCK-level (or if we could
+            # not load the profile, in which case block_controls is None → all block).
+            is_block = (block_controls is None) or (control_id in block_controls)
+            if is_block:
+                block_failed += 1
+                tier = "BLOCK"
+            else:
+                tier = "warn"
+            print(f"  ✗ {control_id}: {r} [{tier}] — {msg[:80]}")
             if is_ci:
-                print(f"::error title=Policy {control_id} FAILED ({r})::{control_id}: {msg[:200]}")
+                if is_block:
+                    # Error annotation — this failure will fail the step and block merge.
+                    print(f"::error title=Policy {control_id} FAILED (BLOCK)::{control_id}: {msg[:200]}")
+                else:
+                    # Warning annotation — visible but non-blocking (matches job 7).
+                    print(f"::warning title=Policy {control_id} failed (warn-level)::{control_id}: {msg[:200]}")
 
-    print(f"\nResults: {passed} pass, {failed} fail/error, {waived} waived, {skipped} not in scope")
+    print(f"\nResults: {passed} pass, {failed} fail/error ({block_failed} BLOCK-level), {waived} waived, {skipped} not in scope")
     print(f"Written to: {results}/")
 
     # Emit a GitHub Actions job summary table for at-a-glance visibility.
@@ -330,20 +382,28 @@ def main():
                     detail = rd.get("details", {}).get("message", "")[:80]
                     note = " _(not in scope)_" if res == "not_applicable" else ""
                     sf.write(f"| `{cid}` | {icon} {res}{note} | {detail} |\n")
-                sf.write(f"\n**{passed} ✅ pass · {failed} ❌ fail · {waived} 〰️ waived · {skipped} ⚪ not in scope**\n\n")
-                if failed > 0:
-                    sf.write("> ⛔ **Gate will block** — one or more BLOCK-level controls failed. Fix the issues above before merging.\n")
+                sf.write(f"\n**{passed} ✅ pass · {failed} ❌ fail ({block_failed} BLOCK) · {waived} 〰️ waived · {skipped} ⚪ not in scope**\n\n")
+                if block_failed > 0:
+                    sf.write("> ⛔ **Gate blocked** — one or more BLOCK-level controls failed. Fix the issues above before merging.\n")
+                elif failed > 0:
+                    sf.write("> ⚠️ Warn-level control(s) failed — visible but non-blocking. Review before release.\n")
                 else:
                     sf.write("> ✅ All in-scope checks passed or not applicable.\n")
         except Exception:
             pass
 
-    # Exit non-zero when any policy fails — step turns red, PR blocked immediately.
+    # Exit non-zero ONLY when a BLOCK-level control fails, so job 4 (this step) and
+    # job 7 (gate evaluator) agree on what constitutes a gate failure (SF-4).
+    # Warn-level failures are surfaced as ::warning:: annotations but do not fail the
+    # step. If the profile could not be loaded, block_controls is None and every
+    # failure is treated as blocking (conservative fallback).
     # Jobs 5-7 use 'if: always()' so they still run and provide the full assessment.
-    if failed > 0:
+    if block_failed > 0:
         if is_ci:
-            print(f"::error::OPA gate: {failed} policy failure(s). See error annotations above.")
+            print(f"::error::OPA gate: {block_failed} BLOCK-level policy failure(s). PR merge is blocked. See error annotations above.")
         return 1
+    if failed > 0 and is_ci:
+        print(f"::warning::OPA gate: {failed} warn-level policy failure(s) (non-blocking). Review before release.")
     return 0
 
 
