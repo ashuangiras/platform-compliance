@@ -85,6 +85,43 @@ phases:
         title: "Create formal mapping records for controls missing from 05-mappings/ (RUN-003, etc.)"
         status: not-started
 
+  - id: phase-C-identity
+    title: "Identity provider and SSO — ADR-0020"
+    horizon: "Phase C extension"
+    tasks:
+      - id: PC-0160
+        title: "Ratify ADR-0020 (Authentik identity provider)"
+        status: in-progress
+        note: "ADR-0020 written; authentik context registered"
+      - id: PC-0161
+        title: "Add modules/identity/authentik to platform-modules (PostgreSQL + Redis + Authentik)"
+        status: not-started
+        depends_on: [PC-0160]
+      - id: PC-0162
+        title: "Deploy Authentik in platform-services/identity/"
+        status: not-started
+        depends_on: [PC-0161, PC-0141]
+      - id: PC-0163
+        title: "Configure Grafana OIDC → Authentik"
+        status: not-started
+        depends_on: [PC-0162]
+      - id: PC-0164
+        title: "Configure MinIO OIDC → Authentik"
+        status: not-started
+        depends_on: [PC-0162]
+      - id: PC-0165
+        title: "Add Vault OIDC auth method → Authentik"
+        status: not-started
+        depends_on: [PC-0162]
+      - id: PC-0166
+        title: "Deploy Authentik forward auth proxy for Consul UI + Prometheus"
+        status: not-started
+        depends_on: [PC-0162]
+      - id: PC-0167
+        title: "Define ACC-002 control (SSO mandatory for human-facing services)"
+        status: not-started
+        depends_on: [PC-0163, PC-0164, PC-0165, PC-0166]
+
   - id: phase-D
     title: "Advanced maturity"
     horizon: "v3.0.0+"

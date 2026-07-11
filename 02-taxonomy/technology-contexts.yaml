@@ -109,3 +109,13 @@ contexts:
       The repository uses HashiCorp Consul for service configuration (KV store),
       service discovery, or service mesh (Consul Connect).
     applies_when: "repository declares the 'consul' context (Consul KV, service registration, or Connect in use)"
+
+  authentik:
+    code: authentik
+    description: >
+      The repository integrates with Authentik as the platform identity provider.
+      Applicable to services that use Authentik OIDC/OAuth2 for authentication,
+      the Authentik forward authentication proxy, or that configure Authentik
+      applications/providers. Governs SSO integration, token validation, and
+      role/group mapping from Authentik to service-level permissions.
+    applies_when: "repository declares the 'authentik' context (OIDC integration, forward auth, or Authentik application configuration present)"
