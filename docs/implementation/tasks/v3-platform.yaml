@@ -85,6 +85,43 @@ phases:
         title: "Create formal mapping records for controls missing from 05-mappings/ (RUN-003, etc.)"
         status: not-started
 
+  - id: phase-C-identity
+    title: "Identity provider and SSO — ADR-0020"
+    horizon: "Phase C extension"
+    tasks:
+      - id: PC-0160
+        title: "Ratify ADR-0020 (Authentik in platform-infrastructure, automated SSO integration)"
+        status: in-progress
+        note: "ADR-0020 written; authentik context registered; Authentik in platform-infrastructure not platform-services"
+      - id: PC-0161
+        title: "Add modules/identity/postgresql + redis + authentik to platform-modules"
+        status: not-started
+        depends_on: [PC-0160]
+      - id: PC-0162
+        title: "Add identity/ component to platform-infrastructure (deploys Authentik stack)"
+        status: not-started
+        depends_on: [PC-0161, PC-0137]
+      - id: PC-0163
+        title: "Add integrations/ component to platform-infrastructure (Vault OIDC + MinIO OIDC + Authentik app declarations — all Terraform-managed)"
+        status: not-started
+        depends_on: [PC-0162]
+      - id: PC-0164
+        title: "Migrate Grafana in platform-services to Authentik OIDC (env vars from integrations output)"
+        status: not-started
+        depends_on: [PC-0163]
+      - id: PC-0165
+        title: "Deploy Authentik forward auth proxy for Consul UI and Prometheus"
+        status: not-started
+        depends_on: [PC-0163]
+      - id: PC-0166
+        title: "Remove all static admin credentials from tfvars (MinIO, Grafana) — replaced by OIDC"
+        status: not-started
+        depends_on: [PC-0164, PC-0165]
+      - id: PC-0167
+        title: "Define ACC-002 control (SSO mandatory for all human-facing platform services)"
+        status: not-started
+        depends_on: [PC-0166]
+
   - id: phase-D
     title: "Advanced maturity"
     horizon: "v3.0.0+"
