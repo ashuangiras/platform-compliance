@@ -1,0 +1,74 @@
+$schema: "../../../schemas/control.schema.yaml"
+
+id: REL-001
+title: Services must declare SLO targets in their service contract before reaching production
+domain: REL
+type: directive
+priority: P1
+severity: medium
+
+statement: >
+  Every service registered in the service catalog must declare at least one
+  Service Level Objective (SLO) target in its service contract before the service
+  is deployed to a production environment. The SLO must specify:
+
+  1. The SLI (Service Level Indicator) being measured (e.g., availability,
+     latency, error rate)
+  2. The target value (e.g., 99.9% availability over a rolling 30-day window)
+  3. The measurement window (e.g., 30d, 7d)
+
+  An SLO target of "TBD" or an empty placeholder is not compliant.
+
+rationale: >
+  An SLO is the operational commitment behind a service. Without a declared SLO,
+  there is no shared understanding of what "working correctly" means, no basis for
+  incident response prioritisation, and no way to measure whether reliability is
+  improving or degrading over time.
+
+  Declaring the SLO in the service contract makes the commitment visible to
+  consumers, operators, and the compliance system. It enables error budget
+  calculation and provides the input for automated alerting (REL-002).
+
+mapped_standards:
+  - source_id: SRC-GOOGLE-SRE
+    clause: "Chapter 4 — Service Level Objectives: every production service must have
+      an SLO; the SLO is the threshold below which operator action is required."
+    mapping_note: >
+      Google SRE Chapter 4 defines SLOs as the foundation of reliability engineering.
+      REL-001 mandates the declaration of this threshold for every platform service,
+      making the SRE principle machine-verifiable.
+  - source_id: SRC-AWS-WAF-2024
+    clause: "REL 02 — How do you plan your network topology? Best practice: define
+      availability and recovery targets for each workload component."
+    mapping_note: >
+      AWS WAF reliability practices require explicit availability targets to be
+      defined for each workload. REL-001 implements this as a governance control
+      enforced at service registration time.
+  - source_id: SRC-CNCF-PLATFORM-MATURITY-V1
+    clause: "Level 3 — Scaling: SLOs are defined for platform services; error
+      budgets are tracked and used for change management decisions."
+    mapping_note: >
+      CNCF Platform Maturity Level 3 requires SLO-driven operations. REL-001
+      is the first gate: SLOs must be declared before a service reaches production.
+
+automation_status: partially-automated
+assessment_cadence: per-deployment
+failure_behavior: warn
+failure_applies_to:
+  - deployment_gate
+
+scope_conditions:
+  - condition: "repository.type == 'service'"
+    rationale: >
+      Applies only to service repositories. Infrastructure repositories do not
+      have SLOs in the traditional sense.
+
+evidence_required:
+  - type: service-contract-file
+    description: >
+      service-contracts/<service-id>.yaml with a non-empty slo.availability_target
+      field (or equivalent SLI target). The value must not be "TBD" or empty.
+    format: yaml
+
+lifecycle_status: active
+introduced_date: "2026-07-11"

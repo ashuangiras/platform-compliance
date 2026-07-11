@@ -65,12 +65,13 @@ phases:
         note: "CAT-001 and CAT-002 controls defined + schema-validated; CAT-001 OPA policy in progress (PC-0143)"
       - id: PC-0143
         title: "Register all platform services in service catalog"
-        status: in-progress
+        status: done
         depends_on: [PC-0142, PC-0141]
-        note: "CAT-001 OPA policy + binding in PR #50; service contracts exist in platform-services"
+        note: "CAT-001 OPA policy live; platform-services has service-contracts/ (prometheus.yaml, grafana.yaml)"
       - id: PC-0144
         title: "Define REL-001 and REL-002 controls (reliability domain)"
-        status: not-started
+        status: in-progress
+        note: "REL-001 and REL-002 controls defined in PR #51"
       - id: PC-0145
         title: "Create PROF-STAGING-V1 and PROF-PRODUCTION-V1 profiles"
         status: done
@@ -118,12 +119,14 @@ phases:
         depends_on: [PC-0154]
       - id: PC-0156
         title: "Deploy time-series database for SLO tracking (Prometheus or equivalent)"
-        status: not-started
+        status: done
         depends_on: [PC-0141]
+        note: "Prometheus deployed in platform-services as first service (PC-0141)"
       - id: PC-0157
         title: "Define SLI/SLO for first platform service"
-        status: not-started
+        status: in-progress
         depends_on: [PC-0144, PC-0156]
+        note: "SLO targets + error budget policies in platform-services PR #3"
       - id: PC-0158
         title: "Activate REL-001 (SLO declaration required) in platform profiles"
         status: not-started
