@@ -16,13 +16,21 @@ default result := {
     "details": {"message": "CAT-001 policy error: missing input data"},
 }
 
+# Helper: true only when repository.type is explicitly "service".
+# Using a helper avoids the OPA undefined-reference pitfall:
+# `undefined != "service"` evaluates to false (not true), so the
+# not_applicable rule would never fire if repository.type is absent.
+is_service_repo if {
+    input.repository.type == "service"
+}
+
 # ─── NOT APPLICABLE ───────────────────────────────────────────────────────────
 # Only service repositories require service contracts.
 result := {
     "result": "not_applicable",
     "details": {"message": "CAT-001: not applicable to non-service repositories"},
 } if {
-    input.repository.type != "service"
+    not is_service_repo
 }
 
 # ─── NOT APPLICABLE (no files input) ──────────────────────────────────────────
