@@ -7,6 +7,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v3.3.4] — 2026-07-11 (CHG-20260711-039)
+
+### fix(forge): ComplianceOrg, default ref v3.3.3, tfsec + gitignore for terraform types
+
+- `ComplianceOrg` was never set in TemplateVars — compliance workflow rendered with empty org
+  prefix (`/platform-compliance/...` instead of `ashuangiras/platform-compliance/...`)
+- Default `ComplianceRef` updated from hardcoded `v2.6.0` to `v3.3.3`
+- Terraform repos (`terraform-module`, `terraform-root`) now always get
+  `.github/workflows/terraform-security.yml` and `.gitignore` in the forge scaffold
+
+---
+
 ## [v3.3.3] — 2026-07-11 (CHG-20260711-036)
 
 ### feat(forge): role-appropriate agent stubs per repo type
