@@ -92,6 +92,15 @@
       },
       "description": "Compliance profile IDs from 04-profiles/. At least one required. The listed profiles drive all gate checks."
     },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "development",
+        "staging",
+        "production"
+      ],
+      "description": "Committed, governed deployment-environment declaration used by SEC-013 (TLS enforcement) and other environment-sensitive controls. This is the source of truth for the repository's environment, replacing the gitignored terraform.tfvars (which CI cannot read, so it always defaulted to 'staging' and masked production). Fail-safe semantics: this field is OPTIONAL, but when it is ABSENT on a terraform-root repository, tooling MUST treat the environment as 'production' (TLS is enforced unless a repo explicitly declares 'staging' or 'development'). Absence therefore defaults to the secure behavior."
+    },
     "technology_contexts": {
       "type": "array",
       "minItems": 1,

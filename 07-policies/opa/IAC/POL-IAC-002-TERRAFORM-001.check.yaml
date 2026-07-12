@@ -1,13 +1,20 @@
 id: POL-IAC-002-TERRAFORM-001
-title: Terraform plan was reviewed and approved before apply
+title: Terraform plan was generated for the head commit and approved before apply
 binding_ids:
 - BIND-IAC-002-TERRAFORM
 engine: opa
 file_path: 07-policies/opa/IAC/POL-IAC-002-TERRAFORM-001.rego
-pass_criteria: plan_reviewed is true AND approval_after_plan is true. Not applicable
-  for non-terraform-root repositories.
-fail_criteria: No reviewed plan exists for the commit being applied, or PR was not
-  approved after the plan was posted.
+input_file: iac-plan-review.json
+pass_criteria: For a terraform-root repository in a pull-request context that changes
+  one or more .tf files, a plan was generated for the PR head commit (plan_commit_sha
+  == head_sha) and at least one APPROVED review was submitted after the plan was posted
+  (submitted_at > plan_posted_at). Not applicable for non-terraform-root repositories,
+  when there is no pull-request context (push-to-main, tag/release, plan-not-yet-run),
+  or when the pull request changes no .tf files.
+fail_criteria: A terraform-root pull request changes one or more .tf files but no plan
+  was generated for the head commit (plan_commit_sha != head_sha or plan_generated
+  false), or a plan exists for the head commit but no approving review was submitted
+  after the plan was posted (stale or missing approval).
 evidence_type: terraform-plan-pr-comment
 severity: high
 introduced_date: '2026-07-09'

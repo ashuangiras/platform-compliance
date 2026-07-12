@@ -74,6 +74,15 @@ chg-pr-context.json:
   script: ""
   interpreter: bash
 
+# IAC-002 (P0-3) Terraform plan-review evidence. Requires PR context + `gh` (PR
+# comments/reviews), which forge's per-repo-dir invocation cannot supply — so there
+# is no standalone script. Produced by collect-all-inputs.py from PR comments and
+# reviews; yields {pr_context: false} (⇒ not_applicable) when there is no PR
+# context or the repo is not a terraform-root.
+iac-plan-review.json:
+  script: ""
+  interpreter: bash
+
 chg-release.json:
   script: ""
   interpreter: bash

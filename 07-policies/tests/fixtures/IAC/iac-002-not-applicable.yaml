@@ -1,0 +1,9 @@
+# Fixture: IAC-002 — NOT APPLICABLE
+# Scenario: a terraform-module repository (not terraform-root). Plan review is only
+#   gated for terraform-root repositories, so this is not applicable.
+# Input file: iac-plan-review.json (no-PR / non-root shape)
+# Expected policy result: { "result": "not_applicable" }
+repository:
+  name: platform-modules
+  type: terraform-module
+pr_context: false

@@ -1,0 +1,90 @@
+$schema: "../../schemas/assessment.schema.json"
+
+# Self-assessment report for platform-compliance v4.1.0 (P0 security tier).
+# This release activates two TERRAFORM enforcement controls (IAC-002 plan-before-apply on the
+# deployment_gate/release_gate, and SEC-013 TLS de-masking via the governed `environment`
+# field) and ratifies two additive optional schema fields (`environment`, `input_file`).
+# platform-compliance is the governance repo (repository.type = platform-repo, PROF-PLATFORM-V1,
+# no terraform context), so both terraform-scoped controls evaluate not_applicable here and the
+# catalog totals are unchanged from v4.0.3. Verified locally: `opa check 07-policies/opa/` clean;
+# IAC-002 fixtures pass/fail/fail-stale-approval/not_applicable as expected; SEC-013 fixtures
+# staging-na/production-fail/production-pass as expected; all changed *.check.yaml and the
+# BIND-IAC-002 binding validate against their schemas. SRC-001/SRC-002 remain covered by active
+# waivers (single-developer bootstrap).
+
+id: "ASSESS-PLATFORM-COMPLIANCE-20260712-070"
+schema_version: "1.0.0"
+
+subject:
+  type: release
+  identifier: "https://github.com/ashuangiras/platform-compliance"
+
+profile_id: PROF-PLATFORM-V1
+profile_version: "1.0.0"
+control_catalog_version: "v4.1.0"
+
+assessment_date: "2026-07-12T00:00:00Z"
+
+evidence_window:
+  from: "2026-07-12T00:00:00Z"
+  to: "2026-07-12T23:59:59Z"
+
+# ─── Control results ──────────────────────────────────────────────────────────
+# Representative results for the release_gate OPA run on the v4.1.0 commit. IAC-002 and SEC-013
+# are terraform-scoped; platform-compliance is not a terraform-root and declares no terraform
+# context, so both evaluate not_applicable here (their behavioral changes are exercised by the
+# terraform fixtures, all green). SRC-001/SRC-002 remain waived.
+control_results:
+  - control_id: IAC-002
+    result: not_applicable
+    evidence_ids: []
+    failure_reason: "Not applicable — platform-compliance is not a terraform-root repository (IAC-002 is deployment_gate/release_gate scoped to repository.type == 'terraform-root')."
+  - control_id: SEC-013
+    result: not_applicable
+    evidence_ids: []
+    failure_reason: "Not applicable — platform-compliance declares no terraform context and has no .tf files (SEC-013 is terraform TLS enforcement)."
+  - control_id: SUP-001
+    result: pass
+    evidence_ids: []
+  - control_id: CHG-002
+    result: pass
+    evidence_ids: []
+  - control_id: SEC-001
+    result: pass
+    evidence_ids: []
+  - control_id: CAT-003
+    result: pass
+    evidence_ids: []
+  - control_id: AGT-013
+    result: pass
+    evidence_ids: []
+  - control_id: AGT-014
+    result: pass
+    evidence_ids: []
+  - control_id: SRC-001
+    result: waived
+    evidence_ids: []
+    failure_reason: "Covered by active waiver WAV-SRC-001-202607-001 (branch protection verified out-of-band)."
+  - control_id: SRC-002
+    result: waived
+    evidence_ids: []
+    failure_reason: "Covered by active waiver WAV-SRC-002-202607-001."
+
+summary:
+  total_controls: 92
+  pass: 31
+  fail: 0
+  manual_review: 0
+  not_applicable: 59
+  waived: 2
+  error: 0
+
+overall_result: pass-with-waivers
+
+gate_evaluation:
+  gate_id: release_gate
+  gate_result: pass-with-warnings
+
+generated_by:
+  tool: run-all-policies.py
+  version: "v4.1.0"

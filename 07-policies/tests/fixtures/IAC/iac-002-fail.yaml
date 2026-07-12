@@ -1,0 +1,18 @@
+# Fixture: IAC-002 — FAIL (no plan generated)
+# Scenario: terraform-root pull request changing main.tf but no plan was generated for
+#   the applied head commit (plan_generated: false) — no plan evidence exists.
+# Input file: iac-plan-review.json (PR-context shape)
+# Expected policy result: { "result": "fail" }
+repository:
+  name: platform-infrastructure
+  type: terraform-root
+pr_context: true
+head_sha: 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+changed_tf_files:
+- main.tf
+plan_generated: false
+plan_commit_sha: null
+plan_posted_at: null
+plan_summary: null
+plan_artifact_url: null
+approving_reviews: []

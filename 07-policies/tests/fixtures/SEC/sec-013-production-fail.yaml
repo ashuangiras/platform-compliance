@@ -1,0 +1,16 @@
+# Fixture: SEC-013 — FAIL (production with a TLS violation)
+# Scenario: declared_environment=production with one tls_disabled_configs entry and
+#   non-empty module_calls. Enforced environments must have zero TLS violations.
+# Input file: iac-terraform.json
+# Expected policy result: { "result": "fail" }
+repository:
+  name: platform-infrastructure
+  type: terraform-root
+declared_environment: production
+tls_disabled_configs:
+- file: providers.tf
+  line: 17
+  pattern: insecure = true
+module_calls:
+- name: networking
+  source: ./modules/networking

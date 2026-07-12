@@ -1,0 +1,71 @@
+$schema: "../../schemas/release-record.schema.json"
+
+# Release record for platform-compliance v4.1.0
+# MINOR — P0 security tier. Activates two terraform enforcement controls that were present but
+# not actually enforcing (IAC-002 plan-before-apply; SEC-013 TLS de-masking) and ratifies two
+# additive OPTIONAL schema fields (`environment`, `input_file`).
+#
+# Per ADR-0010 this is a MINOR release, not a MAJOR break:
+#   * Adding a new OPA policy/binding for an already-gated control (IAC-002) → MINOR.
+#   * Adding optional schema fields (`environment`, `input_file`) → MINOR.
+#   * None of the six MAJOR triggers are met: no new mandatory blocking control on the
+#     MERGE gate (IAC-002 is deployment_gate/release_gate only), no warn/notify→block flip on
+#     an existing gate, no removed waiver pathway, no schema narrowing/required-field removal,
+#     no profile removal.
+#   * SEC-013 de-masking fails safe (absent environment ⇒ "production" ⇒ enforce) and the only
+#     registered consumer, platform-infrastructure, declares environment: staging, so no
+#     currently-passing consumer gate newly blocks.
+
+id: "v4.1.0"
+schema_version: "1.0.0"
+
+release_date: "2026-07-12"
+
+change_record_ids:
+  - CHG-20260712-070   # v4.1.0 — P0 security tier: IAC-002 enforcing + SEC-013 env de-masking + input_file/environment schema fields
+  - CHG-20260711-069   # v4.0.3 — SUP-001 honors git ?ref pinning; exempts local modules (provenance)
+
+gate_assessment_id: "ASSESS-PLATFORM-COMPLIANCE-20260712-070"
+
+release_summary: >
+  MINOR release — P0 security tier. Activates two terraform enforcement controls that were
+  present but not actually enforcing, and ratifies the governed inputs they depend on.
+  breaking_changes: false.
+
+  P0-3 — IAC-002 (plan-before-apply): POL-IAC-002-TERRAFORM-001 was reworked from a placeholder
+  shape into a real enforcing policy consuming the collected "iac-plan-review.json" input. For a
+  terraform-root repository in a pull-request context that changes one or more .tf files, it
+  requires a plan generated for the PR head commit (plan_commit_sha == head_sha) AND at least
+  one APPROVED review submitted AFTER the plan was posted (stale approvals do not count). It is
+  not_applicable for non-terraform-root repos, when there is no PR context (push-to-main,
+  tag/release, plan-not-yet-run), or when the PR changes no .tf files. IAC-002 is wired ONLY
+  into the deployment_gate and release_gate (terraform-root) — NEVER the merge_gate — so it
+  gates applies without slowing every-PR merges.
+
+  P0-7 — governed environment field: SEC-013 (TLS enforcement) previously keyed applicability
+  off declared_environment sourced from the gitignored terraform.tfvars, which CI cannot read,
+  so it always resolved to "staging" → not_applicable and never enforced. The environment
+  declaration now lives in a committed, governed OPTIONAL field ("environment", enum
+  development|staging|production) in repository-compliance.schema.json, mirrored into the OPA
+  input as declared_environment. SEC-013 FAILS SAFE: an absent/empty environment is treated as
+  "production" (TLS enforced), so a repo that omits the declaration is held to the strict
+  standard, not silently exempted. A repo that explicitly declares "staging" stays
+  not_applicable.
+
+  input_file convention: policy-check.schema.json gained an OPTIONAL "input_file" field so a
+  *.check.yaml names the collected OPA input document its policy consumes, making the
+  collector → POLICY_MAP → policy wiring self-documenting and auditable.
+
+  Both schema changes are purely ADDITIVE optional fields (no required-field removal, no enum
+  narrowing). Verified: opa check clean; IAC-002 fixtures pass/fail/fail-stale-approval/
+  not_applicable; SEC-013 fixtures staging-na/production-fail/production-pass; all changed
+  governance objects schema-validate. change_record_ids chains back to CHG-20260711-069 for
+  provenance.
+
+  OPERATOR ACTION for consuming terraform repositories: declare "environment:" (development,
+  staging, or production) in .compliance-manifest.yaml. Absence defaults to "production" and
+  will enforce SEC-013 TLS. platform-infrastructure already declares environment: staging.
+
+breaking_changes: false
+
+released_by: platform-team

@@ -10,6 +10,48 @@ agents more effective* — not just what files changed.
 
 ---
 
+## 2026-07-12 — feat(security): P0 security tier — fail-safe environment de-masking + deployment-only gate discipline
+
+**Change Record:** CHG-20260712-070
+
+- **A control that reads its scoping signal from a source CI cannot see is a silently-disabled
+  control.** SEC-013 (TLS enforcement) keyed applicability off `declared_environment`, which the
+  collector sourced from the gitignored `terraform.tfvars`. CI never reads `.tfvars`, so the
+  value always resolved to `staging` → `not_applicable` forever: the control looked active but
+  never enforced. The fix moves the environment declaration to a *committed, governed* field
+  (`environment` in `.compliance-manifest.yaml`, mirrored into the OPA input as
+  `declared_environment`). Lesson for **collector-engineer** and **policy-engineer**: an input
+  a collector cannot actually read in CI is not an input — trace every scoping field back to a
+  source that is present in the CI checkout before trusting a `not_applicable`.
+- **Absence must fail safe to the *secure* default, never the permissive one.** The new
+  `environment` field is OPTIONAL, but the SEC-013 policy treats an absent/empty value as
+  `production` (enforce TLS), so a repo that simply forgets to declare its environment is held
+  to the strict standard rather than silently exempted. Ratified as a design rule: optional
+  governance fields that gate enforcement must default to enforcement, and the schema
+  `description` must state the fail-safe explicitly (added to the `environment` field docs).
+- **Deployment-only controls must stay out of the merge gate.** IAC-002 (plan-before-apply) was
+  reworked from a stub into a real enforcing policy consuming `iac-plan-review.json`, but it is
+  wired ONLY into the `deployment_gate` and `release_gate` (terraform-root) — never the
+  `merge_gate`. This keeps every-PR merges fast while still blocking un-reviewed applies.
+  Lesson for **control-author** and **compliance-reviewer**: when adding a blocking policy,
+  verify its gate membership explicitly; a deployment/release-only control in the merge gate
+  would break every PR. Merge-gate isolation is now a standard review checkpoint.
+- **The `input_file` convention is now schema-ratified.** `policy-check.schema.json` gained an
+  optional `input_file` field so a `*.check.yaml` names the collected OPA input document it
+  consumes, making the collector→POLICY_MAP→policy wiring self-documenting and auditable.
+  Lesson for **policy-engineer**: declare the consumed input in `check.yaml` so
+  compliance-reviewer can verify the collector actually produces it.
+- **Versioning:** classified **MINOR (v4.1.0)** per ADR-0010 — additive optional schema fields
+  and a new OPA policy for an already-gated control, with no MAJOR trigger met (no merge-gate
+  blocking control, no warn→block flip, no schema narrowing, no waiver/profile removal) and no
+  currently-passing registered consumer newly blocked (platform-infrastructure declares
+  `environment: staging`). Lesson for **release-manager**: a fail-safe security de-masking that
+  restores intended-but-never-active enforcement, with no registered consumer regression, is a
+  MINOR feature — not a MAJOR break — but the CHANGELOG must carry an explicit operator action
+  (declare `environment:`) so downstream repos are not surprised.
+
+---
+
 ## 2026-07-11 — fix(policy): a pinning policy must classify dependency SOURCE before choosing its signal
 
 **Change Record:** CHG-20260711-069

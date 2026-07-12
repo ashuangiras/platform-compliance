@@ -1,0 +1,13 @@
+# Fixture: SEC-013 — PASS (production, no TLS violations)
+# Scenario: declared_environment=production, empty tls_disabled_configs, non-empty
+#   module_calls. TLS verification is not disabled anywhere.
+# Input file: iac-terraform.json
+# Expected policy result: { "result": "pass" }
+repository:
+  name: platform-infrastructure
+  type: terraform-root
+declared_environment: production
+tls_disabled_configs: []
+module_calls:
+- name: networking
+  source: ./modules/networking

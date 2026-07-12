@@ -207,20 +207,34 @@ for call in module_calls:
         })
 
 # ── SEC-013: TLS disabled / insecure provider configs ─────────────────────────
-# Detect declared environment: prefer terraform.tfvars (gitignored, local only)
-# then fall back to terraform.tfvars.example (committed, has placeholder comment).
-declared_environment = ""
-for tfvars_candidate in [repo_root / 'terraform.tfvars', repo_root / 'terraform.tfvars.example']:
+# Declared environment source (P0-7): the committed .compliance-manifest.yaml
+# top-level `environment` field is the single source of truth. terraform.tfvars is
+# gitignored and is NO LONGER read for this. Fail-safe: if the field is absent, the
+# manifest is missing, or it cannot be parsed, treat the environment as the
+# strictest tier "production" (NOT staging). Reuses the optional _yaml_mod import +
+# regex fallback pattern already used above for repository_type.
+declared_environment = "production"
+if manifest_path.exists():
     try:
-        if tfvars_candidate.exists():
-            for line in tfvars_candidate.read_text().splitlines():
-                # Match: environment = "staging"  OR  # environment = "staging"
-                m = re.match(r'^\s*#?\s*environment\s*=\s*"([^"]+)"', line)
-                if m:
-                    declared_environment = m.group(1)
-                    break
-        if declared_environment:
-            break
+        manifest_env_text = manifest_path.read_text()
+        parsed_env = None
+        if _yaml_mod is not None:
+            try:
+                manifest_env_data = _yaml_mod.safe_load(manifest_env_text)
+                if isinstance(manifest_env_data, dict):
+                    _env = manifest_env_data.get('environment')
+                    if isinstance(_env, str) and _env.strip():
+                        parsed_env = _env.strip()
+            except Exception:
+                parsed_env = None
+        if parsed_env is None:
+            # Regex fallback: top-level `environment: <value>` (no indentation).
+            m = re.search(r'^environment:\s*["\']?([A-Za-z0-9_-]+)["\']?\s*$',
+                          manifest_env_text, re.MULTILINE)
+            if m:
+                parsed_env = m.group(1)
+        if parsed_env:
+            declared_environment = parsed_env
     except Exception:
         pass
 
