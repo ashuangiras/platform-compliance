@@ -1,0 +1,18 @@
+# Fixture: SEC-013 — NOT APPLICABLE (staging defers TLS enforcement)
+# Scenario: declared_environment=staging WITH a tls_disabled_configs violation present
+#   and non-empty module_calls. Proves staging defers enforcement even when a TLS
+#   violation exists, and that the staging not_applicable branch is mutually exclusive
+#   with the "no terraform files" not_applicable branch (no eval_conflict_error).
+# Input file: iac-terraform.json
+# Expected policy result: { "result": "not_applicable" }
+repository:
+  name: platform-services-staging
+  type: terraform-root
+declared_environment: staging
+tls_disabled_configs:
+- file: main.tf
+  line: 42
+  pattern: skip_tls_verify = true
+module_calls:
+- name: vault
+  source: ./modules/vault

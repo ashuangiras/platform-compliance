@@ -50,6 +50,11 @@
       "description": "Relative path to the policy file within 07-policies/.",
       "examples": ["07-policies/opa/SRC/POL-SRC-001-GITHUB-001.rego"]
     },
+    "input_file": {
+      "type": "string",
+      "description": "Name of the collected OPA input document this policy consumes (produced by its collector). Optional.",
+      "examples": ["iac-plan-review.json", "terraform-state.json"]
+    },
     "pass_criteria": {
       "type": "string",
       "minLength": 10,

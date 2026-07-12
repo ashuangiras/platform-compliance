@@ -1,0 +1,25 @@
+# Fixture: IAC-002 — FAIL (stale approval)
+# Scenario: terraform-root pull request changing main.tf; a plan was generated for the
+#   head commit (plan_commit_sha == head_sha), but the only APPROVED review was
+#   submitted BEFORE the plan was posted (submitted_at < plan_posted_at) — a stale
+#   approval that does not cover the current plan.
+# Input file: iac-plan-review.json (PR-context shape)
+# Expected policy result: { "result": "fail" }
+repository:
+  name: platform-infrastructure
+  type: terraform-root
+pr_context: true
+head_sha: 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+changed_tf_files:
+- main.tf
+plan_generated: true
+plan_commit_sha: 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+plan_posted_at: '2026-07-12T10:00:00Z'
+plan_summary:
+  add: 1
+  change: 0
+  destroy: 0
+plan_artifact_url: https://github.com/org/platform-infrastructure/actions/runs/124/artifacts/457
+approving_reviews:
+- state: APPROVED
+  submitted_at: '2026-07-12T09:00:00Z'

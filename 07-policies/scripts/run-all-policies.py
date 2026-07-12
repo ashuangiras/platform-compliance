@@ -21,7 +21,7 @@ POLICY_MAP = {
     "CHG-001": ("CHG/POL-CHG-001-GITHUB-001.rego",       "chg-pr-context.json",          "data.platform.chg.chg_001_github.result"),
     "CHG-002": ("CHG/POL-CHG-002-GITHUB-001.rego",       "chg-release.json",             "data.platform.chg.chg_002_github.result"),
     "IAC-001": ("IAC/POL-IAC-001-TERRAFORM-001.rego",    "iac-terraform.json",           "data.platform.iac.iac_001_terraform.result",    ["terraform"]),
-    "IAC-002": ("IAC/POL-IAC-002-TERRAFORM-001.rego",    "iac-terraform.json",           "data.platform.iac.iac_002_terraform.result",    ["terraform"]),
+    "IAC-002": ("IAC/POL-IAC-002-TERRAFORM-001.rego",    "iac-plan-review.json",         "data.platform.iac.iac_002_terraform.result",    ["terraform"]),
     "SUP-001-TF": ("SUP/POL-SUP-001-TERRAFORM-001.rego", "iac-terraform.json",           "data.platform.sup.sup_001_terraform.result",    ["terraform"]),
     "RUN-001": ("RUN/POL-RUN-001-DOCKER-001.rego",       "docker-info.json",             "data.platform.run.run_001_docker.result",        ["docker"]),
     "RUN-002": ("RUN/POL-RUN-002-DOCKER-001.rego",       "docker-info.json",             "data.platform.run.run_002_docker.result",        ["docker"]),

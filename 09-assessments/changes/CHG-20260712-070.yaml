@@ -1,0 +1,82 @@
+$schema: "../../schemas/change-record.schema.json"
+
+id: "CHG-20260712-070"
+schema_version: "1.0.0"
+
+change_type: "policy"
+
+description: >
+  v4.1.0 MINOR — P0 security tier. Activates two Terraform enforcement controls that were
+  present but not actually enforcing, and ratifies the governed inputs they depend on. No
+  MAJOR trigger is met (no merge-gate blocking control, no warn→block flip on an existing
+  gate, no schema narrowing, no waiver/profile removal), so per ADR-0010 this is a MINOR
+  feature release, not a breaking change.
+
+  P0-3 (IAC-002 plan-before-apply): POL-IAC-002-TERRAFORM-001 was reworked from a placeholder
+  shape into a real enforcing policy that consumes the collected "iac-plan-review.json" input.
+  For a terraform-root repository in a pull-request context that changes one or more .tf files,
+  it requires a plan generated for the PR head commit (plan_commit_sha == head_sha) AND at
+  least one APPROVED review submitted AFTER the plan was posted (stale approvals do not count).
+  It is not_applicable for non-terraform-root repos, when there is no PR context (push-to-main,
+  tag/release, plan-not-yet-run), or when the PR changes no .tf files. IAC-002 is wired ONLY
+  into the deployment_gate and release_gate (terraform-root) — never the merge_gate — so it
+  gates applies without slowing every PR merge.
+
+  P0-7 (governed environment field): SEC-013 (TLS enforcement) previously keyed applicability
+  off declared_environment sourced from the gitignored terraform.tfvars, which CI cannot read,
+  so it always resolved to "staging" → not_applicable and never enforced. The environment
+  declaration now lives in a committed, governed field ("environment" in the compliance
+  manifest, added as an OPTIONAL enum development|staging|production in
+  repository-compliance.schema.json) mirrored into the OPA input as declared_environment. The
+  SEC-013 policy FAILS SAFE: an absent/empty environment is treated as "production" (TLS
+  enforced), so a repo that omits the declaration is held to the strict standard, not silently
+  exempted. A repo that explicitly declares "staging" (as platform-infrastructure does) stays
+  not_applicable, so no currently-passing registered consumer newly blocks.
+
+  input_file convention: policy-check.schema.json gained an OPTIONAL "input_file" field so a
+  *.check.yaml names the collected OPA input document its policy consumes, making the
+  collector → POLICY_MAP → policy wiring self-documenting and auditable. POL-IAC-002 declares
+  input_file: iac-plan-review.json.
+
+  Both schema changes are purely ADDITIVE optional fields (no required-field removal, no enum
+  narrowing). Collectors (collect-terraform-info.sh, collect-all-inputs.py) and the engine
+  (run-all-policies.py, collector-map.yaml) were wired to produce iac-plan-review.json and the
+  governed declared_environment, context-gated to ["terraform"]. Verified locally: opa check
+  clean; IAC-002 fixtures pass/fail/fail-stale-approval/not_applicable as expected; SEC-013
+  fixtures staging-na/production-fail/production-pass as expected.
+
+  Operator action for consuming terraform repositories: declare "environment:" (development,
+  staging, or production) in .compliance-manifest.yaml. Absence defaults to "production" and
+  will enforce SEC-013 TLS. platform-infrastructure already declares environment: staging.
+
+affected_object_ids:
+  - "POL-IAC-002-TERRAFORM-001"
+  - "POL-SEC-013-TERRAFORM-001"
+  - "BIND-IAC-002-TERRAFORM"
+  - "07-policies/opa/IAC/POL-IAC-002-TERRAFORM-001.rego"
+  - "07-policies/opa/IAC/POL-IAC-002-TERRAFORM-001.check.yaml"
+  - "07-policies/opa/SEC/POL-SEC-013-TERRAFORM-001.rego"
+  - "06-bindings/bindings/terraform/BIND-IAC-002-TERRAFORM.yaml"
+  - "07-policies/scripts/collect-terraform-info.sh"
+  - "07-policies/scripts/collect-all-inputs.py"
+  - "07-policies/scripts/collector-map.yaml"
+  - "07-policies/scripts/run-all-policies.py"
+  - "schemas/policy-check.schema.json"
+  - "schemas/repository-compliance.schema.json"
+  - "07-policies/tests/fixtures/IAC/iac-002-pass.yaml"
+  - "07-policies/tests/fixtures/IAC/iac-002-fail.yaml"
+  - "07-policies/tests/fixtures/IAC/iac-002-fail-stale-approval.yaml"
+  - "07-policies/tests/fixtures/IAC/iac-002-not-applicable.yaml"
+  - "07-policies/tests/fixtures/SEC/sec-013-staging-na.yaml"
+  - "07-policies/tests/fixtures/SEC/sec-013-production-fail.yaml"
+  - "07-policies/tests/fixtures/SEC/sec-013-production-pass.yaml"
+  - "09-assessments/releases/v4.1.0.yaml"
+  - "09-assessments/reports/platform-compliance/ASSESS-PLATFORM-COMPLIANCE-20260712-070.yaml"
+  - "CHANGELOG.md"
+
+breaking: false
+
+author: "platform-team"
+date: "2026-07-12"
+
+review_refs: []

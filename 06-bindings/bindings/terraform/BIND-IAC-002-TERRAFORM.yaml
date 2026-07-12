@@ -38,5 +38,7 @@ observable_artifact: >
   c) Apply step reference: the workflow confirms it is using the plan file
   from the approved PR rather than running a fresh speculative plan.
 
-policy_check_ids: []
-# Planned policy: POL-IAC-002-TERRAFORM-001 (requires CI tooling integration — partially-automated)
+policy_check_ids: [POL-IAC-002-TERRAFORM-001]
+# POL-IAC-002-TERRAFORM-001 exists and is wired: it consumes the dedicated
+# iac-plan-review.json collector input (plan_generated, plan_commit_sha,
+# plan_posted_at, and approving reviews with submitted_at).

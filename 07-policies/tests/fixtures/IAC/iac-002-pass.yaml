@@ -1,0 +1,24 @@
+# Fixture: IAC-002 — PASS
+# Scenario: terraform-root pull request changing main.tf; a plan was generated for the
+#   PR head commit (plan_commit_sha == head_sha) and an APPROVED review was submitted
+#   AFTER the plan was posted (submitted_at > plan_posted_at).
+# Input file: iac-plan-review.json (PR-context shape)
+# Expected policy result: { "result": "pass" }
+repository:
+  name: platform-infrastructure
+  type: terraform-root
+pr_context: true
+head_sha: 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+changed_tf_files:
+- main.tf
+plan_generated: true
+plan_commit_sha: 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+plan_posted_at: '2026-07-12T10:00:00Z'
+plan_summary:
+  add: 3
+  change: 1
+  destroy: 0
+plan_artifact_url: https://github.com/org/platform-infrastructure/actions/runs/123/artifacts/456
+approving_reviews:
+- state: APPROVED
+  submitted_at: '2026-07-12T10:30:00Z'

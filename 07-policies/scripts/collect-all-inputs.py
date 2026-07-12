@@ -24,6 +24,44 @@ def run_gh(endpoint, default=None):
     except Exception:
         return default
 
+
+def _extract_plan_json(body):
+    """Extract a Terraform plan-evidence JSON object from a PR comment body.
+
+    IAC-002 plan evidence is posted as a PR comment embedding a JSON object with a
+    `plan_commit_sha` key — either a fenced ```json block or an inline {...}. This
+    locates every occurrence of that key, brace-matches the enclosing object (so
+    nested objects like `plan_summary` are captured intact), and returns the LAST
+    object in the body that parses and contains `plan_commit_sha`. Any parse
+    failure ⇒ that candidate is skipped; if none parse, returns None (no-plan).
+    """
+    if not body or not isinstance(body, str):
+        return None
+    best = None
+    for key_match in re.finditer(r"plan_commit_sha", body):
+        start = body.rfind("{", 0, key_match.start())
+        if start == -1:
+            continue
+        depth, end = 0, -1
+        for i in range(start, len(body)):
+            ch = body[i]
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    end = i
+                    break
+        if end == -1:
+            continue
+        try:
+            obj = json.loads(body[start:end + 1])
+        except Exception:
+            continue
+        if isinstance(obj, dict) and "plan_commit_sha" in obj:
+            best = obj  # keep the last valid object (latest occurrence in body)
+    return best
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--repo", default=os.environ.get("GITHUB_REPOSITORY", ""))
@@ -220,6 +258,65 @@ def main():
                     "fmt_result": {"exit_code": 0, "diff": "", "terraform_version": "unknown"},
                     "validate_result": {"exit_code": 0, "errors": [], "warnings": [], "directories_checked": []}}
         (out / "iac-terraform.json").write_text(json.dumps(data))
+
+        # ── IAC-002 (P0-3): Terraform plan-review evidence ────────────────────
+        # Consumed by POL-IAC-002-TERRAFORM-001. The control only applies to a
+        # terraform-root repo evaluated in PR context (a module runs plan-in-CI
+        # only and never applies; a push/tag with no PR has nothing to review).
+        # Anything else ⇒ emit the minimal {pr_context: false} shape so the policy
+        # resolves to not_applicable — never an error. Every gh call tolerates
+        # missing data / non-200 via run_gh's default.
+        plan_review = {"repository": {"name": repo_name, "type": args.repo_type},
+                       "pr_context": False}
+        if args.pr_number and args.repo_type == "terraform-root":
+            pr_pv = run_gh(f"repos/{repo}/pulls/{args.pr_number}") or {}
+            head_sha = (pr_pv.get("head") or {}).get("sha", "") if isinstance(pr_pv, dict) else ""
+            # changed_tf_files reuses the PR files already fetched for CHG-001.
+            changed_tf_files = [f for f in changed_files if f.endswith(".tf")]
+
+            # Plan evidence (observable_artifact a): the plan is posted as a PR
+            # comment embedding a JSON object with a plan_commit_sha key. Find the
+            # LATEST such comment; parse defensively (fenced ```json or inline {...})
+            # — any parse failure ⇒ treat as no-plan.
+            plan_generated = False
+            plan_commit_sha = None
+            plan_posted_at = None
+            plan_summary = None
+            plan_artifact_url = None
+            comments = run_gh(f"repos/{repo}/issues/{args.pr_number}/comments") or []
+            if isinstance(comments, list):
+                for cm in comments:  # GitHub returns oldest→newest; keep last match
+                    if not isinstance(cm, dict):
+                        continue
+                    parsed = _extract_plan_json(cm.get("body") or "")
+                    if parsed is not None:
+                        plan_generated = bool(parsed.get("plan_generated", True))
+                        plan_commit_sha = parsed.get("plan_commit_sha")
+                        plan_summary = parsed.get("plan_summary")
+                        plan_artifact_url = parsed.get("plan_artifact_url")
+                        plan_posted_at = parsed.get("plan_posted_at") or cm.get("created_at")
+
+            # approving_reviews (observable_artifact b): APPROVED reviews only.
+            reviews = run_gh(f"repos/{repo}/pulls/{args.pr_number}/reviews") or []
+            approving_reviews = [
+                {"state": rv.get("state"), "submitted_at": rv.get("submitted_at")}
+                for rv in (reviews if isinstance(reviews, list) else [])
+                if isinstance(rv, dict) and rv.get("state") == "APPROVED"
+            ]
+
+            plan_review = {
+                "repository": {"name": repo_name, "type": args.repo_type},
+                "pr_context": True,
+                "head_sha": head_sha,
+                "changed_tf_files": changed_tf_files,
+                "plan_generated": plan_generated,
+                "plan_commit_sha": plan_commit_sha,
+                "plan_posted_at": plan_posted_at,
+                "plan_summary": plan_summary,
+                "plan_artifact_url": plan_artifact_url,
+                "approving_reviews": approving_reviews,
+            }
+        (out / "iac-plan-review.json").write_text(json.dumps(plan_review))
 
     # ── Docker context ───────────────────────────────────────────────────────
     if "docker" in contexts:

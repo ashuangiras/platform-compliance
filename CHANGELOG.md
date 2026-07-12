@@ -7,6 +7,61 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [v4.1.0] — 2026-07-12 (CHG-20260712-070)
+
+### feat(security): P0 security tier — IAC-002 plan-before-apply enforcing + SEC-013 TLS de-masking
+
+MINOR — activates two terraform enforcement controls that were present but not actually
+enforcing, and ratifies the governed inputs they depend on. `breaking_changes: false`.
+
+**SemVer classification (ADR-0010): MINOR.** Adding a new OPA policy/binding for an
+already-gated control (IAC-002) and adding optional schema fields (`environment`,
+`input_file`) are both explicit MINOR triggers. None of the six MAJOR triggers is met: no new
+mandatory blocking control on the **merge** gate (IAC-002 is `deployment_gate`/`release_gate`
+only), no `warn`/`notify`→`block` flip on an existing gate, no removed waiver pathway, no
+schema narrowing or required-field removal, and no profile removal. The SEC-013 de-masking
+fails safe (absent `environment` ⇒ `production` ⇒ enforce) and the only registered consumer,
+`platform-infrastructure`, declares `environment: staging`, so no currently-passing consumer
+gate newly blocks.
+
+- **P0-3 — IAC-002 (plan-before-apply) now enforces**: `POL-IAC-002-TERRAFORM-001` was
+  reworked from a placeholder shape into a real enforcing policy that consumes the collected
+  `iac-plan-review.json` input. For a terraform-root repository in a pull-request context that
+  changes one or more `.tf` files, it requires a plan generated for the PR head commit
+  (`plan_commit_sha == head_sha`) **and** at least one `APPROVED` review submitted **after**
+  the plan was posted (stale approvals do not count). It is `not_applicable` for
+  non-terraform-root repos, when there is no PR context (push-to-main, tag/release,
+  plan-not-yet-run), or when the PR changes no `.tf` files. **IAC-002 is wired ONLY into the
+  `deployment_gate` and `release_gate` (terraform-root) — never the `merge_gate`** — so it
+  gates applies without slowing every-PR merges.
+- **P0-7 — governed `environment` field (SEC-013 de-masking)**: SEC-013 (TLS enforcement)
+  previously keyed applicability off `declared_environment` sourced from the gitignored
+  `terraform.tfvars`, which CI cannot read, so it always resolved to `staging` →
+  `not_applicable` and never enforced. The environment declaration now lives in a committed,
+  governed **optional** field (`environment`, enum `development|staging|production`) in
+  `schemas/repository-compliance.schema.json`, mirrored into the OPA input as
+  `declared_environment`. **SEC-013 fails safe**: an absent/empty `environment` is treated as
+  `production` (TLS enforced), so a repo that omits the declaration is held to the strict
+  standard, not silently exempted. A repo that explicitly declares `staging` stays
+  `not_applicable`.
+- **`input_file` schema ratification**: `schemas/policy-check.schema.json` gained an
+  **optional** `input_file` field so a `*.check.yaml` names the collected OPA input document
+  its policy consumes, making the collector → `POLICY_MAP` → policy wiring self-documenting
+  and auditable. `POL-IAC-002-TERRAFORM-001.check.yaml` declares `input_file: iac-plan-review.json`.
+- **Additive-only schemas**: both schema changes are purely additive optional fields — no
+  required-field removal, no enum narrowing. Collectors (`collect-terraform-info.sh`,
+  `collect-all-inputs.py`) and the engine (`run-all-policies.py`, `collector-map.yaml`) were
+  wired to produce `iac-plan-review.json` and the governed `declared_environment`,
+  context-gated to `["terraform"]`. Verified: `opa check` clean; IAC-002 fixtures
+  pass/fail/fail-stale-approval/not_applicable; SEC-013 fixtures
+  staging-na/production-fail/production-pass.
+- **Operator note (consuming terraform repositories)**: declare `environment:` (`development`,
+  `staging`, or `production`) in your `.compliance-manifest.yaml`. **Absence defaults to
+  `production` and enforces SEC-013 TLS.** `platform-infrastructure` already declares
+  `environment: staging`.
+
+---
+
 ## [v4.0.3] — 2026-07-11 (CHG-20260711-069)
 
 ### fix(policy): SUP-001 honors git ?ref pinning and exempts local modules
